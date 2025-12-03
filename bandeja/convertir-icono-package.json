@@ -1,0 +1,11 @@
+{
+  "name": "convertir-icono",
+  "version": "1.0.0",
+  "description": "Convertir escritorio.png a icon.ico",
+  "scripts": {
+    "convert": "node convertir-icono.js"
+  },
+  "dependencies": {
+    "png-to-ico": "^2.1.8"
+  }
+}

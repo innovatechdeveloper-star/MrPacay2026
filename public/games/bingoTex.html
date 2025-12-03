@@ -1,0 +1,1056 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>BingoTex - Juego de Bingo Textil</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #ffeaa7 0%, #fab1a0 50%, #fd79a8 100%);
+            min-height: 100vh;
+            color: #2d3436;
+            overflow-x: hidden;
+        }
+
+        .game-container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        .game-header {
+            text-align: center;
+            margin-bottom: 30px;
+            background: linear-gradient(135deg, #6c5ce7 0%, #a29bfe 100%);
+            color: white;
+            padding: 25px;
+            border-radius: 20px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .game-header::before {
+            content: '🧵🪡✂️🧶🎀';
+            position: absolute;
+            top: -20px;
+            left: -50px;
+            font-size: 3em;
+            opacity: 0.1;
+            animation: float 6s ease-in-out infinite;
+        }
+
+        .game-header h1 {
+            font-size: 3em;
+            margin-bottom: 10px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+            animation: glow 2s ease-in-out infinite alternate;
+        }
+
+        @keyframes glow {
+            from { text-shadow: 2px 2px 4px rgba(0,0,0,0.3), 0 0 10px rgba(255,255,255,0.3); }
+            to { text-shadow: 2px 2px 4px rgba(0,0,0,0.3), 0 0 20px rgba(255,255,255,0.6); }
+        }
+
+        @keyframes float {
+            0%, 100% { transform: translateY(0px) rotate(0deg); }
+            50% { transform: translateY(-20px) rotate(10deg); }
+        }
+
+        .back-btn {
+            position: absolute;
+            left: 20px;
+            top: 50%;
+            transform: translateY(-50%);
+            background: rgba(255,255,255,0.2);
+            color: white;
+            border: none;
+            padding: 12px 18px;
+            border-radius: 10px;
+            cursor: pointer;
+            transition: all 0.3s;
+            font-weight: bold;
+            backdrop-filter: blur(10px);
+        }
+
+        .back-btn:hover {
+            background: rgba(255,255,255,0.3);
+            transform: translateY(-50%) scale(1.05);
+        }
+
+        .game-info {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+
+        .info-card {
+            background: white;
+            padding: 20px;
+            border-radius: 15px;
+            box-shadow: 0 8px 25px rgba(0,0,0,0.1);
+            text-align: center;
+            border: 3px solid transparent;
+            background-clip: padding-box;
+            position: relative;
+        }
+
+        .info-card::before {
+            content: '';
+            position: absolute;
+            top: -3px;
+            left: -3px;
+            right: -3px;
+            bottom: -3px;
+            background: linear-gradient(45deg, #ff6b6b, #4ecdc4, #45b7d1, #96ceb4, #ffeaa7);
+            border-radius: 18px;
+            z-index: -1;
+            animation: borderAnimation 3s linear infinite;
+        }
+
+        @keyframes borderAnimation {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+
+        .info-card h3 {
+            color: #6c5ce7;
+            margin-bottom: 10px;
+            font-size: 1.1em;
+        }
+
+        .info-value {
+            font-size: 1.8em;
+            font-weight: bold;
+            color: #2d3436;
+        }
+
+        .game-area {
+            display: grid;
+            grid-template-columns: 1fr 300px;
+            gap: 30px;
+            margin-bottom: 30px;
+        }
+
+        .bingo-card {
+            background: white;
+            border-radius: 20px;
+            padding: 30px;
+            box-shadow: 0 15px 40px rgba(0,0,0,0.15);
+            border: 5px solid #fd79a8;
+        }
+
+        .card-header {
+            text-align: center;
+            margin-bottom: 25px;
+        }
+
+        .card-title {
+            background: linear-gradient(135deg, #fd79a8 0%, #fdcb6e 100%);
+            color: white;
+            padding: 15px;
+            border-radius: 15px;
+            font-size: 2em;
+            font-weight: bold;
+            letter-spacing: 8px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+        }
+
+        .bingo-grid {
+            display: grid;
+            grid-template-columns: repeat(5, 1fr);
+            gap: 8px;
+            margin-bottom: 20px;
+        }
+
+        .bingo-cell {
+            aspect-ratio: 1;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: linear-gradient(135deg, #ffffff 0%, #f8f9fa 100%);
+            border: 3px solid #ddd;
+            border-radius: 12px;
+            font-size: 1.4em;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .bingo-cell.header {
+            background: linear-gradient(135deg, #6c5ce7 0%, #a29bfe 100%);
+            color: white;
+            font-size: 1.8em;
+            cursor: default;
+            border-color: #6c5ce7;
+        }
+
+        .bingo-cell.free {
+            background: linear-gradient(135deg, #00b894 0%, #00cec9 100%);
+            color: white;
+            border-color: #00b894;
+            font-size: 1em;
+            cursor: default;
+        }
+
+        .bingo-cell.marked {
+            background: linear-gradient(135deg, #fd79a8 0%, #fdcb6e 100%);
+            color: white;
+            border-color: #fd79a8;
+            transform: scale(0.95);
+            animation: markAnimation 0.5s ease-out;
+        }
+
+        .bingo-cell.marked::after {
+            content: '🧵';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            font-size: 2em;
+            animation: stitchAnimation 0.5s ease-out;
+        }
+
+        @keyframes markAnimation {
+            0% { transform: scale(1) rotate(0deg); }
+            50% { transform: scale(1.1) rotate(5deg); }
+            100% { transform: scale(0.95) rotate(0deg); }
+        }
+
+        @keyframes stitchAnimation {
+            0% { opacity: 0; transform: translate(-50%, -50%) scale(0); }
+            50% { opacity: 1; transform: translate(-50%, -50%) scale(1.2); }
+            100% { opacity: 1; transform: translate(-50%, -50%) scale(1); }
+        }
+
+        .bingo-cell:hover:not(.header):not(.free):not(.marked) {
+            transform: scale(1.05);
+            border-color: #fd79a8;
+            box-shadow: 0 5px 15px rgba(253, 121, 168, 0.3);
+        }
+
+        .control-panel {
+            background: white;
+            border-radius: 20px;
+            padding: 25px;
+            box-shadow: 0 15px 40px rgba(0,0,0,0.15);
+            height: fit-content;
+        }
+
+        .current-number {
+            background: linear-gradient(135deg, #00b894 0%, #00cec9 100%);
+            color: white;
+            padding: 30px;
+            border-radius: 20px;
+            text-align: center;
+            margin-bottom: 25px;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.15);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .current-number::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: radial-gradient(circle, rgba(255,255,255,0.1) 0%, transparent 70%);
+            animation: shimmer 3s linear infinite;
+        }
+
+        @keyframes shimmer {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .number-letter {
+            font-size: 2em;
+            font-weight: bold;
+            margin-bottom: 10px;
+        }
+
+        .number-value {
+            font-size: 4em;
+            font-weight: bold;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+        }
+
+        .game-buttons {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+
+        .game-btn {
+            background: linear-gradient(135deg, #6c5ce7 0%, #a29bfe 100%);
+            color: white;
+            border: none;
+            padding: 15px 20px;
+            border-radius: 12px;
+            font-size: 1.1em;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .game-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(108, 92, 231, 0.4);
+        }
+
+        .game-btn:active {
+            transform: translateY(0);
+        }
+
+        .game-btn:disabled {
+            background: #95a5a6;
+            cursor: not-allowed;
+            transform: none;
+            box-shadow: none;
+        }
+
+        .game-btn.bingo-btn {
+            background: linear-gradient(135deg, #e17055 0%, #f39c12 100%);
+            font-size: 1.3em;
+            padding: 20px;
+            animation: pulse 2s infinite;
+        }
+
+        .game-btn.bingo-btn:hover {
+            box-shadow: 0 8px 20px rgba(225, 112, 85, 0.4);
+        }
+
+        @keyframes pulse {
+            0% { box-shadow: 0 0 0 0 rgba(225, 112, 85, 0.7); }
+            70% { box-shadow: 0 0 0 10px rgba(225, 112, 85, 0); }
+            100% { box-shadow: 0 0 0 0 rgba(225, 112, 85, 0); }
+        }
+
+        .called-numbers {
+            margin-top: 25px;
+        }
+
+        .called-numbers h4 {
+            color: #6c5ce7;
+            margin-bottom: 15px;
+            font-size: 1.2em;
+        }
+
+        .numbers-grid {
+            display: grid;
+            grid-template-columns: repeat(5, 1fr);
+            gap: 5px;
+            max-height: 200px;
+            overflow-y: auto;
+        }
+
+        .called-number {
+            background: linear-gradient(135deg, #fd79a8 0%, #fdcb6e 100%);
+            color: white;
+            padding: 8px;
+            border-radius: 8px;
+            text-align: center;
+            font-weight: bold;
+            font-size: 0.9em;
+            animation: slideIn 0.5s ease-out;
+        }
+
+        @keyframes slideIn {
+            from { opacity: 0; transform: translateX(-20px); }
+            to { opacity: 1; transform: translateX(0); }
+        }
+
+        .win-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.8);
+            display: none;
+            align-items: center;
+            justify-content: center;
+            z-index: 1000;
+            backdrop-filter: blur(5px);
+        }
+
+        .win-message {
+            background: linear-gradient(135deg, #fd79a8 0%, #fdcb6e 100%);
+            color: white;
+            padding: 50px;
+            border-radius: 30px;
+            text-align: center;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+            animation: winAnimation 1s ease-out;
+            max-width: 500px;
+        }
+
+        @keyframes winAnimation {
+            0% { transform: scale(0) rotate(-180deg); opacity: 0; }
+            50% { transform: scale(1.1) rotate(0deg); opacity: 1; }
+            100% { transform: scale(1) rotate(0deg); opacity: 1; }
+        }
+
+        .win-message h2 {
+            font-size: 3em;
+            margin-bottom: 20px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+        }
+
+        .win-message p {
+            font-size: 1.3em;
+            margin-bottom: 30px;
+        }
+
+        .confetti {
+            position: absolute;
+            width: 10px;
+            height: 10px;
+            background: #fd79a8;
+            animation: confetti-fall 3s linear infinite;
+        }
+
+        @keyframes confetti-fall {
+            0% {
+                transform: translateY(-100vh) rotate(0deg);
+                opacity: 1;
+            }
+            100% {
+                transform: translateY(100vh) rotate(720deg);
+                opacity: 0;
+            }
+        }
+
+        .stats-panel {
+            background: white;
+            border-radius: 15px;
+            padding: 20px;
+            margin-top: 20px;
+            box-shadow: 0 8px 25px rgba(0,0,0,0.1);
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 15px;
+            text-align: center;
+        }
+
+        .stat-item {
+            background: #f8f9fa;
+            padding: 15px;
+            border-radius: 10px;
+            border: 2px solid #fd79a8;
+        }
+
+        .stat-value {
+            font-size: 2em;
+            font-weight: bold;
+            color: #6c5ce7;
+        }
+
+        .stat-label {
+            color: #636e72;
+            font-size: 0.9em;
+            margin-top: 5px;
+        }
+
+        @media (max-width: 768px) {
+            .game-area {
+                grid-template-columns: 1fr;
+            }
+
+            .game-container {
+                padding: 10px;
+            }
+
+            .bingo-cell {
+                font-size: 1.2em;
+            }
+
+            .card-title {
+                font-size: 1.5em;
+                letter-spacing: 4px;
+            }
+
+            .current-number {
+                padding: 20px;
+            }
+
+            .number-value {
+                font-size: 3em;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="game-container">
+        <header class="game-header">
+            <button class="back-btn" onclick="goBack()">← Volver al Centro</button>
+            <h1>🎱 BingoTex</h1>
+            <p>¡El bingo más divertido del taller!</p>
+        </header>
+
+        <div class="game-info">
+            <div class="info-card">
+                <h3>🏆 Puntos</h3>
+                <div class="info-value" id="player-score">0</div>
+            </div>
+            <div class="info-card">
+                <h3>🎯 Partidas Jugadas</h3>
+                <div class="info-value" id="games-played">0</div>
+            </div>
+            <div class="info-card">
+                <h3>🏅 Victorias</h3>
+                <div class="info-value" id="games-won">0</div>
+            </div>
+            <div class="info-card">
+                <h3>⚡ Racha Actual</h3>
+                <div class="info-value" id="current-streak">0</div>
+            </div>
+        </div>
+
+        <div class="game-area">
+            <div class="bingo-card">
+                <div class="card-header">
+                    <div class="card-title">BINGO</div>
+                </div>
+                <div class="bingo-grid" id="bingo-grid">
+                    <!-- El grid se generará con JavaScript -->
+                </div>
+                <div class="stats-panel">
+                    <h4 style="color: #6c5ce7; text-align: center; margin-bottom: 15px;">📊 Estadísticas de la Partida</h4>
+                    <div class="stats-grid">
+                        <div class="stat-item">
+                            <div class="stat-value" id="numbers-marked">0</div>
+                            <div class="stat-label">Números Marcados</div>
+                        </div>
+                        <div class="stat-item">
+                            <div class="stat-value" id="lines-completed">0</div>
+                            <div class="stat-label">Líneas Completadas</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="control-panel">
+                <div class="current-number">
+                    <div class="number-letter" id="current-letter">¡A jugar!</div>
+                    <div class="number-value" id="current-number-value">🎱</div>
+                </div>
+
+                <div class="game-buttons">
+                    <button class="game-btn" id="start-btn" onclick="startGame()">🚀 Comenzar Partida</button>
+                    <button class="game-btn" id="next-btn" onclick="callNextNumber()" disabled>🎲 Siguiente Número</button>
+                    <button class="game-btn bingo-btn" id="bingo-btn" onclick="checkBingo()" disabled>🏆 ¡BINGO!</button>
+                    <button class="game-btn" id="new-game-btn" onclick="newGame()" disabled>🔄 Nueva Partida</button>
+                </div>
+
+                <div class="called-numbers">
+                    <h4>📋 Números Cantados</h4>
+                    <div class="numbers-grid" id="called-numbers-grid">
+                        <!-- Los números cantados aparecerán aquí -->
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Overlay de victoria -->
+    <div class="win-overlay" id="win-overlay">
+        <div class="win-message">
+            <h2>🎉 ¡BINGO!</h2>
+            <p id="win-text">¡Felicitaciones! Has ganado la partida.</p>
+            <button class="game-btn" onclick="closeWinOverlay()">🎊 ¡Genial!</button>
+        </div>
+    </div>
+
+    <script>
+        // Variables del juego
+        let gameState = {
+            isGameActive: false,
+            currentNumber: null,
+            calledNumbers: [],
+            bingoCard: [],
+            markedCells: new Set(),
+            playerScore: parseInt(localStorage.getItem('bingoScore') || '0'),
+            gamesPlayed: parseInt(localStorage.getItem('bingoGamesPlayed') || '0'),
+            gamesWon: parseInt(localStorage.getItem('bingoGamesWon') || '0'),
+            currentStreak: parseInt(localStorage.getItem('bingoStreak') || '0'),
+            numbersMarked: 0,
+            linesCompleted: 0
+        };
+
+        // Columnas del BINGO
+        const BINGO_COLUMNS = {
+            'B': { min: 1, max: 15 },
+            'I': { min: 16, max: 30 },
+            'N': { min: 31, max: 45 },
+            'G': { min: 46, max: 60 },
+            'O': { min: 61, max: 75 }
+        };
+
+        // Inicializar el juego
+        window.onload = function() {
+            updateStats();
+            generateBingoCard();
+        };
+
+        // Generar cartón de bingo
+        function generateBingoCard() {
+            const grid = document.getElementById('bingo-grid');
+            grid.innerHTML = '';
+            gameState.bingoCard = [];
+            gameState.markedCells.clear();
+
+            // Crear headers (B-I-N-G-O)
+            const headers = ['B', 'I', 'N', 'G', 'O'];
+            headers.forEach(letter => {
+                const headerCell = document.createElement('div');
+                headerCell.className = 'bingo-cell header';
+                headerCell.textContent = letter;
+                grid.appendChild(headerCell);
+            });
+
+            // Generar números para cada columna
+            for (let row = 0; row < 5; row++) {
+                gameState.bingoCard[row] = [];
+                
+                for (let col = 0; col < 5; col++) {
+                    const cell = document.createElement('div');
+                    cell.className = 'bingo-cell';
+                    cell.dataset.row = row;
+                    cell.dataset.col = col;
+                    
+                    // Centro libre
+                    if (row === 2 && col === 2) {
+                        cell.textContent = '★ GRATIS ★';
+                        cell.className += ' free';
+                        gameState.bingoCard[row][col] = 'FREE';
+                        gameState.markedCells.add(`${row}-${col}`);
+                    } else {
+                        // Generar número aleatorio según la columna
+                        const column = headers[col];
+                        const range = BINGO_COLUMNS[column];
+                        let number;
+                        
+                        // Asegurar que no se repitan números en la misma columna
+                        do {
+                            number = Math.floor(Math.random() * (range.max - range.min + 1)) + range.min;
+                        } while (gameState.bingoCard.some(row => row && row[col] === number));
+                        
+                        cell.textContent = number;
+                        gameState.bingoCard[row][col] = number;
+                        cell.onclick = () => markCell(row, col);
+                    }
+                    
+                    grid.appendChild(cell);
+                }
+            }
+
+            updateGameStats();
+        }
+
+        // Marcar celda
+        function markCell(row, col) {
+            if (!gameState.isGameActive) return;
+            
+            const number = gameState.bingoCard[row][col];
+            if (number === 'FREE') return;
+            
+            // Solo permitir marcar si el número ha sido cantado
+            if (!gameState.calledNumbers.includes(number)) {
+                alert('¡Este número aún no ha sido cantado!');
+                return;
+            }
+            
+            const cellKey = `${row}-${col}`;
+            const cell = document.querySelector(`[data-row="${row}"][data-col="${col}"]`);
+            
+            if (gameState.markedCells.has(cellKey)) {
+                // Desmarcar
+                gameState.markedCells.delete(cellKey);
+                cell.classList.remove('marked');
+                gameState.numbersMarked--;
+            } else {
+                // Marcar
+                gameState.markedCells.add(cellKey);
+                cell.classList.add('marked');
+                gameState.numbersMarked++;
+                
+                // Efecto de sonido simulado
+                playSound('mark');
+            }
+            
+            updateGameStats();
+            checkLines();
+        }
+
+        // Comenzar juego
+        function startGame() {
+            gameState.isGameActive = true;
+            gameState.calledNumbers = [];
+            gameState.numbersMarked = 1; // Por el centro libre
+            gameState.linesCompleted = 0;
+            
+            document.getElementById('start-btn').disabled = true;
+            document.getElementById('next-btn').disabled = false;
+            document.getElementById('bingo-btn').disabled = false;
+            document.getElementById('new-game-btn').disabled = false;
+            
+            document.getElementById('called-numbers-grid').innerHTML = '';
+            document.getElementById('current-letter').textContent = '¡Empezamos!';
+            document.getElementById('current-number-value').textContent = '🎲';
+            
+            updateGameStats();
+            playSound('start');
+        }
+
+        // Cantar siguiente número
+        function callNextNumber() {
+            if (!gameState.isGameActive) return;
+            
+            // Generar números disponibles
+            const availableNumbers = [];
+            Object.keys(BINGO_COLUMNS).forEach(letter => {
+                const range = BINGO_COLUMNS[letter];
+                for (let i = range.min; i <= range.max; i++) {
+                    if (!gameState.calledNumbers.includes(i)) {
+                        availableNumbers.push({ number: i, letter: letter });
+                    }
+                }
+            });
+            
+            if (availableNumbers.length === 0) {
+                alert('¡Todos los números han sido cantados!');
+                return;
+            }
+            
+            // Seleccionar número aleatorio
+            const randomIndex = Math.floor(Math.random() * availableNumbers.length);
+            const selected = availableNumbers[randomIndex];
+            
+            gameState.currentNumber = selected.number;
+            gameState.calledNumbers.push(selected.number);
+            
+            // Actualizar interfaz
+            document.getElementById('current-letter').textContent = selected.letter;
+            document.getElementById('current-number-value').textContent = selected.number;
+            
+            // Añadir a números cantados
+            const calledGrid = document.getElementById('called-numbers-grid');
+            const numberElement = document.createElement('div');
+            numberElement.className = 'called-number';
+            numberElement.textContent = `${selected.letter}${selected.number}`;
+            calledGrid.appendChild(numberElement);
+            
+            // Scroll automático
+            calledGrid.scrollTop = calledGrid.scrollHeight;
+            
+            // Verificar si el número está en el cartón del jugador
+            checkNumberInCard(selected.number);
+            
+            playSound('call');
+        }
+
+        // Verificar si el número está en el cartón
+        function checkNumberInCard(number) {
+            for (let row = 0; row < 5; row++) {
+                for (let col = 0; col < 5; col++) {
+                    if (gameState.bingoCard[row][col] === number) {
+                        const cell = document.querySelector(`[data-row="${row}"][data-col="${col}"]`);
+                        cell.style.animation = 'pulse 2s infinite';
+                        setTimeout(() => {
+                            cell.style.animation = '';
+                        }, 3000);
+                        return;
+                    }
+                }
+            }
+        }
+
+        // Verificar líneas completadas
+        function checkLines() {
+            let completedLines = 0;
+            
+            // Verificar filas
+            for (let row = 0; row < 5; row++) {
+                let rowComplete = true;
+                for (let col = 0; col < 5; col++) {
+                    if (!gameState.markedCells.has(`${row}-${col}`)) {
+                        rowComplete = false;
+                        break;
+                    }
+                }
+                if (rowComplete) completedLines++;
+            }
+            
+            // Verificar columnas
+            for (let col = 0; col < 5; col++) {
+                let colComplete = true;
+                for (let row = 0; row < 5; row++) {
+                    if (!gameState.markedCells.has(`${row}-${col}`)) {
+                        colComplete = false;
+                        break;
+                    }
+                }
+                if (colComplete) completedLines++;
+            }
+            
+            // Verificar diagonales
+            let diagonal1Complete = true;
+            let diagonal2Complete = true;
+            
+            for (let i = 0; i < 5; i++) {
+                if (!gameState.markedCells.has(`${i}-${i}`)) {
+                    diagonal1Complete = false;
+                }
+                if (!gameState.markedCells.has(`${i}-${4-i}`)) {
+                    diagonal2Complete = false;
+                }
+            }
+            
+            if (diagonal1Complete) completedLines++;
+            if (diagonal2Complete) completedLines++;
+            
+            gameState.linesCompleted = completedLines;
+            updateGameStats();
+        }
+
+        // Verificar BINGO
+        function checkBingo() {
+            // Verificar filas
+            for (let row = 0; row < 5; row++) {
+                let rowComplete = true;
+                for (let col = 0; col < 5; col++) {
+                    if (!gameState.markedCells.has(`${row}-${col}`)) {
+                        rowComplete = false;
+                        break;
+                    }
+                }
+                if (rowComplete) {
+                    winGame();
+                    return;
+                }
+            }
+            
+            // Verificar columnas
+            for (let col = 0; col < 5; col++) {
+                let colComplete = true;
+                for (let row = 0; row < 5; row++) {
+                    if (!gameState.markedCells.has(`${row}-${col}`)) {
+                        colComplete = false;
+                        break;
+                    }
+                }
+                if (colComplete) {
+                    winGame();
+                    return;
+                }
+            }
+            
+            // Verificar diagonal principal (top-left a bottom-right)
+            let diagonal1Complete = true;
+            for (let i = 0; i < 5; i++) {
+                if (!gameState.markedCells.has(`${i}-${i}`)) {
+                    diagonal1Complete = false;
+                    break;
+                }
+            }
+            if (diagonal1Complete) {
+                winGame();
+                return;
+            }
+            
+            // Verificar diagonal secundaria (top-right a bottom-left)
+            let diagonal2Complete = true;
+            for (let i = 0; i < 5; i++) {
+                if (!gameState.markedCells.has(`${i}-${4-i}`)) {
+                    diagonal2Complete = false;
+                    break;
+                }
+            }
+            if (diagonal2Complete) {
+                winGame();
+                return;
+            }
+            
+            // No hay BINGO todavía
+            alert('¡Aún no tienes una línea completa! Necesitas completar una fila, columna o diagonal.');
+            playSound('error');
+        }
+
+        // Ganar juego
+        function winGame() {
+            gameState.isGameActive = false;
+            gameState.gamesWon++;
+            gameState.currentStreak++;
+            
+            // Calcular puntos (bonus por velocidad)
+            const numbersRemaining = 75 - gameState.calledNumbers.length;
+            const basePoints = 100;
+            const speedBonus = numbersRemaining * 5;
+            const lineBonus = gameState.linesCompleted * 20;
+            const totalPoints = basePoints + speedBonus + lineBonus;
+            
+            gameState.playerScore += totalPoints;
+            
+            // Guardar estadísticas
+            saveStats();
+            updateStats();
+            
+            // Mostrar overlay de victoria
+            document.getElementById('win-text').innerHTML = `
+                <div style="margin-bottom: 20px;">
+                    <p><strong>¡Excelente trabajo!</strong></p>
+                    <p>🎯 Puntos obtenidos: <strong>${totalPoints}</strong></p>
+                    <p>⚡ Bonus por velocidad: <strong>${speedBonus}</strong></p>
+                    <p>📏 Bonus por líneas: <strong>${lineBonus}</strong></p>
+                    <p>🏆 Puntos totales: <strong>${gameState.playerScore}</strong></p>
+                </div>
+            `;
+            
+            document.getElementById('win-overlay').style.display = 'flex';
+            
+            // Crear efecto de confeti
+            createConfetti();
+            
+            // Deshabilitar botones
+            document.getElementById('next-btn').disabled = true;
+            document.getElementById('bingo-btn').disabled = true;
+            
+            playSound('win');
+        }
+
+        // Crear efecto de confeti
+        function createConfetti() {
+            const colors = ['#fd79a8', '#fdcb6e', '#6c5ce7', '#00b894', '#e17055'];
+            
+            for (let i = 0; i < 50; i++) {
+                setTimeout(() => {
+                    const confetti = document.createElement('div');
+                    confetti.className = 'confetti';
+                    confetti.style.left = Math.random() * 100 + 'vw';
+                    confetti.style.background = colors[Math.floor(Math.random() * colors.length)];
+                    confetti.style.animationDelay = Math.random() * 3 + 's';
+                    document.body.appendChild(confetti);
+                    
+                    setTimeout(() => {
+                        confetti.remove();
+                    }, 3000);
+                }, i * 100);
+            }
+        }
+
+        // Nueva partida
+        function newGame() {
+            gameState.isGameActive = false;
+            gameState.gamesPlayed++;
+            
+            // Resetear interfaz
+            document.getElementById('start-btn').disabled = false;
+            document.getElementById('next-btn').disabled = true;
+            document.getElementById('bingo-btn').disabled = true;
+            document.getElementById('new-game-btn').disabled = true;
+            
+            document.getElementById('current-letter').textContent = '¡A jugar!';
+            document.getElementById('current-number-value').textContent = '🎱';
+            document.getElementById('called-numbers-grid').innerHTML = '';
+            
+            // Generar nuevo cartón
+            generateBingoCard();
+            
+            // Guardar estadísticas
+            saveStats();
+            updateStats();
+            
+            playSound('newGame');
+        }
+
+        // Cerrar overlay de victoria
+        function closeWinOverlay() {
+            document.getElementById('win-overlay').style.display = 'none';
+        }
+
+        // Actualizar estadísticas del juego
+        function updateGameStats() {
+            document.getElementById('numbers-marked').textContent = gameState.numbersMarked;
+            document.getElementById('lines-completed').textContent = gameState.linesCompleted;
+        }
+
+        // Actualizar estadísticas generales
+        function updateStats() {
+            document.getElementById('player-score').textContent = gameState.playerScore.toLocaleString();
+            document.getElementById('games-played').textContent = gameState.gamesPlayed;
+            document.getElementById('games-won').textContent = gameState.gamesWon;
+            document.getElementById('current-streak').textContent = gameState.currentStreak;
+        }
+
+        // Guardar estadísticas
+        function saveStats() {
+            localStorage.setItem('bingoScore', gameState.playerScore.toString());
+            localStorage.setItem('bingoGamesPlayed', gameState.gamesPlayed.toString());
+            localStorage.setItem('bingoGamesWon', gameState.gamesWon.toString());
+            localStorage.setItem('bingoStreak', gameState.currentStreak.toString());
+        }
+
+        // Simular sonidos
+        function playSound(type) {
+            const sounds = {
+                start: '🎵 Música de inicio',
+                call: '📢 Número cantado',
+                mark: '✓ Número marcado',
+                win: '🎉 ¡Victoria!',
+                error: '❌ Error',
+                newGame: '🔄 Nueva partida'
+            };
+            
+            console.log(`🔊 ${sounds[type]}`);
+        }
+
+        // Volver al centro de juegos
+        function goBack() {
+            const redirect = () => { window.location.href = '/games/panel-juegos.html'; };
+
+            // Si la ventana fue abierta desde el panel (window.opener), cerrarla para no perder pestañas
+            const canClose = !!window.opener;
+
+            if (gameState.isGameActive) {
+                if (confirm('¿Estás segura de que quieres salir? Se perderá la partida actual.')) {
+                    console.log('Volviendo al Centro de Juegos...');
+                    if (canClose) {
+                        window.close();
+                    } else {
+                        redirect();
+                    }
+                }
+            } else {
+                console.log('Volviendo al Centro de Juegos...');
+                if (canClose) {
+                    window.close();
+                } else {
+                    redirect();
+                }
+            }
+        }
+
+        // Auto-guardar cada 30 segundos
+        setInterval(saveStats, 30000);
+    </script>
+</body>
+</html>

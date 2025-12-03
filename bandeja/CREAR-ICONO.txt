@@ -1,0 +1,39 @@
+CREAR ICONO icon.ico
+======================
+
+Este archivo es temporal. Para crear un icono real para la bandeja:
+
+OPCIÓN 1: Usar herramienta online (RECOMENDADO)
+------------------------------------------------
+1. Ve a: https://convertio.co/es/png-ico/
+2. Sube una imagen de impresora/etiqueta (PNG, JPG, SVG)
+3. Convierte a formato .ico
+4. Descarga y renombra como "icon.ico"
+5. Colócalo en esta carpeta (bandeja/)
+
+OPCIÓN 2: Usar software gratuito
+---------------------------------
+1. Descarga IcoFX (https://icofx.ro/)
+2. Crea/edita un icono con múltiples resoluciones:
+   - 16x16 px
+   - 32x32 px
+   - 48x48 px
+   - 256x256 px
+3. Guarda como "icon.ico"
+
+OPCIÓN 3: Usar iconos predeterminados de Windows
+-------------------------------------------------
+Puedes copiar iconos del sistema:
+- C:\Windows\System32\imageres.dll (contiene cientos de iconos)
+- Usa Resource Hacker para extraer
+
+RECOMENDACIÓN DE DISEÑO:
+------------------------
+• Tema: Impresora, etiqueta, código QR
+• Colores: Azul/verde (empresa)
+• Fondo transparente
+• Simple y reconocible a 16x16 px
+
+MIENTRAS TANTO:
+---------------
+La aplicación funcionará con un icono vacío/genérico de Electron.

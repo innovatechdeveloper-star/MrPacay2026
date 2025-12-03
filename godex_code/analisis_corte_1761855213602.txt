@@ -1,0 +1,30 @@
+ANÁLISIS DE COMANDOS DE CORTE
+=============================
+Fecha: 30/10/2025, 15:13:33
+Total de datos: 123 caracteres
+Chunks recibidos: 13
+
+COMANDOS DE CORTE ENCONTRADOS:
+NINGUNO - GoLabel no está configurado para cortar
+
+DATOS COMPLETOS:
+================
+^XSETCUT,DOUBLECUT,0
+^Q50,0,0
+^W30
+^H8
+^P1
+^S3
+^AD
+^C1
+^R0
+~Q+0
+^O0
+^D0
+^E18
+~R255
+^L
+Dy2-me-dd
+Th:m:s
+E
+

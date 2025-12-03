@@ -1,0 +1,244 @@
+/* ============================================
+   ESTILOS DE GÉNERO Y DECORACIONES
+   Sistema de Etiquetas QR - Versión 2.1.0
+   ============================================ */
+
+/* ===================================
+   TEMA FEMENINO (DEFAULT)
+   =================================== */
+body.theme-femenino {
+    /* Ya tienen los estilos aplicados por defecto */
+}
+
+/* ===================================
+   TEMA MASCULINO
+   =================================== */
+body.theme-masculino {
+    background: linear-gradient(-45deg, #1e3a8a, #1e40af, #3b82f6, #60a5fa) !important;
+}
+
+body.theme-masculino::before {
+    background: rgba(30, 41, 59, 0.75) !important;
+}
+
+/* Header masculino */
+body.theme-masculino .header {
+    background: linear-gradient(
+        135deg,
+        rgba(30, 58, 138, 0.95),
+        rgba(59, 130, 246, 0.95),
+        rgba(37, 99, 235, 0.95)
+    ) !important;
+    box-shadow: 
+        0 2px 10px rgba(30, 58, 138, 0.4),
+        0 0 15px rgba(59, 130, 246, 0.3),
+        inset 0 1px 0 rgba(147, 197, 253, 0.3),
+        inset 0 -1px 0 rgba(0, 0, 0, 0.2) !important;
+    border: 1px solid rgba(59, 130, 246, 0.5) !important;
+}
+
+body.theme-masculino .admin-header {
+    background: linear-gradient(
+        135deg,
+        rgba(30, 58, 138, 0.95),
+        rgba(59, 130, 246, 0.95),
+        rgba(37, 99, 235, 0.95)
+    ) !important;
+    box-shadow: 
+        0 2px 10px rgba(30, 58, 138, 0.4),
+        0 0 15px rgba(59, 130, 246, 0.3),
+        inset 0 1px 0 rgba(147, 197, 253, 0.3),
+        inset 0 -1px 0 rgba(0, 0, 0, 0.2) !important;
+}
+
+/* Tabs masculino */
+body.theme-masculino .nav-tab.active {
+    background: linear-gradient(135deg, #1e40af, #3b82f6, #60a5fa) !important;
+    box-shadow: 0 5px 15px rgba(59, 130, 246, 0.4) !important;
+}
+
+body.theme-masculino .dashboard-card {
+    border-left: 4px solid #3b82f6 !important;
+}
+
+body.theme-masculino .btn-primary {
+    background: linear-gradient(
+        135deg, 
+        #1e40af, 
+        #3b82f6,
+        #60a5fa,
+        #1e40af
+    ) !important;
+    box-shadow: 
+        0 4px 15px rgba(59, 130, 246, 0.4),
+        0 0 20px rgba(96, 165, 250, 0.3) !important;
+}
+
+/* Tarjeta de saludo masculina */
+body.theme-masculino .supervisor-greeting-card {
+    background: linear-gradient(135deg, #1e3a8a 0%, #3b82f6 100%) !important;
+    box-shadow: 0 4px 15px rgba(59, 130, 246, 0.4) !important;
+    border: 1px solid rgba(96, 165, 250, 0.4) !important;
+}
+
+/* ===================================
+   MODO OSCURO MASCULINO
+   =================================== */
+body.theme-masculino.dark-mode {
+    background: linear-gradient(-45deg, #0f172a, #1e293b, #334155, #475569) !important;
+}
+
+body.theme-masculino.dark-mode::before {
+    background: rgba(15, 23, 42, 0.85) !important;
+}
+
+body.theme-masculino.dark-mode .header,
+body.theme-masculino.dark-mode .admin-header {
+    background: linear-gradient(
+        135deg,
+        rgba(15, 23, 42, 0.95),
+        rgba(30, 41, 59, 0.95),
+        rgba(51, 65, 85, 0.95)
+    ) !important;
+    box-shadow: 
+        0 2px 10px rgba(0, 0, 0, 0.6),
+        0 0 15px rgba(59, 130, 246, 0.2) !important;
+}
+
+body.theme-masculino.dark-mode .supervisor-greeting-card {
+    background: linear-gradient(135deg, #1e293b 0%, #334155 100%) !important;
+}
+
+/* ===================================
+   OCULTAR DECORACIONES
+   =================================== */
+body.hide-decorations .flowers-container,
+body.hide-decorations .hearts-container,
+body.hide-decorations .stars-container,
+body.hide-decorations .butterflies-container,
+body.hide-decorations .floating-lights,
+body.hide-decorations .confetti-container,
+body.hide-decorations .waves-background,
+body.hide-decorations .flower,
+body.hide-decorations .heart,
+body.hide-decorations .star,
+body.hide-decorations .star-deco,
+body.hide-decorations .butterfly,
+body.hide-decorations .bubble,
+body.hide-decorations .confetti,
+body.hide-decorations .light {
+    display: none !important;
+    opacity: 0 !important;
+    visibility: hidden !important;
+}
+
+/* ===================================
+   BOTÓN DE DECORACIONES
+   =================================== */
+.decorations-toggle {
+    position: relative;
+    width: 45px;
+    height: 45px;
+    background: linear-gradient(135deg, #f59e0b, #f97316);
+    border-radius: 50%;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 20px;
+    transition: all 0.3s ease;
+    box-shadow: 
+        0 2px 8px rgba(0, 0, 0, 0.2),
+        inset 0 1px 2px rgba(255, 255, 255, 0.3);
+}
+
+.decorations-toggle:hover {
+    transform: scale(1.1) rotate(15deg);
+    box-shadow: 
+        0 4px 12px rgba(245, 158, 11, 0.4),
+        inset 0 1px 2px rgba(255, 255, 255, 0.4);
+}
+
+body.dark-mode .decorations-toggle {
+    background: linear-gradient(135deg, #ea580c, #dc2626);
+}
+
+body.hide-decorations .decorations-toggle {
+    background: linear-gradient(135deg, #6b7280, #4b5563);
+}
+
+/* ===================================
+   ELEMENTOS DECORATIVOS MASCULINOS
+   =================================== */
+
+/* Circuitos tecnológicos para tema masculino */
+.tech-circuits {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    pointer-events: none;
+    z-index: 0;
+    overflow: hidden;
+    opacity: 0;
+    transition: opacity 0.5s ease;
+}
+
+body.theme-masculino .tech-circuits {
+    opacity: 0.2;
+}
+
+body.theme-masculino.dark-mode .tech-circuits {
+    opacity: 0.15;
+}
+
+.circuit-line {
+    position: absolute;
+    background: linear-gradient(90deg, 
+        transparent, 
+        rgba(59, 130, 246, 0.5), 
+        transparent
+    );
+    animation: circuitPulse 3s ease-in-out infinite;
+}
+
+@keyframes circuitPulse {
+    0%, 100% { opacity: 0.3; }
+    50% { opacity: 0.8; }
+}
+
+/* Íconos técnicos flotantes para masculino */
+.tech-icons {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    pointer-events: none;
+    z-index: 0;
+    overflow: hidden;
+    opacity: 0;
+}
+
+body.theme-masculino .tech-icons {
+    opacity: 0.4;
+}
+
+body.theme-masculino.dark-mode .tech-icons {
+    opacity: 0.3;
+}
+
+.tech-icon {
+    position: absolute;
+    font-size: 30px;
+    opacity: 0.5;
+    animation: floatTech 12s ease-in-out infinite;
+}
+
+@keyframes floatTech {
+    0%, 100% { transform: translate(0, 0) rotate(0deg); opacity: 0.5; }
+    25% { transform: translate(30px, -40px) rotate(45deg); opacity: 0.7; }
+    50% { transform: translate(-20px, -80px) rotate(90deg); opacity: 0.6; }
+    75% { transform: translate(25px, -60px) rotate(135deg); opacity: 0.5; }
+}

@@ -1,0 +1,32 @@
+<service>
+	<id>sistemaetiquetasv25.exe</id>
+	<name>Sistema Etiquetas v2.5</name>
+	<description>Sistema de gestión de etiquetas para impresoras Zebra y Godex</description>
+	<executable>C:\Program Files\nodejs\node.exe</executable>
+	<argument>--max_old_space_size=4096</argument>
+	<argument>D:\mi-app-etiquetas\mi-app-etiquetas\sistema-bandeja\node_modules\node-windows\lib\wrapper.js</argument>
+	<argument>--file</argument>
+	<argument>D:\mi-app-etiquetas\mi-app-etiquetas\server.js</argument>
+	<argument>--scriptoptions=</argument>
+	<argument>--log</argument>
+	<argument>Sistema Etiquetas v2.5 wrapper</argument>
+	<argument>--grow</argument>
+	<argument>0.25</argument>
+	<argument>--wait</argument>
+	<argument>1</argument>
+	<argument>--maxrestarts</argument>
+	<argument>3</argument>
+	<argument>--abortonerror</argument>
+	<argument>n</argument>
+	<argument>--stopparentfirst</argument>
+	<argument>undefined</argument>
+	<logmode>rotate</logmode>
+	<stoptimeout>30sec</stoptimeout>
+	<env name="NODE_ENV" value="production"/>
+	<serviceaccount>
+		<domain>DESKTOP-V5H22U1</domain>
+		<user>LocalSystem</user>
+		<password></password>
+	</serviceaccount>
+	<workingdirectory>D:\mi-app-etiquetas\mi-app-etiquetas\sistema-bandeja\instalador</workingdirectory>
+</service>

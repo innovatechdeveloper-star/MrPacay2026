@@ -1,0 +1,55 @@
+# Node modules
+node_modules/
+bandeja/node_modules/
+
+# Logs
+logs/
+*.log
+bandeja/logs/
+
+# Configuración sensible (CONTRASEÑAS)
+config.json
+bandeja/config.json
+system.config
+
+# Base de datos con datos
+*.sql
+base_data/*.sql
+!base_data/crear_base_datos.sql
+!base_data/README.md
+
+# SSL Certificates
+ssl/*.key
+ssl/*.pem
+ssl/*.crt
+
+# Variables de entorno
+.env
+.env.local
+
+# Archivos temporales
+*.tmp
+*.temp
+*.swp
+*.bak
+~$*
+
+# Sistema operativo
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# IDEs
+.vscode/settings.json
+.vscode/launch.json
+.idea/
+*.suo
+*.user
+
+# Builds
+dist/
+build/
+
+# Daemon ejecutables
+daemon/*.exe
+daemon/*.dll

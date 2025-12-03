@@ -1,0 +1,1024 @@
+
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Centro de Juegos - TextilApp</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #e8f5e8 0%, #f0e6ff 50%, #fff0f5 100%);
+            min-height: 100vh;
+            color: #4a4a4a;
+            transition: background 0.4s ease, color 0.3s ease;
+        }
+
+        /* Tema: Océano Tranquilo */
+        .theme-ocean {
+            background: linear-gradient(135deg, #a8edea 0%, #86a8e7 50%, #7f7fd5 100%);
+            color: #05204a;
+        }
+
+        /* Tema: Atardecer Dorado */
+        .theme-sunset {
+            background: linear-gradient(135deg, #ff9966 0%, #ff5e62 50%, #ff9966 100%);
+            color: #3b1f10;
+        }
+
+        /* Tema: Bosque Sereno */
+        .theme-forest {
+            background: linear-gradient(135deg, #d4fc79 0%, #96e6a1 50%, #43cea2 100%);
+            color: #0b2a26;
+        }
+
+        /* Contenedor para efectos de tema (no interfiere con accesibilidad) */
+        .theme-effects{
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            overflow: hidden;
+            z-index: 1;
+        }
+
+        /* Burbujas para tema ocean */
+        .ocean-bubble{
+            position: absolute;
+            bottom: -10%;
+            width: 20px;
+            height: 20px;
+            background: rgba(255,255,255,0.25);
+            border-radius: 50%;
+            box-shadow: inset -4px -6px 10px rgba(255,255,255,0.2);
+            animation: bubbleRise linear infinite;
+            opacity: 0.9;
+        }
+
+        @keyframes bubbleRise{
+            0% { transform: translateY(0) scale(0.6); opacity: 0.6; }
+            50% { opacity: 0.95; }
+            100% { transform: translateY(-120vh) scale(1); opacity: 0; }
+        }
+
+        /* Rayos suaves para sunset */
+        .sun-ray{
+            position: absolute;
+            width: 200px;
+            height: 200px;
+            background: radial-gradient(circle at 30% 30%, rgba(255,255,255,0.12), transparent 40%);
+            filter: blur(20px);
+            transform-origin: center;
+            animation: rotateSlow linear infinite;
+            opacity: 0.7;
+        }
+
+        @keyframes rotateSlow{
+            from { transform: rotate(0deg) translateY(0); }
+            to { transform: rotate(360deg) translateY(0); }
+        }
+
+        /* Hojas para forest */
+        .leaf{
+            position: absolute;
+            width: 24px;
+            height: 12px;
+            background: linear-gradient(90deg,#6bbf59,#2f8f49);
+            border-radius: 12px 12px 12px 12px;
+            transform-origin: center;
+            opacity: 0.95;
+            animation: leafFall linear infinite;
+        }
+
+        @keyframes leafFall{
+            0% { transform: translateY(-10vh) rotate(0deg); opacity: 0; }
+            20% { opacity: 1; }
+            100% { transform: translateY(120vh) rotate(360deg); opacity: 0; }
+        }
+
+        /* Pétalos para default/flowers */
+        .petal{
+            position: absolute;
+            width: 16px;
+            height: 24px;
+            background: radial-gradient(circle at 40% 30%, #fff1f2, #ffb6c1 60%);
+            border-radius: 50% 50% 40% 40%;
+            transform-origin: center;
+            animation: petalFall linear infinite;
+            opacity: 0.95;
+        }
+
+        @keyframes petalFall{
+            0% { transform: translateY(-5vh) rotate(0deg) translateX(0); opacity: 0; }
+            30% { opacity: 1; }
+            100% { transform: translateY(110vh) rotate(360deg) translateX(40px); opacity: 0; }
+        }
+
+        /* Respetar preferencia de reducir movimiento */
+        @media (prefers-reduced-motion: reduce) {
+            .ocean-bubble, .sun-ray, .leaf, .petal {
+                animation-duration: 0.001s !important;
+                opacity: 0.4 !important;
+            }
+        }
+
+        .games-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        .games-header {
+            text-align: center;
+            margin-bottom: 30px;
+            position: relative;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 25px;
+            border-radius: 20px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+        }
+
+        .games-header h1 {
+            font-size: 2.5em;
+            margin-bottom: 10px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+        }
+
+        .games-header p {
+            font-size: 1.1em;
+            opacity: 0.9;
+        }
+
+        .back-btn {
+            position: absolute;
+            left: 20px;
+            top: 50%;
+            transform: translateY(-50%);
+            background: rgba(255,255,255,0.2);
+            color: white;
+            border: none;
+            padding: 12px 18px;
+            border-radius: 10px;
+            cursor: pointer;
+            transition: all 0.3s;
+            font-weight: bold;
+            backdrop-filter: blur(10px);
+        }
+
+        .back-btn:hover {
+            background: rgba(255,255,255,0.3);
+            transform: translateY(-50%) scale(1.05);
+        }
+
+        .navigation-tabs {
+            display: flex;
+            justify-content: center;
+            gap: 10px;
+            margin-bottom: 30px;
+        }
+
+        .nav-tab {
+            background: white;
+            border: none;
+            padding: 15px 30px;
+            border-radius: 25px;
+            cursor: pointer;
+            font-size: 1.1em;
+            font-weight: bold;
+            transition: all 0.3s;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+            color: #667eea;
+        }
+
+        .nav-tab.active {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            transform: translateY(-2px);
+        }
+
+        .nav-tab:hover:not(.active) {
+            background: #f8f9ff;
+            transform: translateY(-2px);
+        }
+
+        .section {
+            background: white;
+            border-radius: 20px;
+            padding: 30px;
+            margin-bottom: 25px;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.08);
+            border: 1px solid rgba(255,255,255,0.5);
+            display: none;
+        }
+
+        .section.active {
+            display: block;
+            animation: fadeIn 0.5s ease-in;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .section h2 {
+            color: #667eea;
+            margin-bottom: 25px;
+            font-size: 1.8em;
+            text-align: center;
+        }
+
+        /* Estilos para la sección de puntos */
+        .points-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+            gap: 20px;
+        }
+
+        .game-score {
+            background: linear-gradient(135deg, #ffeaa7 0%, #fab1a0 100%);
+            border-radius: 15px;
+            padding: 20px;
+            text-align: center;
+            transition: transform 0.3s;
+            border: 3px solid rgba(255,255,255,0.5);
+        }
+
+        .game-score:hover {
+            transform: translateY(-5px);
+        }
+
+        .game-score h3 {
+            color: #d63031;
+            margin-bottom: 15px;
+            font-size: 1.3em;
+        }
+
+        .top-players {
+            background: rgba(255,255,255,0.3);
+            border-radius: 10px;
+            padding: 15px;
+            font-size: 0.9em;
+        }
+
+        .player-score {
+            display: flex;
+            justify-content: space-between;
+            padding: 5px 0;
+            border-bottom: 1px solid rgba(255,255,255,0.3);
+        }
+
+        .player-score:last-child {
+            border-bottom: none;
+        }
+
+        /* Estilos para la sección de juegos */
+        .games-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 25px;
+        }
+
+        .game-card {
+            background: linear-gradient(135deg, #a8edea 0%, #fed6e3 100%);
+            border-radius: 20px;
+            padding: 30px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s;
+            border: 3px solid rgba(255,255,255,0.5);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .game-card::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: linear-gradient(45deg, transparent, rgba(255,255,255,0.3), transparent);
+            transform: rotate(45deg);
+            transition: all 0.6s;
+            opacity: 0;
+        }
+
+        .game-card:hover::before {
+            opacity: 1;
+            left: 100%;
+        }
+
+        .game-card:hover {
+            transform: translateY(-8px) scale(1.02);
+            box-shadow: 0 20px 50px rgba(0,0,0,0.15);
+        }
+
+        .game-icon {
+            font-size: 4em;
+            margin-bottom: 15px;
+            position: relative;
+            z-index: 2;
+        }
+
+        .game-card h3 {
+            color: #2d3436;
+            margin-bottom: 10px;
+            font-size: 1.4em;
+            position: relative;
+            z-index: 2;
+        }
+
+        .game-card p {
+            color: #636e72;
+            font-size: 1em;
+            position: relative;
+            z-index: 2;
+        }
+
+        .game-status {
+            position: absolute;
+            top: 15px;
+            right: 15px;
+            background: #00b894;
+            color: white;
+            padding: 5px 10px;
+            border-radius: 15px;
+            font-size: 0.8em;
+            font-weight: bold;
+        }
+
+        .game-status.coming-soon {
+            background: #fdcb6e;
+            color: #2d3436;
+        }
+
+        /* Estilos para configuración */
+        .config-options {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 25px;
+        }
+
+        .config-item {
+            background: #f8f9ff;
+            padding: 20px;
+            border-radius: 15px;
+            border: 2px solid #e17055;
+        }
+
+        .config-item h4 {
+            color: #667eea;
+            margin-bottom: 15px;
+            font-size: 1.2em;
+        }
+
+        .config-item label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: bold;
+            color: #2d3436;
+        }
+
+        .config-item input[type="text"], .config-item select {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #ddd;
+            border-radius: 8px;
+            font-size: 1em;
+            margin-bottom: 10px;
+            transition: border-color 0.3s;
+        }
+
+        .config-item input[type="text"]:focus, .config-item select:focus {
+            border-color: #667eea;
+            outline: none;
+        }
+
+        .config-item button {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            padding: 12px 20px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: bold;
+            transition: transform 0.3s;
+            width: 100%;
+        }
+
+        .config-item button:hover {
+            transform: translateY(-2px);
+        }
+
+        .switch {
+            position: relative;
+            display: inline-block;
+            width: 60px;
+            height: 34px;
+        }
+
+        .switch input {
+            opacity: 0;
+            width: 0;
+            height: 0;
+        }
+
+        .slider {
+            position: absolute;
+            cursor: pointer;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: #ccc;
+            transition: .4s;
+            border-radius: 34px;
+        }
+
+        .slider:before {
+            position: absolute;
+            content: "";
+            height: 26px;
+            width: 26px;
+            left: 4px;
+            bottom: 4px;
+            background-color: white;
+            transition: .4s;
+            border-radius: 50%;
+        }
+
+        input:checked + .slider {
+            background-color: #667eea;
+        }
+
+        input:checked + .slider:before {
+            transform: translateX(26px);
+        }
+
+        @media (max-width: 768px) {
+            .games-container {
+                padding: 10px;
+            }
+
+            .navigation-tabs {
+                flex-wrap: wrap;
+            }
+
+            .nav-tab {
+                padding: 10px 20px;
+                font-size: 1em;
+            }
+
+            .games-header h1 {
+                font-size: 2em;
+            }
+
+            .back-btn {
+                position: static;
+                transform: none;
+                margin-bottom: 15px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div id="theme-effects" class="theme-effects" aria-hidden="true"></div>
+    <div class="games-container">
+        <header class="games-header">
+            <button class="back-btn" onclick="goBack()">← Volver al Sistema</button>
+            <h1>🎮 Centro de Juegos TextilApp</h1>
+            <p>¡Diviértete y compite con tus compañeras de trabajo!</p>
+        </header>
+
+        <!-- Navegación por pestañas -->
+        <div class="navigation-tabs">
+            <button class="nav-tab active" onclick="showSection('points')">🏆 Puntos</button>
+            <button class="nav-tab" onclick="showSection('games')">🎯 Jugar</button>
+            <button class="nav-tab" onclick="showSection('config')">⚙️ Configuración</button>
+        </div>
+
+        <!-- Sección de Puntos -->
+        <div class="section active" id="points-section">
+            <h2>🏆 Tabla de Puntos General</h2>
+            <div class="points-grid">
+                <div class="game-score">
+                    <h3>🎱 BingoTex</h3>
+                    <div class="top-players">
+                        <div class="player-score">
+                            <span>👑 María Elena</span>
+                            <span><strong>2,450 pts</strong></span>
+                        </div>
+                        <div class="player-score">
+                            <span>🥈 Rosa Carmen</span>
+                            <span><strong>2,200 pts</strong></span>
+                        </div>
+                        <div class="player-score">
+                            <span>🥉 Ana Lucía</span>
+                            <span><strong>1,980 pts</strong></span>
+                        </div>
+                        <div class="player-score">
+                            <span>4. Patricia</span>
+                            <span><strong>1,750 pts</strong></span>
+                        </div>
+                        <div class="player-score">
+                            <span>5. Carmen Rosa</span>
+                            <span><strong>1,650 pts</strong></span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="game-score">
+                    <h3>💎 AlsimtexCrush</h3>
+                    <div class="top-players">
+                        <div class="player-score">
+                            <span>👑 Luz Marina</span>
+                            <span><strong>15,800 pts</strong></span>
+                        </div>
+                        <div class="player-score">
+                            <span>🥈 Sofia Isabel</span>
+                            <span><strong>14,200 pts</strong></span>
+                        </div>
+                        <div class="player-score">
+                            <span>🥉 Gladys Pilar</span>
+                            <span><strong>12,950 pts</strong></span>
+                        </div>
+                        <div class="player-score">
+                            <span>4. Milagros</span>
+                            <span><strong>11,500 pts</strong></span>
+                        </div>
+                        <div class="player-score">
+                            <span>5. Esperanza</span>
+                            <span><strong>10,800 pts</strong></span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="game-score">
+                    <h3>📝 Tutti-Tex</h3>
+                    <div class="top-players">
+                        <div class="player-score">
+                            <span>👑 Elena Beatriz</span>
+                            <span><strong>890 pts</strong></span>
+                        </div>
+                        <div class="player-score">
+                            <span>🥈 Norma Yolanda</span>
+                            <span><strong>780 pts</strong></span>
+                        </div>
+                        <div class="player-score">
+                            <span>🥉 Cecilia Rosa</span>
+                            <span><strong>720 pts</strong></span>
+                        </div>
+                        <div class="player-score">
+                            <span>4. Blanca Flor</span>
+                            <span><strong>650 pts</strong></span>
+                        </div>
+                        <div class="player-score">
+                            <span>5. Marlene</span>
+                            <span><strong>580 pts</strong></span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="game-score">
+                    <h3>🇵🇪 SaberYcoser</h3>
+                    <div class="top-players">
+                        <div class="player-score">
+                            <span>👑 Victoria Inés</span>
+                            <span><strong>95% aciertos</strong></span>
+                        </div>
+                        <div class="player-score">
+                            <span>🥈 Mercedes</span>
+                            <span><strong>92% aciertos</strong></span>
+                        </div>
+                        <div class="player-score">
+                            <span>🥉 Teodora</span>
+                            <span><strong>88% aciertos</strong></span>
+                        </div>
+                        <div class="player-score">
+                            <span>4. Felicita</span>
+                            <span><strong>85% aciertos</strong></span>
+                        </div>
+                        <div class="player-score">
+                            <span>5. Juana María</span>
+                            <span><strong>82% aciertos</strong></span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="game-score">
+                    <h3>👑 El Tejido del Rey</h3>
+                    <div class="top-players">
+                        <div class="player-score">
+                            <span>👑 Carmela</span>
+                            <span><strong>12 victorias</strong></span>
+                        </div>
+                        <div class="player-score">
+                            <span>🥈 Domitila</span>
+                            <span><strong>10 victorias</strong></span>
+                        </div>
+                        <div class="player-score">
+                            <span>🥉 Griselda</span>
+                            <span><strong>8 victorias</strong></span>
+                        </div>
+                        <div class="player-score">
+                            <span>4. Florencia</span>
+                            <span><strong>7 victorias</strong></span>
+                        </div>
+                        <div class="player-score">
+                            <span>5. Matilde</span>
+                            <span><strong>6 victorias</strong></span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Sección de Juegos -->
+        <div class="section" id="games-section">
+            <h2>🎯 Selecciona tu Juego Favorito</h2>
+            <div class="games-grid">
+                <div class="game-card" onclick="openGame('bingo')">
+                    <div class="game-status">Disponible</div>
+                    <div class="game-icon">🎱</div>
+                    <h3>BingoTex</h3>
+                    <p>Bingo tradicional con premios especiales. ¡Completa tu cartón y gana!</p>
+                </div>
+
+                <div class="game-card" onclick="openGame('crush')">
+                    <div class="game-status">Disponible</div>
+                    <div class="game-icon">💎</div>
+                    <h3>AlsimtexCrush</h3>
+                    <p>Match-3 con hilos, botones y elementos de costura. ¡Combina y triunfa!</p>
+                </div>
+
+                <div class="game-card" onclick="openGame('tutti')">
+                    <div class="game-status">Disponible</div>
+                    <div class="game-icon">📝</div>
+                    <h3>Tutti-Tex</h3>
+                    <p>Palabras creativas por categoría. ¡Demuestra tu vocabulario!</p>
+                </div>
+
+                <div class="game-card" onclick="openGame('trivia')">
+                    <div class="game-status">Disponible</div>
+                    <div class="game-icon">🇵🇪</div>
+                    <h3>SaberYcoser</h3>
+                    <p>Trivias sobre Perú, cultura y tradiciones. ¡Pon a prueba tus conocimientos!</p>
+                </div>
+
+                <div class="game-card" onclick="openGame('solitaire')">
+                    <div class="game-status">Disponible</div>
+                    <div class="game-icon">👑</div>
+                    <h3>El Tejido del Rey</h3>
+                    <p>Solitario clásico con diseño elegante. ¡Relájate y disfruta!</p>
+                </div>
+
+                <div class="game-card" onclick="showComingSoon()">
+                    <div class="game-status coming-soon">Próximamente</div>
+                    <div class="game-icon">🃏</div>
+                    <h3>Cartas del Telar</h3>
+                    <p>Golpe, BlackJack y más juegos de cartas. ¡Muy pronto!</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Sección de Configuración -->
+        <div class="section" id="config-section">
+            <h2>⚙️ Configuración del Juego</h2>
+            <div class="config-options">
+                <div class="config-item">
+                    <h4>👩 Perfil de Jugadora</h4>
+                    <label for="player-name">Nombre de jugadora:</label>
+                    <input type="text" id="player-name" placeholder="Ej: María Elena" value="">
+                    <button onclick="savePlayerName()">💾 Guardar Nombre</button>
+                </div>
+
+                <div class="config-item">
+                    <h4>🔊 Configuración de Audio</h4>
+                    <label for="sounds-enabled">Efectos de sonido:</label>
+                    <label class="switch">
+                        <input type="checkbox" id="sounds-enabled" checked>
+                        <span class="slider"></span>
+                    </label>
+                    <br><br>
+                    <label for="music-enabled">Música de fondo:</label>
+                    <label class="switch">
+                        <input type="checkbox" id="music-enabled" checked>
+                        <span class="slider"></span>
+                    </label>
+                </div>
+
+                <div class="config-item">
+                    <h4>🎨 Preferencias Visuales</h4>
+                    <label for="theme-select">Tema de colores:</label>
+                    <select id="theme-select">
+                        <option value="default">🌸 Flores Primaverales</option>
+                        <option value="ocean">🌊 Océano Tranquilo</option>
+                        <option value="sunset">🌅 Atardecer Dorado</option>
+                        <option value="forest">🌿 Bosque Sereno</option>
+                    </select>
+                    <button onclick="changeTheme()">🎨 Aplicar Tema</button>
+                </div>
+
+                <div class="config-item">
+                    <h4>🏆 Estadísticas Personales</h4>
+                    <div style="text-align: center; color: #667eea;">
+                        <p><strong>Partidas jugadas:</strong> <span id="total-games">42</span></p>
+                        <p><strong>Puntos totales:</strong> <span id="total-points">8,750</span></p>
+                        <p><strong>Juego favorito:</strong> <span id="favorite-game">BingoTex</span></p>
+                        <p><strong>Racha actual:</strong> <span id="current-streak">5 victorias</span></p>
+                    </div>
+                    <button onclick="resetStats()">🔄 Reiniciar Estadísticas</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Variables globales
+        let currentPlayerName = localStorage.getItem('playerName') || '';
+        let soundsEnabled = localStorage.getItem('soundsEnabled') !== 'false';
+        let musicEnabled = localStorage.getItem('musicEnabled') !== 'false';
+
+        // Cargar configuración al iniciar
+        window.onload = function() {
+            document.getElementById('player-name').value = currentPlayerName;
+            document.getElementById('sounds-enabled').checked = soundsEnabled;
+            document.getElementById('music-enabled').checked = musicEnabled;
+
+            // Aplicar tema guardado si existe
+            const savedTheme = localStorage.getItem('selectedTheme') || 'default';
+            applyTheme(savedTheme);
+            // Asegurar inyección de efectos después del primer frame
+            requestAnimationFrame(() => { try { injectThemeEffects(savedTheme); } catch(e){} });
+            // Seleccionar opción en el select
+            const themeSelect = document.getElementById('theme-select');
+            if (themeSelect) themeSelect.value = savedTheme;
+        };
+
+        // Función para cambiar entre secciones
+        function showSection(sectionName) {
+            // Ocultar todas las secciones
+            const sections = document.querySelectorAll('.section');
+            sections.forEach(section => {
+                section.classList.remove('active');
+            });
+
+            // Remover clase active de todos los tabs
+            const tabs = document.querySelectorAll('.nav-tab');
+            tabs.forEach(tab => {
+                tab.classList.remove('active');
+            });
+
+            // Mostrar la sección seleccionada
+            document.getElementById(sectionName + '-section').classList.add('active');
+
+            // Activar el tab correspondiente
+            event.target.classList.add('active');
+
+            // Reproducir sonido si está habilitado
+            if (soundsEnabled) {
+                playSound('click');
+            }
+        }
+
+        // Función para volver atrás
+        function goBack() {
+            if (confirm('¿Estás segura de que quieres volver al sistema principal?')) {
+                // Aquí iría la lógica para volver al sistema principal
+                alert('Volviendo al sistema TextilApp...');
+                // window.location.href = '../index.html';
+            }
+        }
+
+        // Función para abrir juegos (abre en nueva pestaña para no perder el panel)
+        function openGame(gameType) {
+            if (!currentPlayerName) {
+                alert('¡Por favor ingresa tu nombre en Configuración antes de jugar!');
+                showSection('config');
+                return;
+            }
+
+            // Determinar nombre y ruta del juego
+            let gameName = '';
+            let url = null;
+            switch(gameType) {
+                case 'bingo':
+                    gameName = 'BingoTex';
+                    url = '/games/bingoTex.html';
+                    break;
+                case 'crush':
+                    gameName = 'AlsimtexCrush';
+                    url = '/games/AlsimtexCrush.html';
+                    break;
+                case 'tutti':
+                    gameName = 'Tutti-Tex';
+                    break;
+                case 'trivia':
+                    gameName = 'SaberYcoser';
+                    break;
+                case 'solitaire':
+                    gameName = 'El Tejido del Rey';
+                    break;
+            }
+
+            if (soundsEnabled) {
+                playSound('gameStart');
+            }
+
+            // Si hay una URL asociada, abrir en nueva pestaña y mostrar mensaje no bloqueante
+            if (url) {
+                try {
+                    window.open(url, '_blank', 'noopener,noreferrer');
+                    console.log(`🎮 Abriendo ${gameName} en una nueva pestaña. Buena suerte ${currentPlayerName}!`);
+                } catch (e) {
+                    // Fallback: navegar en la misma pestaña si window.open falla
+                    console.warn('No se pudo abrir nueva pestaña, navegando en la misma ventana.', e);
+                    window.location.href = url;
+                }
+            } else {
+                // Juegos no implementados muestran un aviso (mantiene comportamiento previo)
+                alert(`🎮 Cargando ${gameName}...\n\n¡Buena suerte ${currentPlayerName}!`);
+            }
+        }
+
+        function showComingSoon() {
+            alert('🚧 ¡Próximamente!\n\nEstamos trabajando en más juegos emocionantes para ti.');
+        }
+
+        // Función para guardar nombre del jugador
+        function savePlayerName() {
+            const name = document.getElementById('player-name').value.trim();
+            if (name) {
+                currentPlayerName = name;
+                localStorage.setItem('playerName', name);
+                alert(`¡Hola ${name}! Tu nombre ha sido guardado correctamente.`);
+                
+                if (soundsEnabled) {
+                    playSound('success');
+                }
+            } else {
+                alert('Por favor ingresa un nombre válido.');
+            }
+        }
+
+        // Función para cambiar tema
+        function changeTheme() {
+            const theme = document.getElementById('theme-select').value;
+            applyTheme(theme);
+            localStorage.setItem('selectedTheme', theme);
+
+            alert(`Tema "${document.getElementById('theme-select').selectedOptions[0].text}" aplicado correctamente.`);
+            if (soundsEnabled) {
+                playSound('success');
+            }
+        }
+
+        // Aplica la clase de tema al body y ajusta colores si es necesario
+        function applyTheme(themeName) {
+            const body = document.body;
+            body.classList.remove('theme-ocean', 'theme-sunset', 'theme-forest');
+
+            switch (themeName) {
+                case 'ocean':
+                    body.classList.add('theme-ocean');
+                    break;
+                case 'sunset':
+                    body.classList.add('theme-sunset');
+                    break;
+                case 'forest':
+                    body.classList.add('theme-forest');
+                    break;
+                default:
+                    // default: remover clases para usar el estilo base
+                    break;
+            }
+
+            // Inyectar/limpiar efectos según tema
+            try { injectThemeEffects(themeName); } catch (e) { console.error('Error injecting theme effects', e); }
+        }
+
+        // Inyecta efectos de fondo según tema y limpia los anteriores
+        function injectThemeEffects(themeName) {
+            const container = document.getElementById('theme-effects');
+            if (!container) return;
+            // Limpiar efectos previos
+            container.innerHTML = '';
+
+            // Respetar preferencia por reducir movimiento
+            const reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+            if (reduce) return;
+
+            if (themeName === 'ocean') {
+                // Crear pocas burbujas con posiciones y duraciones aleatorias
+                const count = Math.min(18, Math.max(8, Math.floor(window.innerWidth / 80)));
+                for (let i = 0; i < count; i++) {
+                    const b = document.createElement('div');
+                    b.className = 'ocean-bubble';
+                    const size = 8 + Math.random() * 36;
+                    b.style.width = size + 'px';
+                    b.style.height = size + 'px';
+                    b.style.left = Math.random() * 100 + '%';
+                    b.style.animationDuration = (8 + Math.random() * 12) + 's';
+                    b.style.bottom = (-10 - Math.random() * 20) + '%';
+                    container.appendChild(b);
+                }
+            } else if (themeName === 'sunset') {
+                // Añadir algunos rayos grandes y lentos
+                const positions = [10, 40, 70, 90];
+                positions.forEach((pos, idx) => {
+                    const r = document.createElement('div');
+                    r.className = 'sun-ray';
+                    r.style.left = pos + '%';
+                    r.style.top = (10 + idx * 15) + '%';
+                    r.style.width = (200 + idx * 80) + 'px';
+                    r.style.height = (200 + idx * 80) + 'px';
+                    r.style.animationDuration = (30 + idx * 10) + 's';
+                    container.appendChild(r);
+                });
+            } else if (themeName === 'forest') {
+                // Hojas cayendo
+                const count = Math.min(20, Math.max(6, Math.floor(window.innerWidth / 100)));
+                for (let i = 0; i < count; i++) {
+                    const leaf = document.createElement('div');
+                    leaf.className = 'leaf';
+                    leaf.style.left = Math.random() * 100 + '%';
+                    leaf.style.animationDuration = (6 + Math.random() * 8) + 's';
+                    leaf.style.transform = `rotate(${Math.random()*360}deg)`;
+                    leaf.style.top = (-10 - Math.random()*30) + 'vh';
+                    leaf.style.opacity = 0.8 + Math.random()*0.2;
+                    leaf.style.animationDelay = (Math.random()*3) + 's';
+                    container.appendChild(leaf);
+                }
+            } else {
+                // Flowers/petals for default
+                const count = Math.min(24, Math.max(8, Math.floor(window.innerWidth / 70)));
+                for (let i = 0; i < count; i++) {
+                    const petal = document.createElement('div');
+                    petal.className = 'petal';
+                    petal.style.left = Math.random() * 100 + '%';
+                    petal.style.animationDuration = (7 + Math.random()*8) + 's';
+                    petal.style.animationDelay = (Math.random()*3) + 's';
+                    petal.style.opacity = 0.85 + Math.random()*0.15;
+                    container.appendChild(petal);
+                }
+            }
+        }
+
+        // Función para reiniciar estadísticas
+        function resetStats() {
+            if (confirm('¿Estás segura de que quieres reiniciar todas tus estadísticas?')) {
+                // Aquí iría la lógica para reiniciar estadísticas
+                document.getElementById('total-games').textContent = '0';
+                document.getElementById('total-points').textContent = '0';
+                document.getElementById('current-streak').textContent = '0 victorias';
+                
+                alert('📊 Estadísticas reiniciadas correctamente.');
+                
+                if (soundsEnabled) {
+                    playSound('reset');
+                }
+            }
+        }
+
+        // Función para reproducir sonidos (simulada)
+        function playSound(soundType) {
+            // En la implementación real, aquí se reproducirían los sonidos
+            console.log(`🔊 Reproduciendo sonido: ${soundType}`);
+        }
+
+        // Manejar cambios en los switches de configuración
+        document.addEventListener('change', function(e) {
+            if (e.target.id === 'sounds-enabled') {
+                soundsEnabled = e.target.checked;
+                localStorage.setItem('soundsEnabled', soundsEnabled);
+            } else if (e.target.id === 'music-enabled') {
+                musicEnabled = e.target.checked;
+                localStorage.setItem('musicEnabled', musicEnabled);
+            }
+        });
+
+        // Animación de entrada para las tarjetas de juegos
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.style.animation = 'fadeIn 0.6s ease-out forwards';
+                }
+            });
+        });
+
+        document.querySelectorAll('.game-card').forEach(card => {
+            observer.observe(card);
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,1282 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Manual de Ayuda - Sistema de Etiquetas</title>
+    <link rel="icon" type="image/x-icon" href="logo-icon.ico">
+    
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+            overflow: hidden;
+        }
+
+        .header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 40px;
+            text-align: center;
+            position: relative;
+        }
+
+        .header h1 {
+            font-size: 2.5rem;
+            margin-bottom: 10px;
+            text-shadow: 0 2px 4px rgba(0,0,0,0.2);
+        }
+
+        .header p {
+            font-size: 1.1rem;
+            opacity: 0.95;
+        }
+
+        .back-button {
+            position: absolute;
+            top: 20px;
+            left: 20px;
+            background: rgba(255,255,255,0.2);
+            color: white;
+            border: 2px solid rgba(255,255,255,0.5);
+            padding: 10px 20px;
+            border-radius: 10px;
+            cursor: pointer;
+            font-size: 1rem;
+            transition: all 0.3s ease;
+            text-decoration: none;
+            display: inline-block;
+        }
+
+        .back-button:hover {
+            background: rgba(255,255,255,0.3);
+            transform: translateX(-5px);
+        }
+
+        .intro {
+            padding: 40px;
+            background: linear-gradient(to bottom, #f8f9ff, white);
+            border-bottom: 2px solid #e0e7ff;
+        }
+
+        .intro h2 {
+            color: #667eea;
+            margin-bottom: 20px;
+            font-size: 1.8rem;
+        }
+
+        .intro p {
+            font-size: 1.1rem;
+            line-height: 1.8;
+            color: #4a5568;
+            margin-bottom: 15px;
+        }
+
+        .categories {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 25px;
+            padding: 40px;
+        }
+
+        .category-card {
+            background: white;
+            border: 2px solid #e0e7ff;
+            border-radius: 15px;
+            padding: 25px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.05);
+        }
+
+        .category-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 20px rgba(102, 126, 234, 0.2);
+            border-color: #667eea;
+        }
+
+        .category-icon {
+            font-size: 2rem;
+            margin-bottom: 20px;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 60px;
+            height: 60px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border-radius: 50%;
+            font-weight: 600;
+        }
+
+        .category-title {
+            font-size: 1.2rem;
+            color: #2d3748;
+            margin-bottom: 10px;
+            font-weight: 600;
+        }
+
+        .category-description {
+            font-size: 0.95rem;
+            color: #718096;
+            line-height: 1.6;
+        }
+
+        .video-section {
+            padding: 40px;
+            background: #f7fafc;
+            border-top: 2px solid #e0e7ff;
+            display: none;
+        }
+
+        .video-section.active {
+            display: block;
+        }
+
+        .video-section h2 {
+            color: #667eea;
+            font-size: 2rem;
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .video-container {
+            background: white;
+            border-radius: 15px;
+            padding: 30px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            margin-bottom: 30px;
+        }
+
+        .video-container h3 {
+            color: #2d3748;
+            font-size: 1.5rem;
+            margin-bottom: 15px;
+        }
+
+        .video-placeholder {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            height: 400px;
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 1.2rem;
+            margin-bottom: 20px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .video-placeholder video {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            border-radius: 10px;
+        }
+
+        .video-placeholder .placeholder-text {
+            position: absolute;
+            background: rgba(0,0,0,0.7);
+            padding: 20px 40px;
+            border-radius: 10px;
+            text-align: center;
+        }
+
+        .step-by-step {
+            margin-top: 20px;
+        }
+
+        .step {
+            display: flex;
+            gap: 15px;
+            margin-bottom: 15px;
+            padding: 15px;
+            background: #f7fafc;
+            border-radius: 10px;
+            border-left: 4px solid #667eea;
+        }
+
+        .step-number {
+            background: #667eea;
+            color: white;
+            width: 35px;
+            height: 35px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            flex-shrink: 0;
+        }
+
+        .step-content {
+            flex: 1;
+        }
+
+        .step-content h4 {
+            color: #2d3748;
+            margin-bottom: 5px;
+        }
+
+        .step-content p {
+            color: #718096;
+            line-height: 1.6;
+        }
+
+        .qr-section {
+            padding: 40px;
+            background: white;
+            text-align: center;
+            border-top: 2px solid #e0e7ff;
+        }
+
+        .qr-section h2 {
+            color: #667eea;
+            font-size: 2rem;
+            margin-bottom: 20px;
+        }
+
+        .qr-section p {
+            color: #718096;
+            font-size: 1.1rem;
+            margin-bottom: 30px;
+        }
+
+        .qr-placeholder {
+            display: inline-block;
+            width: 250px;
+            height: 250px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border-radius: 15px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 1.2rem;
+            margin: 0 auto;
+        }
+
+        .close-section {
+            background: #667eea;
+            color: white;
+            padding: 12px 30px;
+            border: none;
+            border-radius: 10px;
+            font-size: 1rem;
+            cursor: pointer;
+            margin-top: 20px;
+            transition: all 0.3s ease;
+        }
+
+        .close-section:hover {
+            background: #5568d3;
+            transform: scale(1.05);
+        }
+
+        /* Modal QR */
+        .qr-modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.8);
+            z-index: 10000;
+            align-items: center;
+            justify-content: center;
+            backdrop-filter: blur(5px);
+        }
+
+        .qr-modal.active {
+            display: flex;
+        }
+
+        .qr-modal-content {
+            background: white;
+            border-radius: 20px;
+            padding: 40px;
+            max-width: 450px;
+            width: 90%;
+            text-align: center;
+            position: relative;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5);
+            animation: modalSlideUp 0.3s ease;
+        }
+
+        @keyframes modalSlideUp {
+            from {
+                opacity: 0;
+                transform: translateY(50px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .qr-modal-close {
+            position: absolute;
+            top: 15px;
+            right: 15px;
+            background: #e0e7ff;
+            border: none;
+            width: 35px;
+            height: 35px;
+            border-radius: 50%;
+            cursor: pointer;
+            font-size: 20px;
+            color: #667eea;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .qr-modal-close:hover {
+            background: #667eea;
+            color: white;
+            transform: rotate(90deg);
+        }
+
+        .qr-modal h3 {
+            color: #2d3748;
+            font-size: 1.8rem;
+            margin-bottom: 15px;
+        }
+
+        .qr-modal p {
+            color: #718096;
+            margin-bottom: 25px;
+            line-height: 1.6;
+        }
+
+        .qr-code-container {
+            background: white;
+            padding: 20px;
+            border-radius: 15px;
+            display: inline-block;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+            margin-bottom: 20px;
+        }
+
+        #qr-code-canvas {
+            display: block;
+            margin: 0 auto;
+        }
+
+        .qr-instructions {
+            background: #f7fafc;
+            padding: 20px;
+            border-radius: 10px;
+            border-left: 4px solid #667eea;
+            text-align: left;
+            margin-top: 20px;
+        }
+
+        .qr-instructions h4 {
+            color: #2d3748;
+            margin-bottom: 10px;
+            font-size: 1.1rem;
+        }
+
+        .qr-instructions ol {
+            color: #718096;
+            padding-left: 20px;
+            line-height: 1.8;
+        }
+
+        .qr-button {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            padding: 12px 30px;
+            border-radius: 10px;
+            font-size: 1rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 12px rgba(102, 126, 234, 0.3);
+        }
+
+        .qr-button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(102, 126, 234, 0.4);
+        }
+
+        @media (max-width: 768px) {
+            .header h1 {
+                font-size: 1.8rem;
+            }
+
+            .header p {
+                font-size: 0.95rem;
+            }
+
+            .back-button {
+                padding: 8px 15px;
+                font-size: 0.9rem;
+            }
+
+            .intro {
+                padding: 30px 20px;
+            }
+
+            .intro h2 {
+                font-size: 1.5rem;
+            }
+
+            .intro p {
+                font-size: 1rem;
+            }
+
+            .categories {
+                grid-template-columns: 1fr;
+                padding: 20px;
+                gap: 20px;
+            }
+
+            .category-card {
+                padding: 20px;
+            }
+
+            .category-icon {
+                width: 50px;
+                height: 50px;
+                font-size: 1.5rem;
+                margin-bottom: 15px;
+            }
+
+            .category-title {
+                font-size: 1.1rem;
+            }
+
+            .category-description {
+                font-size: 0.9rem;
+            }
+
+            .video-section {
+                padding: 30px 20px;
+            }
+
+            .video-section h2 {
+                font-size: 1.5rem;
+                flex-direction: column;
+                gap: 15px;
+            }
+
+            .video-placeholder {
+                height: 250px;
+            }
+
+            .step {
+                flex-direction: column;
+                gap: 10px;
+            }
+
+            .step-number {
+                width: 30px;
+                height: 30px;
+                font-size: 0.9rem;
+            }
+
+            .qr-section {
+                padding: 30px 20px;
+            }
+
+            .qr-section h2 {
+                font-size: 1.5rem;
+            }
+
+            .qr-placeholder {
+                width: 200px;
+                height: 200px;
+            }
+
+            .qr-modal-content {
+                padding: 30px 20px;
+                max-width: 95%;
+            }
+
+            .qr-modal h3 {
+                font-size: 1.4rem;
+            }
+
+            .qr-code-container {
+                padding: 15px;
+            }
+
+            .qr-instructions {
+                padding: 15px;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .header {
+                padding: 20px 15px;
+            }
+
+            .header h1 {
+                font-size: 1.5rem;
+            }
+
+            .back-button {
+                top: 15px;
+                left: 15px;
+                padding: 6px 12px;
+                font-size: 0.85rem;
+            }
+
+            .intro {
+                padding: 25px 15px;
+            }
+
+            .intro h2 {
+                font-size: 1.3rem;
+            }
+
+            .categories {
+                padding: 15px;
+                gap: 15px;
+            }
+
+            .category-card {
+                padding: 18px;
+            }
+
+            .category-icon {
+                width: 45px;
+                height: 45px;
+                font-size: 1.3rem;
+            }
+
+            .video-container {
+                padding: 20px;
+            }
+
+            .close-section {
+                padding: 10px 20px;
+                font-size: 0.9rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Header -->
+        <div class="header">
+            <a href="#" onclick="history.back(); return false;" class="back-button">← Volver</a>
+            <h1>Manual de Ayuda</h1>
+            <p>Sistema de Etiquetas QR - Guía Completa</p>
+        </div>
+
+        <!-- Introducción -->
+        <div class="intro">
+            <h2>¿En qué necesitas ayuda hoy?</h2>
+            <p>Bienvenida al manual de ayuda del Sistema de Etiquetas. Aquí encontrarás guías paso a paso con videos explicativos para realizar todas las tareas del sistema.</p>
+            <p>Selecciona la categoría que necesites para ver instrucciones detalladas y videos demostrativos.</p>
+        </div>
+
+        <!-- Categorías principales -->
+        <div class="categories" id="categories">
+            <div class="category-card" onclick="showSection('crear-solicitud')">
+                <span class="category-icon">�</span>
+                <div class="category-title">Crear Solicitud de Etiquetas</div>
+                <div class="category-description">Aprende a solicitar etiquetas paso a paso desde tu tablet o computadora</div>
+            </div>
+
+            <div class="category-card" onclick="showSection('crear-producto')">
+                <span class="category-icon">+</span>
+                <div class="category-title">Crear Nuevo Producto</div>
+                <div class="category-description">Cómo agregar un nuevo producto al catálogo del sistema</div>
+            </div>
+
+            <div class="category-card" onclick="showSection('editar-producto')">
+                <span class="category-icon">✎</span>
+                <div class="category-title">Editar Producto</div>
+                <div class="category-description">Modifica la información, logos y configuración de productos existentes</div>
+            </div>
+
+            <div class="category-card" onclick="showSection('eliminar-producto')">
+                <span class="category-icon">×</span>
+                <div class="category-title">Eliminar Producto</div>
+                <div class="category-description">Cómo eliminar productos que ya no se utilizan</div>
+            </div>
+
+            <div class="category-card" onclick="showSection('aprobar-solicitudes')">
+                <span class="category-icon">✓</span>
+                <div class="category-title">Aprobar Solicitudes (Supervisor)</div>
+                <div class="category-description">Proceso de revisión y aprobación de solicitudes pendientes</div>
+            </div>
+
+            <div class="category-card" onclick="showSection('historial')">
+                <span class="category-icon">�</span>
+                <div class="category-title">Ver Historial</div>
+                <div class="category-description">Consulta el historial de solicitudes y estadísticas</div>
+            </div>
+
+            <div class="category-card" onclick="showSection('imprimir')">
+                <span class="category-icon">⎙</span>
+                <div class="category-title">Proceso de Impresión</div>
+                <div class="category-description">Entiende cómo funciona el sistema de impresión automática</div>
+            </div>
+
+            <div class="category-card" onclick="showSection('seguridad')">
+                <span class="category-icon">⚠</span>
+                <div class="category-title">Seguridad del Equipo</div>
+                <div class="category-description">Medidas de seguridad y cuidado del equipo de impresión</div>
+            </div>
+        </div>
+
+        <!-- Sección: Crear Solicitud -->
+        <div class="video-section" id="section-crear-solicitud">
+            <h2>
+                Crear Solicitud de Etiquetas
+                <button class="close-section" onclick="hideAllSections()">Cerrar</button>
+            </h2>
+
+            <div class="video-container">
+                <h3>Video Tutorial</h3>
+                <div class="video-placeholder">
+                    <video controls autoplay loop muted style="width: 100%; height: 100%; object-fit: cover; border-radius: 10px;">
+                        <source src="../founds/animations-info/video_explicativo.mp4" type="video/mp4">
+                        Tu navegador no soporta la reproducción de videos HTML5.
+                    </video>
+                </div>
+
+                <div class="step-by-step">
+                    <h3>Pasos a seguir:</h3>
+                    
+                    <div class="step">
+                        <div class="step-number">1</div>
+                        <div class="step-content">
+                            <h4>Iniciar Sesión</h4>
+                            <p>Ingresa tu usuario y contraseña en la pantalla de inicio. El sistema te redirigirá automáticamente según tu rol (Costurera o Supervisor).</p>
+                        </div>
+                    </div>
+
+                    <div class="step">
+                        <div class="step-number">2</div>
+                        <div class="step-content">
+                            <h4>Buscar Producto</h4>
+                            <p>En el dashboard, usa la barra de búsqueda para encontrar el producto. Puedes buscar por nombre, código o escanear el código de barras.</p>
+                        </div>
+                    </div>
+
+                    <div class="step">
+                        <div class="step-number">3</div>
+                        <div class="step-content">
+                            <h4>Seleccionar Producto y Cantidad</h4>
+                            <p>Haz clic en el producto deseado, ingresa la cantidad de etiquetas que necesitas y presiona "Solicitar Etiquetas".</p>
+                        </div>
+                    </div>
+
+                    <div class="step">
+                        <div class="step-number">4</div>
+                        <div class="step-content">
+                            <h4>Esperar Aprobación (si aplica)</h4>
+                            <p>Si no tienes auto-aprobación, tu solicitud quedará pendiente hasta que un supervisor la revise. Recibirás una notificación cuando sea aprobada.</p>
+                        </div>
+                    </div>
+
+                    <div class="step">
+                        <div class="step-number">5</div>
+                        <div class="step-content">
+                            <h4>Recoger Etiquetas Impresas</h4>
+                            <p>Una vez aprobada, las etiquetas se imprimen automáticamente. Recógelas de la impresora Zebra (etiquetas cortadas listas para usar).</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Sección: Crear Producto -->
+        <div class="video-section" id="section-crear-producto">
+            <h2>
+                Crear Nuevo Producto
+                <button class="close-section" onclick="hideAllSections()">Cerrar</button>
+            </h2>
+
+            <div class="video-container">
+                <h3>Video Tutorial</h3>
+                <div class="video-placeholder">
+                    <video controls autoplay loop muted style="width: 100%; height: 100%; object-fit: cover; border-radius: 10px;">
+                        <source src="../founds/animations-info/creador_producto.mp4" type="video/mp4">
+                        Tu navegador no soporta la reproducción de videos HTML5.
+                    </video>
+                </div>
+
+                <div class="step-by-step">
+                    <h3>Pasos a seguir:</h3>
+                    
+                    <div class="step">
+                        <div class="step-number">1</div>
+                        <div class="step-content">
+                            <h4>Acceder al Panel de Administración</h4>
+                            <p>Desde el menú principal, selecciona "Gestión de Productos" (solo disponible para supervisores/administradores).</p>
+                        </div>
+                    </div>
+
+                    <div class="step">
+                        <div class="step-number">2</div>
+                        <div class="step-content">
+                            <h4>Presionar "Nuevo Producto"</h4>
+                            <p>Haz clic en el botón "+" o "Crear Producto" ubicado en la parte superior derecha.</p>
+                        </div>
+                    </div>
+
+                    <div class="step">
+                        <div class="step-number">3</div>
+                        <div class="step-content">
+                            <h4>Llenar Información Básica</h4>
+                            <p>Ingresa: Nombre del producto, código único, categoría, composición de tela, talla, y género (masculino/femenino/unisex).</p>
+                        </div>
+                    </div>
+
+                    <div class="step">
+                        <div class="step-number">4</div>
+                        <div class="step-content">
+                            <h4>Configurar Logos e Íconos</h4>
+                            <p>Selecciona los logos que aparecerán en la etiqueta: Producto Peruano, Algodón 100%, íconos de lavado (30°), planchar baja, etc.</p>
+                        </div>
+                    </div>
+
+                    <div class="step">
+                        <div class="step-number">5</div>
+                        <div class="step-content">
+                            <h4>Vista Previa y Guardar</h4>
+                            <p>Revisa la vista previa de la etiqueta, asegúrate de que todo esté correcto y presiona "Guardar Producto".</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Sección: Editar Producto -->
+        <div class="video-section" id="section-editar-producto">
+            <h2>
+                Editar Producto
+                <button class="close-section" onclick="hideAllSections()">Cerrar</button>
+            </h2>
+
+            <div class="video-container">
+                <h3>Video Tutorial</h3>
+                <div class="video-placeholder">
+                    <video controls autoplay loop muted style="width: 100%; height: 100%; object-fit: cover; border-radius: 10px;">
+                        <source src="../founds/animations-info/editar_producto.mp4" type="video/mp4">
+                        Tu navegador no soporta la reproducción de videos HTML5.
+                    </video>
+                </div>
+
+                <div class="step-by-step">
+                    <h3>Pasos a seguir:</h3>
+                    
+                    <div class="step">
+                        <div class="step-number">1</div>
+                        <div class="step-content">
+                            <h4>Buscar el Producto</h4>
+                            <p>En "Gestión de Productos", usa la barra de búsqueda para encontrar el producto que deseas modificar.</p>
+                        </div>
+                    </div>
+
+                    <div class="step">
+                        <div class="step-number">2</div>
+                        <div class="step-content">
+                            <h4>Hacer Clic en "Editar"</h4>
+                            <p>Selecciona el ícono de lápiz ✏️ en la fila del producto correspondiente.</p>
+                        </div>
+                    </div>
+
+                    <div class="step">
+                        <div class="step-number">3</div>
+                        <div class="step-content">
+                            <h4>Modificar Campos Necesarios</h4>
+                            <p>Actualiza la información que necesites cambiar: nombre, composición, logos, íconos de cuidado, etc.</p>
+                        </div>
+                    </div>
+
+                    <div class="step">
+                        <div class="step-number">4</div>
+                        <div class="step-content">
+                            <h4>Vista Previa de Cambios</h4>
+                            <p>Revisa cómo quedará la etiqueta con las modificaciones realizadas.</p>
+                        </div>
+                    </div>
+
+                    <div class="step">
+                        <div class="step-number">5</div>
+                        <div class="step-content">
+                            <h4>Guardar Cambios</h4>
+                            <p>Presiona "Actualizar Producto". Los cambios se aplicarán inmediatamente a todas las nuevas solicitudes.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Sección: Eliminar Producto -->
+        <div class="video-section" id="section-eliminar-producto">
+            <h2>
+                Eliminar Producto
+                <button class="close-section" onclick="hideAllSections()">Cerrar</button>
+            </h2>
+
+            <div class="video-container">
+                <h3>Video Tutorial</h3>
+                <div class="video-placeholder">
+                    <div class="placeholder-text">
+                        Video: Eliminación de productos<br>
+                        <small>(Próximamente)</small>
+                    </div>
+                </div>
+
+                <div class="step-by-step">
+                    <h3>Pasos a seguir:</h3>
+                    
+                    <div class="step">
+                        <div class="step-number">1</div>
+                        <div class="step-content">
+                            <h4>Acceder a Gestión de Productos</h4>
+                            <p>Entra al panel de administración y selecciona "Gestión de Productos".</p>
+                        </div>
+                    </div>
+
+                    <div class="step">
+                        <div class="step-number">2</div>
+                        <div class="step-content">
+                            <h4>Buscar el Producto a Eliminar</h4>
+                            <p>Usa los filtros o barra de búsqueda para localizar el producto que deseas eliminar.</p>
+                        </div>
+                    </div>
+
+                    <div class="step">
+                        <div class="step-number">3</div>
+                        <div class="step-content">
+                            <h4>Presionar Botón de Eliminar</h4>
+                            <p>Haz clic en el ícono de papelera 🗑️ en la fila del producto.</p>
+                        </div>
+                    </div>
+
+                    <div class="step">
+                        <div class="step-number">4</div>
+                        <div class="step-content">
+                            <h4>Confirmar Eliminación</h4>
+                            <p>El sistema mostrará un mensaje de confirmación. Lee cuidadosamente y confirma si estás seguro.</p>
+                        </div>
+                    </div>
+
+                    <div class="step">
+                        <div class="step-number">5</div>
+                        <div class="step-content">
+                            <h4>Verificar Eliminación</h4>
+                            <p>El producto desaparecerá de la lista. NOTA: Esta acción no se puede deshacer, pero el historial se conserva.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Sección: Aprobar Solicitudes -->
+        <div class="video-section" id="section-aprobar-solicitudes">
+            <h2>
+                Aprobar Solicitudes (Supervisor)
+                <button class="close-section" onclick="hideAllSections()">Cerrar</button>
+            </h2>
+
+            <div class="video-container">
+                <h3>Video Tutorial</h3>
+                <div class="video-placeholder">
+                    <div class="placeholder-text">
+                        Video: Proceso de aprobación de solicitudes<br>
+                        <small>(Próximamente)</small>
+                    </div>
+                </div>
+
+                <div class="step-by-step">
+                    <h3>Pasos a seguir:</h3>
+                    
+                    <div class="step">
+                        <div class="step-number">1</div>
+                        <div class="step-content">
+                            <h4>Revisar Solicitudes Pendientes</h4>
+                            <p>En el dashboard de supervisor, verás un contador de solicitudes pendientes de aprobación.</p>
+                        </div>
+                    </div>
+
+                    <div class="step">
+                        <div class="step-number">2</div>
+                        <div class="step-content">
+                            <h4>Acceder a la Lista</h4>
+                            <p>Haz clic en "Solicitudes Pendientes" para ver el listado completo con detalles de cada solicitud.</p>
+                        </div>
+                    </div>
+
+                    <div class="step">
+                        <div class="step-number">3</div>
+                        <div class="step-content">
+                            <h4>Revisar Detalles</h4>
+                            <p>Verifica: quién solicitó, qué producto, cantidad, fecha/hora. Asegúrate de que la solicitud sea válida.</p>
+                        </div>
+                    </div>
+
+                    <div class="step">
+                        <div class="step-number">4</div>
+                        <div class="step-content">
+                            <h4>Aprobar o Rechazar</h4>
+                            <p>Presiona el botón ✅ "Aprobar" para autorizar la impresión, o ❌ "Rechazar" si hay algún problema.</p>
+                        </div>
+                    </div>
+
+                    <div class="step">
+                        <div class="step-number">5</div>
+                        <div class="step-content">
+                            <h4>Impresión Automática</h4>
+                            <p>Al aprobar, las etiquetas se envían automáticamente a la impresora. La costurera recibirá una notificación.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Sección: Historial -->
+        <div class="video-section" id="section-historial">
+            <h2>
+                Ver Historial
+                <button class="close-section" onclick="hideAllSections()">Cerrar</button>
+            </h2>
+
+            <div class="video-container">
+                <h3>Video Tutorial</h3>
+                <div class="video-placeholder">
+                    <div class="placeholder-text">
+                        Video: Consulta de historial y reportes<br>
+                        <small>(Próximamente)</small>
+                    </div>
+                </div>
+
+                <div class="step-by-step">
+                    <h3>Pasos a seguir:</h3>
+                    
+                    <div class="step">
+                        <div class="step-number">1</div>
+                        <div class="step-content">
+                            <h4>Acceder al Historial</h4>
+                            <p>Desde el menú principal, selecciona "Historial de Solicitudes" o "Ver Historial".</p>
+                        </div>
+                    </div>
+
+                    <div class="step">
+                        <div class="step-number">2</div>
+                        <div class="step-content">
+                            <h4>Aplicar Filtros</h4>
+                            <p>Filtra por fecha, usuario, producto, estado (completada/pendiente/rechazada) para encontrar información específica.</p>
+                        </div>
+                    </div>
+
+                    <div class="step">
+                        <div class="step-number">3</div>
+                        <div class="step-content">
+                            <h4>Ver Detalles de Solicitud</h4>
+                            <p>Haz clic en cualquier registro para ver información completa: producto, cantidad, fecha, hora, estado, tiempo de respuesta.</p>
+                        </div>
+                    </div>
+
+                    <div class="step">
+                        <div class="step-number">4</div>
+                        <div class="step-content">
+                            <h4>Exportar Reportes</h4>
+                            <p>Usa el botón "Exportar Excel" para descargar reportes completos con toda la información de las solicitudes.</p>
+                        </div>
+                    </div>
+
+                    <div class="step">
+                        <div class="step-number">5</div>
+                        <div class="step-content">
+                            <h4>Ver Estadísticas</h4>
+                            <p>El panel de administración muestra gráficas de productividad, etiquetas por día/semana/mes, y usuarios más activos.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Sección: Proceso de Impresión -->
+        <div class="video-section" id="section-imprimir">
+            <h2>
+                Proceso de Impresión
+                <button class="close-section" onclick="hideAllSections()">Cerrar</button>
+            </h2>
+
+            <div class="video-container">
+                <h3>Video Tutorial - Aplicación de Rotulado</h3>
+                <div class="video-placeholder">
+                    <video controls autoplay loop muted style="width: 100%; height: 100%; object-fit: cover; border-radius: 10px;">
+                        <source src="../founds/animations-info/aplicacionde_rotulado.mp4" type="video/mp4">
+                        Tu navegador no soporta la reproducción de videos HTML5.
+                    </video>
+                </div>
+
+                <div class="step-by-step">
+                    <h3>¿Cómo funciona el sistema de impresión?</h3>
+                    
+                    <div class="step">
+                        <div class="step-number">1</div>
+                        <div class="step-content">
+                            <h4>Generación de ZPL</h4>
+                            <p>Cuando se aprueba una solicitud, el servidor genera código ZPL (lenguaje de la impresora Zebra) con la información del producto.</p>
+                        </div>
+                    </div>
+
+                    <div class="step">
+                        <div class="step-number">2</div>
+                        <div class="step-content">
+                            <h4>Envío por TCP/IP</h4>
+                            <p>El código se envía directamente a la impresora Zebra ZD230 mediante conexión TCP/IP (192.168.1.34:9100).</p>
+                        </div>
+                    </div>
+
+                    <div class="step">
+                        <div class="step-number">3</div>
+                        <div class="step-content">
+                            <h4>Impresión Automática</h4>
+                            <p>La impresora procesa el código ZPL e imprime las etiquetas de forma automática. Cada etiqueta se corta automáticamente (modo tear-off).</p>
+                        </div>
+                    </div>
+
+                    <div class="step">
+                        <div class="step-number">4</div>
+                        <div class="step-content">
+                            <h4>Cola de Impresión</h4>
+                            <p>Si hay múltiples solicitudes, el sistema las procesa en orden (FIFO). Puedes ver el estado en tiempo real.</p>
+                        </div>
+                    </div>
+
+                    <div class="step">
+                        <div class="step-number">5</div>
+                        <div class="step-content">
+                            <h4>Confirmación</h4>
+                            <p>Una vez completada la impresión, el sistema actualiza el estado a "Completada" y registra la hora exacta en el historial.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Sección: Seguridad del Equipo -->
+        <div class="video-section" id="section-seguridad">
+            <h2>
+                Seguridad del Equipo
+                <button class="close-section" onclick="hideAllSections()">Cerrar</button>
+            </h2>
+
+            <div class="video-container">
+                <h3>Video Tutorial - Medidas de Seguridad</h3>
+                <div class="video-placeholder">
+                    <video controls autoplay loop muted style="width: 100%; height: 100%; object-fit: cover; border-radius: 10px;">
+                        <source src="../founds/animations-info/advertencia_usos.mp4" type="video/mp4">
+                        Tu navegador no soporta la reproducción de videos HTML5.
+                    </video>
+                </div>
+
+                <div class="step-by-step">
+                    <h3>⚠️ Medidas de Seguridad Importantes</h3>
+                    
+                    <div class="step">
+                        <div class="step-number">❌</div>
+                        <div class="step-content">
+                            <h4>NO desconectar cables bruscamente</h4>
+                            <p><strong style="color: #e53e3e;">¡PROHIBIDO!</strong> Nunca desconectes la corriente o cables de red mientras los equipos estén encendidos. Esto puede dañar las impresoras y el switch de red.</p>
+                        </div>
+                    </div>
+
+                    <div class="step">
+                        <div class="step-number">✅</div>
+                        <div class="step-content">
+                            <h4>Apagar correctamente</h4>
+                            <p>Antes de desconectar cualquier equipo, apágalo primero usando su botón de encendido. Espera 10 segundos antes de desconectar.</p>
+                        </div>
+                    </div>
+
+                    <div class="step">
+                        <div class="step-number">⚡</div>
+                        <div class="step-content">
+                            <h4>Cuidado con la extensión eléctrica</h4>
+                            <p>No sobrecargues la extensión de 8 salidas. Solo conecta los equipos autorizados: impresoras Zebra, Godex, Access Point y Switch.</p>
+                        </div>
+                    </div>
+
+                    <div class="step">
+                        <div class="step-number">🔌</div>
+                        <div class="step-content">
+                            <h4>Gestión de cables</h4>
+                            <p>Los cables de red deben pasar por los agujeros traseros de la mesa. No jales los cables con fuerza ni los dobles excesivamente.</p>
+                        </div>
+                    </div>
+
+                    <div class="step">
+                        <div class="step-number">🛡️</div>
+                        <div class="step-content">
+                            <h4>Mantenimiento preventivo</h4>
+                            <p>Limpia las impresoras semanalmente, verifica las conexiones mensualmente, y reporta cualquier problema inmediatamente al supervisor.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Sección QR -->
+        <div class="qr-section">
+            <h2>Acceso Móvil</h2>
+            <p>Escanea el código QR para acceder a este manual desde tu dispositivo móvil</p>
+            <button class="qr-button" onclick="openQRModal()">
+                Generar Código QR
+            </button>
+        </div>
+    </div>
+
+    <!-- Modal QR -->
+    <div class="qr-modal" id="qr-modal" onclick="closeQRModal(event)">
+        <div class="qr-modal-content" onclick="event.stopPropagation()">
+            <button class="qr-modal-close" onclick="closeQRModal()">×</button>
+            
+            <h3>Código QR - Manual de Ayuda</h3>
+            <p>Escanea este código con la cámara de tu celular para acceder al manual</p>
+            
+            <div class="qr-code-container">
+                <canvas id="qr-code-canvas"></canvas>
+            </div>
+
+            <div class="qr-instructions">
+                <h4>Cómo escanear:</h4>
+                <ol>
+                    <li>Abre la cámara de tu celular</li>
+                    <li>Apunta hacia el código QR</li>
+                    <li>Toca la notificación que aparece</li>
+                    <li>Se abrirá el manual en tu navegador</li>
+                </ol>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        function showSection(sectionId) {
+            // Ocultar todas las secciones
+            hideAllSections();
+            
+            // Mostrar la sección seleccionada
+            const section = document.getElementById('section-' + sectionId);
+            if (section) {
+                section.classList.add('active');
+                section.scrollIntoView({ behavior: 'smooth', block: 'start' });
+            }
+        }
+
+        function hideAllSections() {
+            const sections = document.querySelectorAll('.video-section');
+            sections.forEach(section => {
+                section.classList.remove('active');
+            });
+            
+            // Volver a mostrar las categorías
+            document.getElementById('categories').scrollIntoView({ behavior: 'smooth' });
+        }
+
+        // Funciones del Modal QR
+        function openQRModal() {
+            const modal = document.getElementById('qr-modal');
+            modal.classList.add('active');
+            generateQRCode();
+            document.body.style.overflow = 'hidden';
+        }
+
+        function closeQRModal(event) {
+            const modal = document.getElementById('qr-modal');
+            modal.classList.remove('active');
+            document.body.style.overflow = 'auto';
+        }
+
+        // Generar QR Code usando Canvas (sin librerías externas)
+        function generateQRCode() {
+            const canvas = document.getElementById('qr-code-canvas');
+            const ctx = canvas.getContext('2d');
+            const currentUrl = window.location.href;
+            
+            // Tamaño del canvas
+            const size = 250;
+            canvas.width = size;
+            canvas.height = size;
+            
+            // Intentar usar API de QR si está disponible, sino mostrar mensaje
+            if (typeof QRCode !== 'undefined') {
+                // Si la librería QRCode.js está cargada
+                const qr = new QRCode(canvas, {
+                    text: currentUrl,
+                    width: size,
+                    height: size,
+                    colorDark: "#667eea",
+                    colorLight: "#ffffff",
+                    correctLevel: QRCode.CorrectLevel.H
+                });
+            } else {
+                // Fallback: generar QR usando API externa
+                generateQRWithAPI(canvas, currentUrl, size);
+            }
+        }
+
+        // Generar QR usando API de Google Charts (fallback)
+        function generateQRWithAPI(canvas, url, size) {
+            const ctx = canvas.getContext('2d');
+            const encodedUrl = encodeURIComponent(url);
+            const qrApiUrl = `https://api.qrserver.com/v1/create-qr-code/?size=${size}x${size}&data=${encodedUrl}&color=667eea&bgcolor=ffffff`;
+            
+            const img = new Image();
+            img.crossOrigin = 'Anonymous';
+            img.onload = function() {
+                ctx.clearRect(0, 0, size, size);
+                ctx.drawImage(img, 0, 0, size, size);
+            };
+            img.onerror = function() {
+                // Si falla la API, mostrar QR de respaldo con texto
+                ctx.fillStyle = '#f7fafc';
+                ctx.fillRect(0, 0, size, size);
+                ctx.fillStyle = '#667eea';
+                ctx.font = 'bold 16px Arial';
+                ctx.textAlign = 'center';
+                ctx.fillText('Código QR', size/2, size/2 - 20);
+                ctx.font = '12px Arial';
+                ctx.fillText('Manual de Ayuda', size/2, size/2);
+                ctx.font = '10px Arial';
+                ctx.fillStyle = '#718096';
+                const shortUrl = url.length > 40 ? url.substring(0, 40) + '...' : url;
+                ctx.fillText(shortUrl, size/2, size/2 + 30);
+            };
+            img.src = qrApiUrl;
+        }
+
+        // Cerrar modal con tecla ESC
+        document.addEventListener('keydown', function(e) {
+            if (e.key === 'Escape') {
+                closeQRModal();
+            }
+        });
+    </script>
+</body>
+</html>

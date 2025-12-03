@@ -1,0 +1,49 @@
+{
+  "name": "sistema-etiquetas-tray",
+  "version": "2.5.0",
+  "description": "Aplicación de bandeja para gestionar Sistema Etiquetas v2.5",
+  "main": "main.js",
+  "scripts": {
+    "start": "electron .",
+    "build": "electron-builder",
+    "build:win": "electron-builder --win --x64"
+  },
+  "keywords": [
+    "electron",
+    "sistema-etiquetas",
+    "tray",
+    "etiquetas",
+    "impresoras"
+  ],
+  "author": "Sistema Etiquetas",
+  "license": "MIT",
+  "devDependencies": {
+    "electron": "^27.0.0",
+    "electron-builder": "^24.6.4"
+  },
+  "dependencies": {
+    "node-notifier": "^10.0.1"
+  },
+  "build": {
+    "appId": "com.sistemaetiquetas.tray",
+    "productName": "Sistema Etiquetas",
+    "win": {
+      "icon": "icon.ico",
+      "target": [
+        {
+          "target": "nsis",
+          "arch": [
+            "x64"
+          ]
+        }
+      ]
+    },
+    "nsis": {
+      "oneClick": false,
+      "allowToChangeInstallationDirectory": true,
+      "createDesktopShortcut": true,
+      "createStartMenuShortcut": true,
+      "shortcutName": "Sistema Etiquetas"
+    }
+  }
+}

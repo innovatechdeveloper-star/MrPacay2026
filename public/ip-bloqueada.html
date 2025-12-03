@@ -1,0 +1,189 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Acceso Restringido - Sistema de Etiquetas QR</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+        }
+
+        .container {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            border-radius: 20px;
+            padding: 40px;
+            text-align: center;
+            max-width: 500px;
+            margin: 20px;
+            box-shadow: 0 8px 32px rgba(31, 38, 135, 0.37);
+        }
+
+        .icon {
+            font-size: 80px;
+            margin-bottom: 20px;
+        }
+
+        h1 {
+            font-size: 28px;
+            margin-bottom: 20px;
+            color: #ffeb3b;
+        }
+
+        .message {
+            font-size: 16px;
+            line-height: 1.6;
+            margin-bottom: 30px;
+            color: rgba(255, 255, 255, 0.9);
+        }
+
+        .ip-info {
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 10px;
+            padding: 20px;
+            margin: 20px 0;
+            border-left: 4px solid #f44336;
+        }
+
+        .ip-display {
+            font-size: 18px;
+            font-weight: bold;
+            color: #ffeb3b;
+            margin-bottom: 10px;
+        }
+
+        .allowed-range {
+            font-size: 14px;
+            color: #4caf50;
+            font-weight: 600;
+        }
+
+        .contact-info {
+            background: rgba(76, 175, 80, 0.2);
+            border-radius: 10px;
+            padding: 15px;
+            margin-top: 20px;
+            border-left: 4px solid #4caf50;
+        }
+
+        .btn {
+            background: #4caf50;
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 14px;
+            margin: 10px;
+            transition: all 0.3s ease;
+        }
+
+        .btn:hover {
+            background: #45a049;
+            transform: translateY(-2px);
+        }
+
+        .btn-secondary {
+            background: #2196f3;
+        }
+
+        .btn-secondary:hover {
+            background: #1976d2;
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                margin: 10px;
+                padding: 30px 20px;
+            }
+            
+            h1 {
+                font-size: 24px;
+            }
+            
+            .icon {
+                font-size: 60px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="icon">🚫</div>
+        <h1>Acceso Restringido</h1>
+        
+        <div class="message">
+            Su dirección IP no está autorizada para acceder a este sistema.
+            El acceso está limitado a dispositivos específicos en la red local.
+        </div>
+        
+        <div class="ip-info">
+            <div class="ip-display" id="client-ip">
+                Cargando información de IP...
+            </div>
+            <div class="allowed-range">
+                📍 IPs autorizadas:<br>
+                • Consulta con el administrador del sistema<br>
+                • Las IPs se configuran en server.js
+            </div>
+        </div>
+        
+        <div class="contact-info">
+            <h3>📞 Para solicitar acceso:</h3>
+            <p>Contacte al administrador del sistema para agregar su dispositivo a la lista de equipos autorizados.</p>
+        </div>
+        
+        <button class="btn btn-secondary" onclick="verificarIP()">
+            🔄 Verificar IP Actual
+        </button>
+        
+        <button class="btn" onclick="location.reload()">
+            🔁 Reintentar Conexión
+        </button>
+    </div>
+
+    <script>
+        // Verificar IP automáticamente al cargar
+        window.addEventListener('load', verificarIP);
+
+        async function verificarIP() {
+            try {
+                const response = await fetch('/api/verificar-ip');
+                const data = await response.json();
+                
+                document.getElementById('client-ip').innerHTML = `
+                    🌐 Su IP: <strong>${data.ip_limpia}</strong><br>
+                    Estado: <span style="color: ${data.es_permitida ? '#4caf50' : '#f44336'}">
+                        ${data.mensaje}
+                    </span>
+                `;
+                
+                // Si la IP es permitida, redirigir automáticamente
+                if (data.es_permitida) {
+                    setTimeout(() => {
+                        window.location.href = '/';
+                    }, 2000);
+                }
+                
+            } catch (error) {
+                document.getElementById('client-ip').innerHTML = `
+                    ❌ Error verificando IP: ${error.message}
+                `;
+            }
+        }
+    </script>
+</body>
+</html>

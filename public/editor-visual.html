@@ -1,0 +1,607 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>🎨 Editor Visual de Etiquetas</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            padding: 20px;
+            min-height: 100vh;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 16px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+            overflow: hidden;
+        }
+
+        .header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 20px 30px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .header h1 {
+            font-size: 24px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .header-actions {
+            display: flex;
+            gap: 10px;
+        }
+
+        .btn {
+            padding: 10px 20px;
+            border: none;
+            border-radius: 8px;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .btn-primary {
+            background: #10b981;
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background: #059669;
+            transform: translateY(-2px);
+        }
+
+        .btn-secondary {
+            background: #6366f1;
+            color: white;
+        }
+
+        .btn-secondary:hover {
+            background: #4f46e5;
+        }
+
+        .btn-warning {
+            background: #f59e0b;
+            color: white;
+        }
+
+        .btn-warning:hover {
+            background: #d97706;
+        }
+
+        .main-content {
+            display: grid;
+            grid-template-columns: 250px 1fr 300px;
+            gap: 0;
+            height: calc(100vh - 140px);
+        }
+
+        .sidebar {
+            background: #f9fafb;
+            border-right: 2px solid #e5e7eb;
+            padding: 20px;
+            overflow-y: auto;
+        }
+
+        .sidebar h3 {
+            font-size: 16px;
+            color: #374151;
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .field-item {
+            background: white;
+            border: 2px solid #d1d5db;
+            border-radius: 8px;
+            padding: 12px;
+            margin-bottom: 10px;
+            cursor: move;
+            transition: all 0.2s;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .field-item:hover {
+            border-color: #6366f1;
+            transform: translateX(5px);
+            box-shadow: 0 4px 12px rgba(99, 102, 241, 0.2);
+        }
+
+        .field-icon {
+            font-size: 24px;
+        }
+
+        .field-info {
+            flex: 1;
+        }
+
+        .field-name {
+            font-weight: 600;
+            color: #1f2937;
+            font-size: 13px;
+        }
+
+        .field-type {
+            font-size: 11px;
+            color: #6b7280;
+        }
+
+        .canvas-container {
+            background: #ffffff;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+        }
+
+        .canvas-wrapper {
+            border: 3px dashed #d1d5db;
+            border-radius: 8px;
+            background: #f9fafb;
+            padding: 20px;
+            position: relative;
+        }
+
+        .canvas-label {
+            position: absolute;
+            top: -30px;
+            left: 0;
+            font-size: 12px;
+            color: #6b7280;
+            font-weight: 600;
+        }
+
+        #canvas {
+            border: 2px solid #9ca3af;
+            background: white;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+        }
+
+        .properties-panel {
+            background: #f9fafb;
+            border-left: 2px solid #e5e7eb;
+            padding: 20px;
+            overflow-y: auto;
+        }
+
+        .properties-panel h3 {
+            font-size: 16px;
+            color: #374151;
+            margin-bottom: 15px;
+        }
+
+        .property-group {
+            background: white;
+            border-radius: 8px;
+            padding: 15px;
+            margin-bottom: 15px;
+            border: 1px solid #e5e7eb;
+        }
+
+        .property-group h4 {
+            font-size: 13px;
+            color: #6b7280;
+            margin-bottom: 10px;
+            text-transform: uppercase;
+            font-weight: 600;
+        }
+
+        .property-row {
+            margin-bottom: 12px;
+        }
+
+        .property-row label {
+            display: block;
+            font-size: 12px;
+            color: #4b5563;
+            margin-bottom: 5px;
+            font-weight: 500;
+        }
+
+        .property-row input,
+        .property-row select {
+            width: 100%;
+            padding: 8px;
+            border: 1px solid #d1d5db;
+            border-radius: 6px;
+            font-size: 13px;
+        }
+
+        .property-row input:focus,
+        .property-row select:focus {
+            outline: none;
+            border-color: #6366f1;
+            box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.1);
+        }
+
+        .checkbox-row {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            margin-bottom: 8px;
+        }
+
+        .checkbox-row input[type="checkbox"] {
+            width: auto;
+            cursor: pointer;
+        }
+
+        .checkbox-row label {
+            margin-bottom: 0;
+            cursor: pointer;
+        }
+
+        .info-box {
+            background: #eff6ff;
+            border: 1px solid #bfdbfe;
+            border-radius: 6px;
+            padding: 12px;
+            margin-bottom: 15px;
+        }
+
+        .info-box p {
+            font-size: 12px;
+            color: #1e40af;
+            line-height: 1.5;
+        }
+
+        .zpl-preview {
+            background: #1f2937;
+            color: #10b981;
+            font-family: 'Courier New', monospace;
+            font-size: 11px;
+            padding: 15px;
+            border-radius: 6px;
+            max-height: 200px;
+            overflow-y: auto;
+            margin-top: 15px;
+            white-space: pre-wrap;
+            word-break: break-all;
+        }
+
+        .action-buttons {
+            display: flex;
+            gap: 10px;
+            margin-top: 15px;
+        }
+
+        .btn-small {
+            padding: 8px 16px;
+            font-size: 12px;
+        }
+
+        .toast {
+            position: fixed;
+            top: 80px;
+            right: 20px;
+            background: #10b981;
+            color: white;
+            padding: 15px 20px;
+            border-radius: 8px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+            z-index: 10000;
+            animation: slideIn 0.3s ease;
+        }
+
+        @keyframes slideIn {
+            from {
+                transform: translateX(400px);
+                opacity: 0;
+            }
+            to {
+                transform: translateX(0);
+                opacity: 1;
+            }
+        }
+
+        .loading {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.5);
+            z-index: 9999;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .loading.active {
+            display: flex;
+        }
+
+        .spinner {
+            width: 50px;
+            height: 50px;
+            border: 5px solid #f3f4f6;
+            border-top-color: #6366f1;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+    </style>
+</head>
+<body>
+    <div class="loading" id="loading">
+        <div class="spinner"></div>
+    </div>
+
+    <div class="container">
+        <div class="header">
+            <h1>
+                <span>🎨</span>
+                <span>Editor Visual de Etiquetas</span>
+                <span style="font-size: 14px; opacity: 0.8;">v1.0 - Fase 1</span>
+            </h1>
+            <div class="header-actions">
+                <button class="btn btn-warning btn-small" onclick="verZPL()">
+                    📄 Ver ZPL
+                </button>
+                <button class="btn btn-secondary btn-small" onclick="imprimirTest()">
+                    🖨️ Imprimir Test
+                </button>
+                <button class="btn btn-primary" onclick="guardarPlantilla()">
+                    💾 Guardar Plantilla
+                </button>
+            </div>
+        </div>
+
+        <!-- Barra de modos y selector de producto -->
+        <div style="background: #f3f4f6; border-bottom: 2px solid #e5e7eb; padding: 15px 30px; display: flex; gap: 30px; align-items: center;">
+            <!-- Selector de Modo -->
+            <div style="display: flex; gap: 10px; align-items: center;">
+                <span style="font-weight: 600; color: #374151;">🎯 Modo:</span>
+                <select id="modo-selector" onchange="cambiarModo()" style="padding: 8px 15px; border: 2px solid #d1d5db; border-radius: 8px; font-weight: 600; font-size: 14px; cursor: pointer;">
+                    <option value="creacion">🎨 CREACIÓN - Diseñar Plantilla</option>
+                    <option value="visualizacion">👁️ VISUALIZACIÓN - Ver con Producto Real</option>
+                </select>
+            </div>
+
+            <!-- Selector de Producto (solo visible en modo visualización) -->
+            <div id="selector-producto-container" style="display: none; flex: 1; gap: 10px; align-items: center;">
+                <span style="font-weight: 600; color: #374151;">📦 Producto:</span>
+                <select id="producto-selector" onchange="cargarProductoSeleccionado()" style="flex: 1; max-width: 500px; padding: 8px 15px; border: 2px solid #d1d5db; border-radius: 8px; font-size: 14px;">
+                    <option value="">Cargando productos...</option>
+                </select>
+                <button onclick="cargarProductoSeleccionado()" style="padding: 8px 15px; background: #6366f1; color: white; border: none; border-radius: 8px; font-weight: 600; cursor: pointer;">
+                    🔄 Actualizar
+                </button>
+            </div>
+        </div>
+
+        <div class="main-content">
+            <!-- Sidebar Izquierdo: Campos Disponibles -->
+            <div class="sidebar">
+                <h3>📦 Campos Disponibles</h3>
+                <p style="font-size: 11px; color: #6b7280; margin-bottom: 15px;">
+                    Arrastra los campos al canvas para agregarlos
+                </p>
+                
+                <div class="field-item" draggable="true" data-tipo="qr" data-campo="qr_code">
+                    <div class="field-icon">📱</div>
+                    <div class="field-info">
+                        <div class="field-name">QR Code</div>
+                        <div class="field-type">Código QR</div>
+                    </div>
+                </div>
+
+                <div class="field-item" draggable="true" data-tipo="texto" data-campo="nombre_producto">
+                    <div class="field-icon">📝</div>
+                    <div class="field-info">
+                        <div class="field-name">Nombre</div>
+                        <div class="field-type">nombre_producto</div>
+                    </div>
+                </div>
+
+                <div class="field-item" draggable="true" data-tipo="texto" data-campo="modelo">
+                    <div class="field-icon">🏷️</div>
+                    <div class="field-info">
+                        <div class="field-name">Modelo</div>
+                        <div class="field-type">modelo</div>
+                    </div>
+                </div>
+
+                <div class="field-item" draggable="true" data-tipo="texto" data-campo="unidad_medida">
+                    <div class="field-icon">📦</div>
+                    <div class="field-info">
+                        <div class="field-name">Unidad</div>
+                        <div class="field-type">unidad_medida</div>
+                    </div>
+                </div>
+
+                <div class="field-item" draggable="true" data-tipo="texto" data-campo="id_producto">
+                    <div class="field-icon">🔢</div>
+                    <div class="field-info">
+                        <div class="field-name">ID Producto</div>
+                        <div class="field-type">id_producto</div>
+                    </div>
+                </div>
+
+                <div class="field-item" draggable="true" data-tipo="texto" data-campo="empresa">
+                    <div class="field-icon">🏢</div>
+                    <div class="field-info">
+                        <div class="field-name">Empresa</div>
+                        <div class="field-type">empresa</div>
+                    </div>
+                </div>
+
+                <div class="info-box" style="margin-top: 20px;">
+                    <p>
+                        <strong>💡 Consejo:</strong><br>
+                        Arrastra los campos al canvas y ajusta sus posiciones. 
+                        Los cambios se reflejan en tiempo real.
+                    </p>
+                </div>
+            </div>
+
+            <!-- Canvas Central -->
+            <div class="canvas-container">
+                <div class="canvas-wrapper">
+                    <div class="canvas-label">📐 Etiqueta: 400x200 dots (50x25mm) - Zebra ZD230 203 DPI</div>
+                    <!-- Canvas 400x200 dots para Zebra ZD230 203 DPI (etiqueta individual 50x25mm) -->
+                    <canvas id="canvas" width="400" height="200"></canvas>
+                </div>
+                
+                <div style="margin-top: 20px; text-align: center; color: #6b7280; font-size: 12px;">
+                    <p><strong>Instrucciones:</strong></p>
+                    <p>1. Arrastra campos desde el panel izquierdo</p>
+                    <p>2. Click para seleccionar y editar propiedades</p>
+                    <p>3. Arrastra para mover posición</p>
+                </div>
+            </div>
+
+            <!-- Panel Derecho: Propiedades -->
+            <div class="properties-panel">
+                <h3>⚙️ Propiedades</h3>
+                
+                <!-- Configuración de campos visibles (solo en modo VISUALIZACIÓN) -->
+                <div id="campos-visibles-config" style="display: none; margin-bottom: 20px;">
+                    <div class="property-group">
+                        <h4>👁️ Campos Visibles</h4>
+                        <p style="font-size: 12px; color: #666; margin-bottom: 10px;">
+                            Selecciona qué campos mostrar en la etiqueta
+                        </p>
+                        
+                        <!-- Nombre -->
+                        <label class="checkbox-row" style="padding: 8px; background: #f9fafb; border-radius: 6px; margin-bottom: 8px; cursor: pointer;">
+                            <input type="checkbox" id="config-mostrar-nombre" checked onchange="actualizarCamposVisibles()">
+                            <span style="font-weight: 500;">📝 Nombre del producto</span>
+                        </label>
+                        
+                        <!-- Modelo -->
+                        <label class="checkbox-row" style="padding: 8px; background: #f9fafb; border-radius: 6px; margin-bottom: 8px; cursor: pointer;">
+                            <input type="checkbox" id="config-mostrar-modelo" checked onchange="actualizarCamposVisibles()">
+                            <span style="font-weight: 500;">🏷️ Modelo</span>
+                        </label>
+                        
+                        <!-- Unidad -->
+                        <label class="checkbox-row" style="padding: 8px; background: #f9fafb; border-radius: 6px; margin-bottom: 8px; cursor: pointer;">
+                            <input type="checkbox" id="config-mostrar-unidad" checked onchange="actualizarCamposVisibles()">
+                            <span style="font-weight: 500;">📏 Unidad de medida</span>
+                        </label>
+                        
+                        <!-- ID -->
+                        <label class="checkbox-row" style="padding: 8px; background: #f9fafb; border-radius: 6px; margin-bottom: 8px; cursor: pointer;">
+                            <input type="checkbox" id="config-mostrar-id" checked onchange="actualizarCamposVisibles()">
+                            <span style="font-weight: 500;">🔢 ID/Código</span>
+                        </label>
+                        
+                        <!-- Empresa -->
+                        <label class="checkbox-row" style="padding: 8px; background: #f9fafb; border-radius: 6px; margin-bottom: 8px; cursor: pointer;">
+                            <input type="checkbox" id="config-mostrar-empresa" checked onchange="actualizarCamposVisibles()">
+                            <span style="font-weight: 500;">🏢 Empresa</span>
+                        </label>
+                        
+                        <div style="background: #fef3c7; padding: 8px; border-radius: 6px; margin-top: 10px;">
+                            <p style="font-size: 11px; color: #92400e; margin: 0;">
+                                ⚠️ El QR siempre se muestra si hay al menos un campo de texto visible
+                            </p>
+                        </div>
+                    </div>
+                </div>
+                
+                <div id="no-selection" class="info-box">
+                    <p>Selecciona un elemento en el canvas para ver sus propiedades</p>
+                </div>
+
+                <div id="properties-form" style="display: none;">
+                    <div class="property-group">
+                        <h4>📍 Posición</h4>
+                        <div class="property-row">
+                            <label>X (horizontal):</label>
+                            <input type="number" id="prop-x" min="0" max="812">
+                        </div>
+                        <div class="property-row">
+                            <label>Y (vertical):</label>
+                            <input type="number" id="prop-y" min="0" max="203">
+                        </div>
+                    </div>
+
+                    <div class="property-group" id="text-properties" style="display: none;">
+                        <h4>✏️ Texto</h4>
+                        <div class="property-row">
+                            <label>Tamaño de fuente:</label>
+                            <input type="number" id="prop-fuente" min="10" max="100" value="24">
+                        </div>
+                        <div class="property-row">
+                            <label>Ancho (dots):</label>
+                            <input type="number" id="prop-ancho" min="50" max="400" value="180">
+                        </div>
+                        <div class="property-row">
+                            <label>Máx. líneas:</label>
+                            <input type="number" id="prop-maxlineas" min="1" max="5" value="2">
+                        </div>
+                        <div class="checkbox-row">
+                            <input type="checkbox" id="prop-wordwrap" checked>
+                            <label for="prop-wordwrap">Word Wrap (salto automático)</label>
+                        </div>
+                    </div>
+
+                    <div class="property-group" id="qr-properties" style="display: none;">
+                        <h4>🔲 QR Code</h4>
+                        <div class="property-row">
+                            <label>Tamaño:</label>
+                            <select id="prop-qr-size">
+                                <option value="4">Pequeño (4)</option>
+                                <option value="5">Mediano (5)</option>
+                                <option value="6" selected>Grande (6)</option>
+                                <option value="7">Extra Grande (7)</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="action-buttons">
+                        <button class="btn btn-secondary btn-small" onclick="aplicarPropiedades()">
+                            ✅ Aplicar
+                        </button>
+                        <button class="btn btn-warning btn-small" onclick="eliminarElemento()">
+                            🗑️ Eliminar
+                        </button>
+                    </div>
+                </div>
+
+                <div class="property-group" style="margin-top: 20px;">
+                    <h4>📋 Vista Previa ZPL</h4>
+                    <div class="zpl-preview" id="zpl-preview">
+                        Genera ZPL agregando campos al canvas...
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Fabric.js para canvas interactivo -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/fabric.js/5.3.0/fabric.min.js"></script>
+    <script src="js/editor-canvas.js"></script>
+</body>
+</html>

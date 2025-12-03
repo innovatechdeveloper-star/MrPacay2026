@@ -1,0 +1,934 @@
+<?xml version="1.0" encoding="utf-8"?>
+<PrintJob xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+  <GraphicMode>false</GraphicMode>
+  <FormatVersion>1</FormatVersion>
+  <QLabelSDKVersion>1.5.9203.30912</QLabelSDKVersion>
+  <GoLabelZoomFactor>0.5</GoLabelZoomFactor>
+  <Label>
+    <Scale>
+      <ComName>COM1</ComName>
+      <Baudrate>9600</Baudrate>
+      <Parity>N</Parity>
+      <DataBit>8</DataBit>
+      <StopBit>1</StopBit>
+    </Scale>
+    <SerialFormat>
+      <string xsi:nil="true" />
+      <string xsi:nil="true" />
+      <string xsi:nil="true" />
+      <string xsi:nil="true" />
+      <string xsi:nil="true" />
+      <string xsi:nil="true" />
+      <string xsi:nil="true" />
+      <string xsi:nil="true" />
+      <string xsi:nil="true" />
+      <string xsi:nil="true" />
+      <string xsi:nil="true" />
+      <string xsi:nil="true" />
+      <string xsi:nil="true" />
+      <string xsi:nil="true" />
+      <string xsi:nil="true" />
+      <string xsi:nil="true" />
+      <string xsi:nil="true" />
+      <string xsi:nil="true" />
+      <string xsi:nil="true" />
+      <string xsi:nil="true" />
+      <string xsi:nil="true" />
+      <string xsi:nil="true" />
+      <string xsi:nil="true" />
+      <string xsi:nil="true" />
+      <string xsi:nil="true" />
+      <string xsi:nil="true" />
+      <string xsi:nil="true" />
+      <string xsi:nil="true" />
+      <string xsi:nil="true" />
+      <string xsi:nil="true" />
+      <string xsi:nil="true" />
+      <string xsi:nil="true" />
+      <string xsi:nil="true" />
+      <string xsi:nil="true" />
+      <string xsi:nil="true" />
+      <string xsi:nil="true" />
+      <string xsi:nil="true" />
+      <string xsi:nil="true" />
+      <string xsi:nil="true" />
+      <string xsi:nil="true" />
+      <string xsi:nil="true" />
+      <string xsi:nil="true" />
+      <string xsi:nil="true" />
+      <string xsi:nil="true" />
+      <string xsi:nil="true" />
+      <string xsi:nil="true" />
+      <string xsi:nil="true" />
+      <string xsi:nil="true" />
+      <string xsi:nil="true" />
+      <string xsi:nil="true" />
+      <string xsi:nil="true" />
+      <string xsi:nil="true" />
+      <string xsi:nil="true" />
+      <string xsi:nil="true" />
+      <string xsi:nil="true" />
+      <string xsi:nil="true" />
+      <string xsi:nil="true" />
+      <string xsi:nil="true" />
+      <string xsi:nil="true" />
+      <string xsi:nil="true" />
+      <string xsi:nil="true" />
+      <string xsi:nil="true" />
+      <string xsi:nil="true" />
+      <string xsi:nil="true" />
+      <string xsi:nil="true" />
+      <string xsi:nil="true" />
+      <string xsi:nil="true" />
+      <string xsi:nil="true" />
+      <string xsi:nil="true" />
+      <string xsi:nil="true" />
+      <string xsi:nil="true" />
+      <string xsi:nil="true" />
+      <string xsi:nil="true" />
+      <string xsi:nil="true" />
+      <string xsi:nil="true" />
+      <string xsi:nil="true" />
+      <string xsi:nil="true" />
+      <string xsi:nil="true" />
+      <string xsi:nil="true" />
+      <string xsi:nil="true" />
+      <string xsi:nil="true" />
+      <string xsi:nil="true" />
+      <string xsi:nil="true" />
+      <string xsi:nil="true" />
+      <string xsi:nil="true" />
+      <string xsi:nil="true" />
+      <string xsi:nil="true" />
+      <string xsi:nil="true" />
+      <string xsi:nil="true" />
+      <string xsi:nil="true" />
+      <string xsi:nil="true" />
+      <string xsi:nil="true" />
+      <string xsi:nil="true" />
+      <string xsi:nil="true" />
+      <string xsi:nil="true" />
+      <string xsi:nil="true" />
+      <string xsi:nil="true" />
+      <string xsi:nil="true" />
+      <string xsi:nil="true" />
+      <string xsi:nil="true" />
+    </SerialFormat>
+    <SerialLeadingCode>
+      <int>0</int>
+      <int>0</int>
+      <int>0</int>
+      <int>0</int>
+      <int>0</int>
+      <int>0</int>
+      <int>0</int>
+      <int>0</int>
+      <int>0</int>
+      <int>0</int>
+      <int>0</int>
+      <int>0</int>
+      <int>0</int>
+      <int>0</int>
+      <int>0</int>
+      <int>0</int>
+      <int>0</int>
+      <int>0</int>
+      <int>0</int>
+      <int>0</int>
+      <int>0</int>
+      <int>0</int>
+      <int>0</int>
+      <int>0</int>
+      <int>0</int>
+      <int>0</int>
+      <int>0</int>
+      <int>0</int>
+      <int>0</int>
+      <int>0</int>
+      <int>0</int>
+      <int>0</int>
+      <int>0</int>
+      <int>0</int>
+      <int>0</int>
+      <int>0</int>
+      <int>0</int>
+      <int>0</int>
+      <int>0</int>
+      <int>0</int>
+      <int>0</int>
+      <int>0</int>
+      <int>0</int>
+      <int>0</int>
+      <int>0</int>
+      <int>0</int>
+      <int>0</int>
+      <int>0</int>
+      <int>0</int>
+      <int>0</int>
+      <int>0</int>
+      <int>0</int>
+      <int>0</int>
+      <int>0</int>
+      <int>0</int>
+      <int>0</int>
+      <int>0</int>
+      <int>0</int>
+      <int>0</int>
+      <int>0</int>
+      <int>0</int>
+      <int>0</int>
+      <int>0</int>
+      <int>0</int>
+      <int>0</int>
+      <int>0</int>
+      <int>0</int>
+      <int>0</int>
+      <int>0</int>
+      <int>0</int>
+      <int>0</int>
+      <int>0</int>
+      <int>0</int>
+      <int>0</int>
+      <int>0</int>
+      <int>0</int>
+      <int>0</int>
+      <int>0</int>
+      <int>0</int>
+      <int>0</int>
+      <int>0</int>
+      <int>0</int>
+      <int>0</int>
+      <int>0</int>
+      <int>0</int>
+      <int>0</int>
+      <int>0</int>
+      <int>0</int>
+      <int>0</int>
+      <int>0</int>
+      <int>0</int>
+      <int>0</int>
+      <int>0</int>
+      <int>0</int>
+      <int>0</int>
+      <int>0</int>
+      <int>0</int>
+      <int>0</int>
+      <int>0</int>
+      <int>0</int>
+    </SerialLeadingCode>
+    <SerialCustomSequence>
+      <string xsi:nil="true" />
+      <string xsi:nil="true" />
+      <string xsi:nil="true" />
+      <string xsi:nil="true" />
+      <string xsi:nil="true" />
+      <string xsi:nil="true" />
+      <string xsi:nil="true" />
+      <string xsi:nil="true" />
+      <string xsi:nil="true" />
+      <string xsi:nil="true" />
+      <string xsi:nil="true" />
+      <string xsi:nil="true" />
+      <string xsi:nil="true" />
+      <string xsi:nil="true" />
+      <string xsi:nil="true" />
+      <string xsi:nil="true" />
+      <string xsi:nil="true" />
+      <string xsi:nil="true" />
+      <string xsi:nil="true" />
+      <string xsi:nil="true" />
+      <string xsi:nil="true" />
+      <string xsi:nil="true" />
+      <string xsi:nil="true" />
+      <string xsi:nil="true" />
+      <string xsi:nil="true" />
+      <string xsi:nil="true" />
+      <string xsi:nil="true" />
+      <string xsi:nil="true" />
+      <string xsi:nil="true" />
+      <string xsi:nil="true" />
+      <string xsi:nil="true" />
+      <string xsi:nil="true" />
+      <string xsi:nil="true" />
+      <string xsi:nil="true" />
+      <string xsi:nil="true" />
+      <string xsi:nil="true" />
+      <string xsi:nil="true" />
+      <string xsi:nil="true" />
+      <string xsi:nil="true" />
+      <string xsi:nil="true" />
+      <string xsi:nil="true" />
+      <string xsi:nil="true" />
+      <string xsi:nil="true" />
+      <string xsi:nil="true" />
+      <string xsi:nil="true" />
+      <string xsi:nil="true" />
+      <string xsi:nil="true" />
+      <string xsi:nil="true" />
+      <string xsi:nil="true" />
+      <string xsi:nil="true" />
+      <string xsi:nil="true" />
+      <string xsi:nil="true" />
+      <string xsi:nil="true" />
+      <string xsi:nil="true" />
+      <string xsi:nil="true" />
+      <string xsi:nil="true" />
+      <string xsi:nil="true" />
+      <string xsi:nil="true" />
+      <string xsi:nil="true" />
+      <string xsi:nil="true" />
+      <string xsi:nil="true" />
+      <string xsi:nil="true" />
+      <string xsi:nil="true" />
+      <string xsi:nil="true" />
+      <string xsi:nil="true" />
+      <string xsi:nil="true" />
+      <string xsi:nil="true" />
+      <string xsi:nil="true" />
+      <string xsi:nil="true" />
+      <string xsi:nil="true" />
+      <string xsi:nil="true" />
+      <string xsi:nil="true" />
+      <string xsi:nil="true" />
+      <string xsi:nil="true" />
+      <string xsi:nil="true" />
+      <string xsi:nil="true" />
+      <string xsi:nil="true" />
+      <string xsi:nil="true" />
+      <string xsi:nil="true" />
+      <string xsi:nil="true" />
+      <string xsi:nil="true" />
+      <string xsi:nil="true" />
+      <string xsi:nil="true" />
+      <string xsi:nil="true" />
+      <string xsi:nil="true" />
+      <string xsi:nil="true" />
+      <string xsi:nil="true" />
+      <string xsi:nil="true" />
+      <string xsi:nil="true" />
+      <string xsi:nil="true" />
+      <string xsi:nil="true" />
+      <string xsi:nil="true" />
+      <string xsi:nil="true" />
+      <string xsi:nil="true" />
+      <string xsi:nil="true" />
+      <string xsi:nil="true" />
+      <string xsi:nil="true" />
+      <string xsi:nil="true" />
+      <string xsi:nil="true" />
+      <string xsi:nil="true" />
+    </SerialCustomSequence>
+    <bSerialSpecialCarry>
+      <boolean>false</boolean>
+      <boolean>false</boolean>
+      <boolean>false</boolean>
+      <boolean>false</boolean>
+      <boolean>false</boolean>
+      <boolean>false</boolean>
+      <boolean>false</boolean>
+      <boolean>false</boolean>
+      <boolean>false</boolean>
+      <boolean>false</boolean>
+      <boolean>false</boolean>
+      <boolean>false</boolean>
+      <boolean>false</boolean>
+      <boolean>false</boolean>
+      <boolean>false</boolean>
+      <boolean>false</boolean>
+      <boolean>false</boolean>
+      <boolean>false</boolean>
+      <boolean>false</boolean>
+      <boolean>false</boolean>
+      <boolean>false</boolean>
+      <boolean>false</boolean>
+      <boolean>false</boolean>
+      <boolean>false</boolean>
+      <boolean>false</boolean>
+      <boolean>false</boolean>
+      <boolean>false</boolean>
+      <boolean>false</boolean>
+      <boolean>false</boolean>
+      <boolean>false</boolean>
+      <boolean>false</boolean>
+      <boolean>false</boolean>
+      <boolean>false</boolean>
+      <boolean>false</boolean>
+      <boolean>false</boolean>
+      <boolean>false</boolean>
+      <boolean>false</boolean>
+      <boolean>false</boolean>
+      <boolean>false</boolean>
+      <boolean>false</boolean>
+      <boolean>false</boolean>
+      <boolean>false</boolean>
+      <boolean>false</boolean>
+      <boolean>false</boolean>
+      <boolean>false</boolean>
+      <boolean>false</boolean>
+      <boolean>false</boolean>
+      <boolean>false</boolean>
+      <boolean>false</boolean>
+      <boolean>false</boolean>
+      <boolean>false</boolean>
+      <boolean>false</boolean>
+      <boolean>false</boolean>
+      <boolean>false</boolean>
+      <boolean>false</boolean>
+      <boolean>false</boolean>
+      <boolean>false</boolean>
+      <boolean>false</boolean>
+      <boolean>false</boolean>
+      <boolean>false</boolean>
+      <boolean>false</boolean>
+      <boolean>false</boolean>
+      <boolean>false</boolean>
+      <boolean>false</boolean>
+      <boolean>false</boolean>
+      <boolean>false</boolean>
+      <boolean>false</boolean>
+      <boolean>false</boolean>
+      <boolean>false</boolean>
+      <boolean>false</boolean>
+      <boolean>false</boolean>
+      <boolean>false</boolean>
+      <boolean>false</boolean>
+      <boolean>false</boolean>
+      <boolean>false</boolean>
+      <boolean>false</boolean>
+      <boolean>false</boolean>
+      <boolean>false</boolean>
+      <boolean>false</boolean>
+      <boolean>false</boolean>
+      <boolean>false</boolean>
+      <boolean>false</boolean>
+      <boolean>false</boolean>
+      <boolean>false</boolean>
+      <boolean>false</boolean>
+      <boolean>false</boolean>
+      <boolean>false</boolean>
+      <boolean>false</boolean>
+      <boolean>false</boolean>
+      <boolean>false</boolean>
+      <boolean>false</boolean>
+      <boolean>false</boolean>
+      <boolean>false</boolean>
+      <boolean>false</boolean>
+      <boolean>false</boolean>
+      <boolean>false</boolean>
+      <boolean>false</boolean>
+      <boolean>false</boolean>
+      <boolean>false</boolean>
+      <boolean>false</boolean>
+    </bSerialSpecialCarry>
+    <VariableFormat>
+      <string xsi:nil="true" />
+      <string xsi:nil="true" />
+      <string xsi:nil="true" />
+      <string xsi:nil="true" />
+      <string xsi:nil="true" />
+      <string xsi:nil="true" />
+      <string xsi:nil="true" />
+      <string xsi:nil="true" />
+      <string xsi:nil="true" />
+      <string xsi:nil="true" />
+      <string xsi:nil="true" />
+      <string xsi:nil="true" />
+      <string xsi:nil="true" />
+      <string xsi:nil="true" />
+      <string xsi:nil="true" />
+      <string xsi:nil="true" />
+      <string xsi:nil="true" />
+      <string xsi:nil="true" />
+      <string xsi:nil="true" />
+      <string xsi:nil="true" />
+      <string xsi:nil="true" />
+      <string xsi:nil="true" />
+      <string xsi:nil="true" />
+      <string xsi:nil="true" />
+      <string xsi:nil="true" />
+      <string xsi:nil="true" />
+      <string xsi:nil="true" />
+      <string xsi:nil="true" />
+      <string xsi:nil="true" />
+      <string xsi:nil="true" />
+      <string xsi:nil="true" />
+      <string xsi:nil="true" />
+      <string xsi:nil="true" />
+      <string xsi:nil="true" />
+      <string xsi:nil="true" />
+      <string xsi:nil="true" />
+      <string xsi:nil="true" />
+      <string xsi:nil="true" />
+      <string xsi:nil="true" />
+      <string xsi:nil="true" />
+      <string xsi:nil="true" />
+      <string xsi:nil="true" />
+      <string xsi:nil="true" />
+      <string xsi:nil="true" />
+      <string xsi:nil="true" />
+      <string xsi:nil="true" />
+      <string xsi:nil="true" />
+      <string xsi:nil="true" />
+      <string xsi:nil="true" />
+      <string xsi:nil="true" />
+      <string xsi:nil="true" />
+      <string xsi:nil="true" />
+      <string xsi:nil="true" />
+      <string xsi:nil="true" />
+      <string xsi:nil="true" />
+      <string xsi:nil="true" />
+      <string xsi:nil="true" />
+      <string xsi:nil="true" />
+      <string xsi:nil="true" />
+      <string xsi:nil="true" />
+      <string xsi:nil="true" />
+      <string xsi:nil="true" />
+      <string xsi:nil="true" />
+      <string xsi:nil="true" />
+      <string xsi:nil="true" />
+      <string xsi:nil="true" />
+      <string xsi:nil="true" />
+      <string xsi:nil="true" />
+      <string xsi:nil="true" />
+      <string xsi:nil="true" />
+      <string xsi:nil="true" />
+      <string xsi:nil="true" />
+      <string xsi:nil="true" />
+      <string xsi:nil="true" />
+      <string xsi:nil="true" />
+      <string xsi:nil="true" />
+      <string xsi:nil="true" />
+      <string xsi:nil="true" />
+      <string xsi:nil="true" />
+      <string xsi:nil="true" />
+      <string xsi:nil="true" />
+      <string xsi:nil="true" />
+      <string xsi:nil="true" />
+      <string xsi:nil="true" />
+      <string xsi:nil="true" />
+      <string xsi:nil="true" />
+      <string xsi:nil="true" />
+      <string xsi:nil="true" />
+      <string xsi:nil="true" />
+      <string xsi:nil="true" />
+      <string xsi:nil="true" />
+      <string xsi:nil="true" />
+      <string xsi:nil="true" />
+      <string xsi:nil="true" />
+      <string xsi:nil="true" />
+      <string xsi:nil="true" />
+      <string xsi:nil="true" />
+      <string xsi:nil="true" />
+      <string xsi:nil="true" />
+      <string xsi:nil="true" />
+    </VariableFormat>
+    <VariableDisplayName>
+      <string xsi:nil="true" />
+      <string xsi:nil="true" />
+      <string xsi:nil="true" />
+      <string xsi:nil="true" />
+      <string xsi:nil="true" />
+      <string xsi:nil="true" />
+      <string xsi:nil="true" />
+      <string xsi:nil="true" />
+      <string xsi:nil="true" />
+      <string xsi:nil="true" />
+      <string xsi:nil="true" />
+      <string xsi:nil="true" />
+      <string xsi:nil="true" />
+      <string xsi:nil="true" />
+      <string xsi:nil="true" />
+      <string xsi:nil="true" />
+      <string xsi:nil="true" />
+      <string xsi:nil="true" />
+      <string xsi:nil="true" />
+      <string xsi:nil="true" />
+      <string xsi:nil="true" />
+      <string xsi:nil="true" />
+      <string xsi:nil="true" />
+      <string xsi:nil="true" />
+      <string xsi:nil="true" />
+      <string xsi:nil="true" />
+      <string xsi:nil="true" />
+      <string xsi:nil="true" />
+      <string xsi:nil="true" />
+      <string xsi:nil="true" />
+      <string xsi:nil="true" />
+      <string xsi:nil="true" />
+      <string xsi:nil="true" />
+      <string xsi:nil="true" />
+      <string xsi:nil="true" />
+      <string xsi:nil="true" />
+      <string xsi:nil="true" />
+      <string xsi:nil="true" />
+      <string xsi:nil="true" />
+      <string xsi:nil="true" />
+      <string xsi:nil="true" />
+      <string xsi:nil="true" />
+      <string xsi:nil="true" />
+      <string xsi:nil="true" />
+      <string xsi:nil="true" />
+      <string xsi:nil="true" />
+      <string xsi:nil="true" />
+      <string xsi:nil="true" />
+      <string xsi:nil="true" />
+      <string xsi:nil="true" />
+      <string xsi:nil="true" />
+      <string xsi:nil="true" />
+      <string xsi:nil="true" />
+      <string xsi:nil="true" />
+      <string xsi:nil="true" />
+      <string xsi:nil="true" />
+      <string xsi:nil="true" />
+      <string xsi:nil="true" />
+      <string xsi:nil="true" />
+      <string xsi:nil="true" />
+      <string xsi:nil="true" />
+      <string xsi:nil="true" />
+      <string xsi:nil="true" />
+      <string xsi:nil="true" />
+      <string xsi:nil="true" />
+      <string xsi:nil="true" />
+      <string xsi:nil="true" />
+      <string xsi:nil="true" />
+      <string xsi:nil="true" />
+      <string xsi:nil="true" />
+      <string xsi:nil="true" />
+      <string xsi:nil="true" />
+      <string xsi:nil="true" />
+      <string xsi:nil="true" />
+      <string xsi:nil="true" />
+      <string xsi:nil="true" />
+      <string xsi:nil="true" />
+      <string xsi:nil="true" />
+      <string xsi:nil="true" />
+      <string xsi:nil="true" />
+      <string xsi:nil="true" />
+      <string xsi:nil="true" />
+      <string xsi:nil="true" />
+      <string xsi:nil="true" />
+      <string xsi:nil="true" />
+      <string xsi:nil="true" />
+      <string xsi:nil="true" />
+      <string xsi:nil="true" />
+      <string xsi:nil="true" />
+      <string xsi:nil="true" />
+      <string xsi:nil="true" />
+      <string xsi:nil="true" />
+      <string xsi:nil="true" />
+      <string xsi:nil="true" />
+      <string xsi:nil="true" />
+      <string xsi:nil="true" />
+      <string xsi:nil="true" />
+      <string xsi:nil="true" />
+      <string xsi:nil="true" />
+      <string xsi:nil="true" />
+    </VariableDisplayName>
+    <UnitPriceType>None</UnitPriceType>
+    <UnitPrice>0</UnitPrice>
+    <TaraType>None</TaraType>
+    <Tara>0</Tara>
+    <qlabel>
+      <GraphicShape xsi:type="Text" Style="Cross" IsPrint="true" PageAlignment="None" Locked="false" bStroke="true" bFill="true" Direction="Angle0" X="14" Y="219.820313" Alignment="Left" AlignPointX="14" AlignPointY="219.820313" FontScript="Default" TextAlign="Left" FontCmd="Microsoft Sans Serif,12&#xD;&#xA;" FontType="BuiltIn_Bitmap_Font" TextSpace="0" Encoding="Default" FontId="H" FontHeight="4" FontWidth="1" IsInverse="false" IsUTF8="true" IsCheckDigit="false" UsePrinterClock="true">
+        <qHitOnCircumferance>false</qHitOnCircumferance>
+        <Selected>false</Selected>
+        <iBackground_color>4294967295</iBackground_color>
+        <Id>0</Id>
+        <ItemLabel>Text_07493877</ItemLabel>
+        <ObjectDrawMode>FW</ObjectDrawMode>
+        <Name>A</Name>
+        <GroupID>0</GroupID>
+        <GroupSelected>false</GroupSelected>
+        <CharTruncateRule>
+          <TrimLeft>false</TrimLeft>
+          <TrimRight>false</TrimRight>
+          <RemoveCharLeft>false</RemoveCharLeft>
+          <RemoveCharLeftNo>0</RemoveCharLeftNo>
+          <RemoveCharRight>false</RemoveCharRight>
+          <RemoveCharRightNo>0</RemoveCharRightNo>
+          <KeepCharLeft>false</KeepCharLeft>
+          <KeepCharLeftNo>6</KeepCharLeftNo>
+          <KeepCharRight>false</KeepCharRight>
+          <KeepCharRightNo>6</KeepCharRightNo>
+          <RemoveDotZero>false</RemoveDotZero>
+        </CharTruncateRule>
+        <bReplaceSpecialCharFromDB>false</bReplaceSpecialCharFromDB>
+        <CharFilterRule>None</CharFilterRule>
+        <LinkMode>OriginalData</LinkMode>
+        <GraphicMode>false</GraphicMode>
+        <ReplaceInfoItems />
+        <FormatType>None</FormatType>
+        <P1 />
+        <P2 />
+        <P3 />
+        <P4 />
+        <Culture>es-ES</Culture>
+        <calendar>GregorianCalendar</calendar>
+        <GetAiFromDigitalLink>false</GetAiFromDigitalLink>
+        <DataField>None</DataField>
+        <Prompt>None</Prompt>
+        <BoundRectWidth>281.421875</BoundRectWidth>
+        <DispData>Sample</DispData>
+        <bRemovePreZeroAndEmpty>false</bRemovePreZeroAndEmpty>
+        <Data>Sample</Data>
+        <ItemInfoList>
+          <Item>
+            <ItemSymbol>1</ItemSymbol>
+            <ItemData>Sample</ItemData>
+          </Item>
+        </ItemInfoList>
+        <BoundRectHeight>370.90625</BoundRectHeight>
+        <BoundRect>
+          <Location>
+            <X>14</X>
+            <Y>219.820313</Y>
+          </Location>
+          <Size>
+            <Width>281.421875</Width>
+            <Height>370.90625</Height>
+          </Size>
+          <X>14</X>
+          <Y>219.820313</Y>
+          <Width>281.421875</Width>
+          <Height>370.90625</Height>
+        </BoundRect>
+        <NormalRatio>true</NormalRatio>
+        <BTrueType>true</BTrueType>
+      </GraphicShape>
+      <GraphicShape xsi:type="Text" Style="Cross" IsPrint="true" PageAlignment="None" Locked="false" bStroke="true" bFill="true" Direction="Angle0" X="10" Y="184" Alignment="Left" AlignPointX="10" AlignPointY="184" FontScript="Default" TextAlign="Left" FontCmd="Microsoft Sans Serif,12&#xD;&#xA;" FontType="BuiltIn_Bitmap_Font" TextSpace="0" Encoding="Default" FontId="H" FontHeight="2" FontWidth="1" IsInverse="false" IsUTF8="true" IsCheckDigit="false" UsePrinterClock="true">
+        <qHitOnCircumferance>false</qHitOnCircumferance>
+        <Selected>false</Selected>
+        <iBackground_color>4294967295</iBackground_color>
+        <Id>0</Id>
+        <ItemLabel>Text_074239</ItemLabel>
+        <ObjectDrawMode>FW</ObjectDrawMode>
+        <Name>A</Name>
+        <GroupID>0</GroupID>
+        <GroupSelected>false</GroupSelected>
+        <CharTruncateRule>
+          <TrimLeft>false</TrimLeft>
+          <TrimRight>false</TrimRight>
+          <RemoveCharLeft>false</RemoveCharLeft>
+          <RemoveCharLeftNo>0</RemoveCharLeftNo>
+          <RemoveCharRight>false</RemoveCharRight>
+          <RemoveCharRightNo>0</RemoveCharRightNo>
+          <KeepCharLeft>false</KeepCharLeft>
+          <KeepCharLeftNo>6</KeepCharLeftNo>
+          <KeepCharRight>false</KeepCharRight>
+          <KeepCharRightNo>6</KeepCharRightNo>
+          <RemoveDotZero>false</RemoveDotZero>
+        </CharTruncateRule>
+        <bReplaceSpecialCharFromDB>false</bReplaceSpecialCharFromDB>
+        <CharFilterRule>None</CharFilterRule>
+        <LinkMode>OriginalData</LinkMode>
+        <GraphicMode>false</GraphicMode>
+        <ReplaceInfoItems />
+        <FormatType>None</FormatType>
+        <P1 />
+        <P2 />
+        <P3 />
+        <P4 />
+        <Culture>es-ES</Culture>
+        <calendar>GregorianCalendar</calendar>
+        <GetAiFromDigitalLink>false</GetAiFromDigitalLink>
+        <DataField>None</DataField>
+        <Prompt>None</Prompt>
+        <BoundRectWidth>281.421875</BoundRectWidth>
+        <DispData>Sample</DispData>
+        <bRemovePreZeroAndEmpty>false</bRemovePreZeroAndEmpty>
+        <Data>Sample</Data>
+        <ItemInfoList>
+          <Item>
+            <ItemSymbol>1</ItemSymbol>
+            <ItemData>Sample</ItemData>
+          </Item>
+        </ItemInfoList>
+        <BoundRectHeight>185.453125</BoundRectHeight>
+        <BoundRect>
+          <Location>
+            <X>10</X>
+            <Y>184</Y>
+          </Location>
+          <Size>
+            <Width>281.421875</Width>
+            <Height>185.453125</Height>
+          </Size>
+          <X>10</X>
+          <Y>184</Y>
+          <Width>281.421875</Width>
+          <Height>185.453125</Height>
+        </BoundRect>
+        <NormalRatio>true</NormalRatio>
+        <BTrueType>true</BTrueType>
+      </GraphicShape>
+      <GraphicShape xsi:type="Text" Style="Cross" IsPrint="true" PageAlignment="None" Locked="false" bStroke="true" bFill="true" Direction="Angle0" X="2" Y="88" Alignment="Left" AlignPointX="2" AlignPointY="88" FontScript="Default" TextAlign="Left" FontCmd="Microsoft Sans Serif,12&#xD;&#xA;" FontType="BuiltIn_Bitmap_Font" TextSpace="0" Encoding="Default" FontId="H" FontHeight="1" FontWidth="1" IsInverse="false" IsUTF8="true" IsCheckDigit="false" UsePrinterClock="true">
+        <qHitOnCircumferance>false</qHitOnCircumferance>
+        <Selected>false</Selected>
+        <iBackground_color>4294967295</iBackground_color>
+        <Id>0</Id>
+        <ItemLabel>Text_0</ItemLabel>
+        <ObjectDrawMode>FW</ObjectDrawMode>
+        <Name>A</Name>
+        <GroupID>0</GroupID>
+        <GroupSelected>false</GroupSelected>
+        <CharTruncateRule>
+          <TrimLeft>false</TrimLeft>
+          <TrimRight>false</TrimRight>
+          <RemoveCharLeft>false</RemoveCharLeft>
+          <RemoveCharLeftNo>0</RemoveCharLeftNo>
+          <RemoveCharRight>false</RemoveCharRight>
+          <RemoveCharRightNo>0</RemoveCharRightNo>
+          <KeepCharLeft>false</KeepCharLeft>
+          <KeepCharLeftNo>6</KeepCharLeftNo>
+          <KeepCharRight>false</KeepCharRight>
+          <KeepCharRightNo>6</KeepCharRightNo>
+          <RemoveDotZero>false</RemoveDotZero>
+        </CharTruncateRule>
+        <bReplaceSpecialCharFromDB>false</bReplaceSpecialCharFromDB>
+        <CharFilterRule>None</CharFilterRule>
+        <LinkMode>OriginalData</LinkMode>
+        <GraphicMode>false</GraphicMode>
+        <ReplaceInfoItems />
+        <FormatType>None</FormatType>
+        <P1 />
+        <P2 />
+        <P3 />
+        <P4 />
+        <Culture>es-ES</Culture>
+        <calendar>GregorianCalendar</calendar>
+        <GetAiFromDigitalLink>false</GetAiFromDigitalLink>
+        <DataField>None</DataField>
+        <Prompt>None</Prompt>
+        <BoundRectWidth>281.421875</BoundRectWidth>
+        <DispData>Sample</DispData>
+        <bRemovePreZeroAndEmpty>false</bRemovePreZeroAndEmpty>
+        <Data>Sample</Data>
+        <ItemInfoList>
+          <Item>
+            <ItemSymbol>1</ItemSymbol>
+            <ItemData>Sample</ItemData>
+          </Item>
+        </ItemInfoList>
+        <BoundRectHeight>92.72656</BoundRectHeight>
+        <BoundRect>
+          <Location>
+            <X>2</X>
+            <Y>88</Y>
+          </Location>
+          <Size>
+            <Width>281.421875</Width>
+            <Height>92.72656</Height>
+          </Size>
+          <X>2</X>
+          <Y>88</Y>
+          <Width>281.421875</Width>
+          <Height>92.72656</Height>
+        </BoundRect>
+        <NormalRatio>true</NormalRatio>
+        <BTrueType>true</BTrueType>
+      </GraphicShape>
+      <GraphicShape xsi:type="Text" Style="Cross" IsPrint="true" PageAlignment="None" Locked="false" bStroke="true" bFill="true" Direction="Angle0" X="2" Alignment="Left" AlignPointX="2" AlignPointY="0" FontScript="Default" TextAlign="Left" FontCmd="Microsoft Sans Serif,12&#xD;&#xA;" FontType="BuiltIn_Bitmap_Font" TextSpace="0" Encoding="Default" FontId="H" FontHeight="1" FontWidth="1" IsInverse="false" IsUTF8="true" IsCheckDigit="false" UsePrinterClock="true">
+        <qHitOnCircumferance>false</qHitOnCircumferance>
+        <Selected>false</Selected>
+        <iBackground_color>4294967295</iBackground_color>
+        <Id>0</Id>
+        <ItemLabel>Text_07447972</ItemLabel>
+        <ObjectDrawMode>FW</ObjectDrawMode>
+        <Name>A</Name>
+        <GroupID>0</GroupID>
+        <GroupSelected>false</GroupSelected>
+        <CharTruncateRule>
+          <TrimLeft>false</TrimLeft>
+          <TrimRight>false</TrimRight>
+          <RemoveCharLeft>false</RemoveCharLeft>
+          <RemoveCharLeftNo>0</RemoveCharLeftNo>
+          <RemoveCharRight>false</RemoveCharRight>
+          <RemoveCharRightNo>0</RemoveCharRightNo>
+          <KeepCharLeft>false</KeepCharLeft>
+          <KeepCharLeftNo>6</KeepCharLeftNo>
+          <KeepCharRight>false</KeepCharRight>
+          <KeepCharRightNo>6</KeepCharRightNo>
+          <RemoveDotZero>false</RemoveDotZero>
+        </CharTruncateRule>
+        <bReplaceSpecialCharFromDB>false</bReplaceSpecialCharFromDB>
+        <CharFilterRule>None</CharFilterRule>
+        <LinkMode>OriginalData</LinkMode>
+        <GraphicMode>false</GraphicMode>
+        <ReplaceInfoItems />
+        <FormatType>None</FormatType>
+        <P1 />
+        <P2 />
+        <P3 />
+        <P4 />
+        <Culture>es-ES</Culture>
+        <calendar>GregorianCalendar</calendar>
+        <GetAiFromDigitalLink>false</GetAiFromDigitalLink>
+        <DataField>None</DataField>
+        <Prompt>None</Prompt>
+        <BoundRectWidth>281.421875</BoundRectWidth>
+        <DispData>Sample</DispData>
+        <bRemovePreZeroAndEmpty>false</bRemovePreZeroAndEmpty>
+        <Data>Sample</Data>
+        <ItemInfoList>
+          <Item>
+            <ItemSymbol>1</ItemSymbol>
+            <ItemData>Sample</ItemData>
+          </Item>
+        </ItemInfoList>
+        <BoundRectHeight>92.72656</BoundRectHeight>
+        <BoundRect>
+          <Location>
+            <X>2</X>
+            <Y>0</Y>
+          </Location>
+          <Size>
+            <Width>281.421875</Width>
+            <Height>92.72656</Height>
+          </Size>
+          <X>2</X>
+          <Y>0</Y>
+          <Width>281.421875</Width>
+          <Height>92.72656</Height>
+        </BoundRect>
+        <NormalRatio>true</NormalRatio>
+        <BTrueType>true</BTrueType>
+      </GraphicShape>
+    </qlabel>
+    <VariableOpFormat />
+    <VariableOption />
+    <DateFormat>y2-me-dd</DateFormat>
+    <TimeFormat>h:m:s</TimeFormat>
+    <DataBaseFormat>None</DataBaseFormat>
+    <DataBaseFilePath />
+    <DataBaseSelection />
+    <UserID />
+    <Password>zhsTbm6nT9o+RQurpwH5Hw==</Password>
+    <EncryptPwd>true</EncryptPwd>
+    <DatabaseNoHeader>false</DatabaseNoHeader>
+    <IntegratedSecurity>false</IntegratedSecurity>
+    <RowIndex>0</RowIndex>
+  </Label>
+  <Setup bInfinityPrint="false" LabelLength="50" LabelWidth="30" LeftMargin="0" TopMargin="0" LabelType="1" GapLength="3" FeedLength="0" ZSign="45" BlackMark="3" Position="0" Speed="3" Copy="1" bCopyDataBase="false" CopyField="None" Stripper="0" LabelsPerCut="0" DoubleCut_Enable="false" DoubleCut_OffsetLen="0" DoubleCut_FirstCutMode="1" Rotate180="255" Stop="18" Darkness="8" Number="1" bCutDataBase="false" bBatchCut="false" bNumberDataBase="false" NumberField="None" PageDirection="Portrait" PrintMode="1" bUsePrinterRFIDCfg="true" PowerRFID="10" LengthRFID="0" RetryRFID="3" DrawMode="0">
+    <Layout Shape="0" AcrossType="Copied" PageDirection="Portrait" HorAcross="1" VerAcross="1" HorGap="0" VerGap="0" HorAcrossMode1="1" VerAcrossMode1="1" LabelMode="0" HorGapMode1="0" VerGapMode1="0" BottomMargin="0" RightMargin="0" />
+    <Description>&#x0;
+Lang:(es-ES) OS:Microsoft Windows NT 10.0.19045.0(Win32NT)</Description>
+    <UnitType>Mm</UnitType>
+    <Dpi>300</Dpi>
+  </Setup>
+  <DriverName>Godex G530 (Copiar 1)</DriverName>
+  <BLE_MAC />
+  <BLE_Address>0</BLE_Address>
+  <BLE_AutoMTU>true</BLE_AutoMTU>
+  <BLE_MTU>20</BLE_MTU>
+  <PrinterModel>G530</PrinterModel>
+  <PrinterLanguage>EZPL</PrinterLanguage>
+  <USBName>GODEX G530#222608A7</USBName>
+  <COMName />
+  <CommunicationType>Network</CommunicationType>
+  <NetworkIPAddress>3232235811</NetworkIPAddress>
+  <NetworkPort>9100</NetworkPort>
+  <BaudRate>9600</BaudRate>
+  <ComSettings>N81</ComSettings>
+  <StandaloneDbSearchKey />
+  <StandaloneDbEnable>false</StandaloneDbEnable>
+</PrintJob>
