@@ -1,0 +1,309 @@
+# RESUMEN DE CAMBIOS IMPLEMENTADOS - SISTEMA V2.5
+
+## FECHA: 12 de diciembre de 2025
+
+---
+
+## 1. INTERFAZ DE LOGIN REDISEÑADA
+
+### Cambios Visuales
+- Eliminados iconos emoji (coronas y tijeras)
+- Eliminados círculos de colores por rol
+- Eliminados badges de "SUPERVISOR" y "COSTURERA"
+- Implementadas fotografías reales de usuarios (120x120px)
+- Diseño limpio mostrando solo el nombre del usuario
+
+### Mapeo de Fotografías
+```
+LUIS          -> 1.-Luis.bmp
+PANCHITA      -> 2.-Panchita.bmp
+YESENIA       -> 3.-Yesenia.bmp
+LUISA LUISA   -> 5.-luisa-luisa.bmp
+MARIA LUISA   -> 6.-Maria-luisa.bmp
+RUTH MARISOL  -> 7.-ruth-marisol.bmp
+SRA. ANTONIA  -> 8.-sra.antonia.bmp
+```
+
+### Archivos Modificados
+- public/login_fixed.html
+
+---
+
+## 2. BITÁCORA DE PRODUCCIÓN MEJORADA
+
+### Nuevos Conceptos
+
+#### ROTULADO
+- Creado automáticamente al imprimir etiquetas
+- Destino: Almacén y stock
+- Editable para colaboraciones
+- No reimprimible
+
+#### NO ROTULADO
+- Creado manualmente con botón "Nueva Entrada"
+- Destino: Pedidos especiales de empresas
+- Sin impresión de etiqueta
+- Solo registro de producción
+
+### Sistema de Colaboración
+
+**Flujo de Trabajo:**
+1. Usuario A crea registro de 50 unidades
+2. Usuario A completa 40 unidades
+3. Usuario A asigna 10 unidades pendientes a Usuario B
+4. Usuario B ve el registro en bitácora compartida
+5. Usuario B edita y registra su cantidad completada
+
+### Nueva Estructura de Datos
+
+**Tabla Principal:** bitacora_produccion
+- tipo: ROTULADO / NO_ROTULADO
+- cantidad_total: Total planificado
+- cantidad_completada: Ya producido
+- Mantiene campos existentes para compatibilidad
+
+**Nueva Tabla:** bitacora_asignaciones
+- id_registro: Registro al que pertenece
+- id_colaborador: Usuario asignado
+- cantidad_asignada: Cantidad delegada
+- asignado_por: Quien realizó la asignación
+- nota: Observaciones opcionales
+
+### Interfaz de Usuario
+
+**Tabla con 9 Columnas:**
+1. Fecha
+2. Tipo (ROTULADO / NO ROTULADO)
+3. Usuario Creador
+4. Producto
+5. Cantidad Total
+6. Cantidad Completada
+7. Cantidad Pendiente
+8. Estado (ACTIVO / EDITADO / ANULADO)
+9. Acciones
+
+**Botones de Acción:**
+- Editar: Modificar cantidad completada
+- Asignar: Delegar trabajo a colaborador
+- Ver: Detalles completos con histórico
+- Anular: Cancelar registro con motivo
+
+**Modalidades:**
+- Modal de Edición
+- Modal de Asignación de Colaborador
+- Modal de Detalles Completos
+- Modal de Anulación
+
+### Filtros Avanzados
+- Fecha Inicio / Fecha Fin
+- Usuario
+- Producto
+- Tipo (ROTULADO / NO ROTULADO)
+- Estado (ACTIVO / EDITADO / ANULADO)
+
+### Cambio de Visibilidad
+**ANTES:** Cada usuario veía solo sus registros
+**AHORA:** Todos los usuarios ven todos los registros (transparencia total)
+
+### Archivos Creados
+- public/components/bitacora-produccion-mejorada.html
+
+---
+
+## 3. BASE DE DATOS
+
+### Script de Migración
+- base_data/MIGRACION-BITACORA-MEJORADA.sql
+
+### Cambios Realizados
+1. Añadidas columnas a bitacora_produccion:
+   - tipo VARCHAR(20)
+   - cantidad_total INTEGER
+   - cantidad_completada INTEGER
+
+2. Creada tabla bitacora_asignaciones
+
+3. Creada vista vista_bitacora_completa
+
+4. Creados índices optimizados:
+   - idx_bitacora_tipo
+   - idx_bitacora_fecha
+   - idx_asignaciones_registro
+   - idx_asignaciones_colaborador
+
+5. Función registrar_impresion_rotulado() para registros automáticos
+
+### Estado de Migración
+- Ejecutada exitosamente
+- 3 registros migrados
+- Sin pérdida de datos
+
+### Herramienta de Migración
+- EJECUTAR-MIGRACION-BITACORA.bat (script batch para facilitar ejecución)
+
+---
+
+## 4. API - NUEVOS ENDPOINTS
+
+### POST /api/bitacora/asignar-colaborador
+Asigna parte del trabajo de un registro a otro usuario.
+
+**Parámetros:**
+- id_registro: ID del registro
+- id_colaborador: ID del usuario colaborador
+- cantidad_asignada: Cantidad a asignar
+- nota: Observaciones opcionales
+- userId: Usuario que realiza la asignación
+
+**Validaciones:**
+- Registro debe existir y estar activo
+- Cantidad no puede exceder el disponible
+- Colaborador debe existir en el sistema
+
+### GET /api/bitacora/:id/asignaciones
+Obtiene todas las asignaciones de un registro específico.
+
+**Respuesta:**
+```json
+{
+  "success": true,
+  "data": [
+    {
+      "id": 1,
+      "nombre_colaborador": "RUTH MARISOL",
+      "cantidad_asignada": 10,
+      "nota": "Urgente",
+      "fecha_asignacion": "2025-12-12T10:30:00"
+    }
+  ]
+}
+```
+
+### Endpoints Actualizados
+
+#### POST /api/bitacora/crear
+- Añadido campo: tipo (ROTULADO / NO_ROTULADO)
+
+#### PUT /api/bitacora/editar
+- Añadido campo: cantidad_completada
+
+---
+
+## 5. INTEGRACIÓN CON SISTEMA EXISTENTE
+
+### Dashboards Actualizados
+- public/costurera-dashboard.html (referencia actualizada)
+- public/administracion-mejorado.html (referencia actualizada)
+
+### Compatibilidad
+- Mantiene compatibilidad con registros antiguos
+- Migración no destructiva
+- Datos legacy siguen funcionando
+
+---
+
+## 6. DOCUMENTACIÓN
+
+### Archivos de Documentación
+1. PLAN-IMPLEMENTACION-MEJORAS-V2.5.md
+   - Plan completo de implementación
+   - Guía paso a paso
+   - Casos de uso detallados
+   - Roadmap futuro
+
+2. RESUMEN-CAMBIOS-V2.5.txt (este archivo)
+   - Resumen ejecutivo
+   - Cambios principales
+   - Referencias rápidas
+
+---
+
+## 7. ESTADO ACTUAL DEL SISTEMA
+
+### Completado
+- Login profesional con fotos de usuarios
+- Sistema de bitácora con tipos ROTULADO/NO ROTULADO
+- Asignación colaborativa implementada
+- Visibilidad total de registros
+- Base de datos migrada
+- 2 nuevos endpoints REST
+- Interfaz profesional sin iconos emoji
+- Referencias actualizadas en dashboards
+- Migración ejecutada exitosamente
+
+### Pendiente (Opcional)
+- Notificaciones push al asignar
+- Gráficos de productividad
+- Dashboard de métricas
+- Sistema de metas
+
+---
+
+## 8. INSTRUCCIONES DE USO
+
+### Para Usuarios
+1. Login: Seleccionar usuario por foto (sin necesidad de recordar rol)
+2. Bitácora: Ver todos los registros de producción
+3. Crear NO ROTULADO: Botón "Nueva Entrada" para pedidos especiales
+4. Asignar trabajo: Botón "Asignar" en registros con pendientes
+5. Ver detalles: Botón "Ver" para información completa
+
+### Para Administradores
+1. Todos los registros son visibles
+2. Puede editar cualquier registro
+3. Puede ver asignaciones de todos los usuarios
+4. Exportar reportes disponible
+
+---
+
+## 9. ENDPOINTS ACTUALIZADOS
+
+### Total de Endpoints de Bitácora: 8
+
+1. POST /api/bitacora/crear
+2. GET  /api/bitacora/listar
+3. PUT  /api/bitacora/anular
+4. PUT  /api/bitacora/editar
+5. GET  /api/bitacora/reporte
+6. GET  /api/bitacora/exportar-docx
+7. POST /api/bitacora/asignar-colaborador (NUEVO)
+8. GET  /api/bitacora/:id/asignaciones (NUEVO)
+
+---
+
+## 10. VERIFICACIÓN
+
+### Comprobar Instalación
+1. Verificar archivos creados:
+   - public/components/bitacora-produccion-mejorada.html
+   - base_data/MIGRACION-BITACORA-MEJORADA.sql
+   - PLAN-IMPLEMENTACION-MEJORAS-V2.5.md
+
+2. Verificar base de datos:
+   - Tabla bitacora_produccion con nuevas columnas
+   - Tabla bitacora_asignaciones creada
+   - Vista vista_bitacora_completa creada
+
+3. Verificar servidor:
+   - 8 endpoints de bitácora registrados
+   - Sin errores en logs
+
+4. Verificar interfaz:
+   - Login muestra fotos en vez de emojis
+   - Bitácora muestra todos los registros
+   - Botones de asignación funcionan
+
+---
+
+## CONTACTO
+
+Para soporte técnico, consultar documentación en:
+- documentation/
+- PLAN-IMPLEMENTACION-MEJORAS-V2.5.md
+
+Para logs del servidor:
+- VER-LOGS-SERVIDOR.bat
+
+---
+
+FIN DEL RESUMEN
