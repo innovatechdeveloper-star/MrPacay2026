@@ -1,0 +1,780 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Bitácora de Producción - Administración</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: #f5f7fa;
+        }
+        
+        .container-bitacora-admin {
+            padding: 24px;
+            max-width: 1600px;
+            margin: 0 auto;
+        }
+        
+        .header-bitacora-admin {
+            background: linear-gradient(135deg, #1e3a8a 0%, #3b82f6 100%);
+            color: white;
+            padding: 28px 32px;
+            border-radius: 12px;
+            box-shadow: 0 4px 12px rgba(30, 58, 138, 0.25);
+            margin-bottom: 28px;
+        }
+        
+        .header-bitacora-admin h2 {
+            font-size: 28px;
+            font-weight: 700;
+            margin-bottom: 8px;
+        }
+        
+        .header-bitacora-admin p {
+            font-size: 15px;
+            opacity: 0.95;
+        }
+        
+        .actions-bar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 24px;
+            gap: 16px;
+            flex-wrap: wrap;
+        }
+        
+        .btn-admin {
+            padding: 12px 24px;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 600;
+            font-size: 14px;
+            transition: all 0.3s ease;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .btn-export-docx {
+            background: linear-gradient(135deg, #059669 0%, #10b981 100%);
+            color: white;
+            box-shadow: 0 2px 6px rgba(5, 150, 105, 0.3);
+        }
+        
+        .btn-export-docx:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(5, 150, 105, 0.4);
+        }
+        
+        .btn-export-excel {
+            background: linear-gradient(135deg, #2563eb 0%, #3b82f6 100%);
+            color: white;
+            box-shadow: 0 2px 6px rgba(37, 99, 235, 0.3);
+        }
+        
+        .btn-export-excel:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(37, 99, 235, 0.4);
+        }
+        
+        .filters-section {
+            background: white;
+            padding: 24px;
+            border-radius: 12px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+            margin-bottom: 24px;
+        }
+        
+        .filters-title {
+            font-size: 16px;
+            font-weight: 600;
+            color: #1e293b;
+            margin-bottom: 16px;
+        }
+        
+        .filters-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 16px;
+            margin-bottom: 16px;
+        }
+        
+        .filter-group {
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+        }
+        
+        .filter-group label {
+            font-size: 13px;
+            font-weight: 600;
+            color: #64748b;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+        
+        .filter-group input,
+        .filter-group select {
+            padding: 10px 12px;
+            border: 2px solid #e2e8f0;
+            border-radius: 8px;
+            font-size: 14px;
+            transition: all 0.2s;
+        }
+        
+        .filter-group input:focus,
+        .filter-group select:focus {
+            outline: none;
+            border-color: #3b82f6;
+            box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+        }
+        
+        .btn-aplicar-filtros-admin {
+            padding: 12px 28px;
+            background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 600;
+            font-size: 14px;
+            transition: all 0.3s;
+        }
+        
+        .btn-aplicar-filtros-admin:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(59, 130, 246, 0.4);
+        }
+        
+        /* Tabla Profesional */
+        .tabla-container {
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+            overflow: hidden;
+        }
+        
+        .tabla-bitacora-admin {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        
+        .tabla-bitacora-admin thead {
+            background: linear-gradient(135deg, #1e3a8a 0%, #3b82f6 100%);
+            color: white;
+        }
+        
+        .tabla-bitacora-admin th {
+            padding: 16px 14px;
+            text-align: left;
+            font-weight: 700;
+            text-transform: uppercase;
+            font-size: 12px;
+            letter-spacing: 1px;
+            border: none;
+        }
+        
+        .tabla-bitacora-admin td {
+            padding: 14px;
+            text-align: left;
+            border-bottom: 1px solid #e2e8f0;
+            font-size: 14px;
+        }
+        
+        .tabla-bitacora-admin tbody tr:nth-child(even) {
+            background: #f8fafc;
+        }
+        
+        .tabla-bitacora-admin tbody tr:hover {
+            background: #eff6ff;
+            transition: all 0.2s ease;
+        }
+        
+        /* Estados Profesionales SIN EMOJIS */
+        .estado-badge-admin {
+            padding: 6px 14px;
+            border-radius: 6px;
+            font-size: 11px;
+            font-weight: 700;
+            display: inline-block;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+        
+        .estado-activo-admin {
+            background: #d1fae5;
+            color: #065f46;
+            border: 1px solid #34d399;
+        }
+        
+        .estado-editado-admin {
+            background: #fef3c7;
+            color: #92400e;
+            border: 1px solid #fbbf24;
+        }
+        
+        .estado-anulado-admin {
+            background: #fee2e2;
+            color: #991b1b;
+            border: 1px solid #f87171;
+        }
+        
+        /* Botones de Acción Profesionales */
+        .acciones-admin {
+            display: flex;
+            gap: 8px;
+        }
+        
+        .btn-accion-admin {
+            padding: 6px 12px;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 12px;
+            font-weight: 600;
+            transition: all 0.2s;
+        }
+        
+        .btn-ver-detalle {
+            background: #3b82f6;
+            color: white;
+        }
+        
+        .btn-ver-detalle:hover {
+            background: #2563eb;
+        }
+        
+        /* Modal de Detalle */
+        .modal-detalle-admin {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.6);
+            z-index: 9999;
+            backdrop-filter: blur(8px);
+        }
+        
+        .modal-detalle-admin.active {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .modal-detalle-contenido {
+            background: white;
+            border-radius: 16px;
+            padding: 32px;
+            max-width: 700px;
+            width: 90%;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+        }
+        
+        .modal-detalle-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 24px;
+            padding-bottom: 16px;
+            border-bottom: 2px solid #e2e8f0;
+        }
+        
+        .modal-detalle-header h3 {
+            font-size: 22px;
+            color: #1e293b;
+        }
+        
+        .btn-cerrar-detalle {
+            background: #ef4444;
+            color: white;
+            border: none;
+            border-radius: 6px;
+            padding: 8px 16px;
+            cursor: pointer;
+            font-weight: 600;
+        }
+        
+        .detalle-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 20px;
+        }
+        
+        .detalle-item {
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+        }
+        
+        .detalle-label {
+            font-size: 12px;
+            font-weight: 600;
+            color: #64748b;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+        
+        .detalle-valor {
+            font-size: 15px;
+            color: #1e293b;
+            font-weight: 500;
+        }
+        
+        .detalle-full {
+            grid-column: 1 / -1;
+        }
+        
+        /* Estadísticas */
+        .stats-section {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 16px;
+            margin-bottom: 24px;
+        }
+        
+        .stat-card {
+            background: white;
+            padding: 20px;
+            border-radius: 12px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+            border-left: 4px solid #3b82f6;
+        }
+        
+        .stat-label {
+            font-size: 12px;
+            font-weight: 600;
+            color: #64748b;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-bottom: 8px;
+        }
+        
+        .stat-value {
+            font-size: 28px;
+            font-weight: 700;
+            color: #1e293b;
+        }
+    </style>
+</head>
+<body>
+    <div class="container-bitacora-admin">
+        <div class="header-bitacora-admin">
+            <h2>Bitácora de Producción</h2>
+            <p>Sistema de seguimiento y auditoría de registros productivos</p>
+        </div>
+        
+        <!-- Estadísticas -->
+        <div class="stats-section" id="statsSection">
+            <div class="stat-card">
+                <div class="stat-label">Total Registros</div>
+                <div class="stat-value" id="statTotal">0</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-label">Registros Activos</div>
+                <div class="stat-value" id="statActivos">0</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-label">Registros Editados</div>
+                <div class="stat-value" id="statEditados">0</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-label">Registros Anulados</div>
+                <div class="stat-value" id="statAnulados">0</div>
+            </div>
+        </div>
+        
+        <!-- Barra de Acciones -->
+        <div class="actions-bar">
+            <div style="display: flex; gap: 12px;">
+                <button class="btn-admin btn-export-docx" onclick="exportarDOCX()">
+                    Exportar DOCX
+                </button>
+                <button class="btn-admin btn-export-excel" onclick="exportarExcel()">
+                    Exportar Excel
+                </button>
+            </div>
+        </div>
+        
+        <!-- Filtros -->
+        <div class="filters-section">
+            <div class="filters-title">Filtros de Búsqueda</div>
+            <div class="filters-grid">
+                <div class="filter-group">
+                    <label>Fecha Inicio</label>
+                    <input type="date" id="fechaInicio">
+                </div>
+                <div class="filter-group">
+                    <label>Fecha Fin</label>
+                    <input type="date" id="fechaFin">
+                </div>
+                <div class="filter-group">
+                    <label>Usuario</label>
+                    <select id="filtroUsuario">
+                        <option value="">Todos los usuarios</option>
+                    </select>
+                </div>
+                <div class="filter-group">
+                    <label>Producto</label>
+                    <select id="filtroProducto">
+                        <option value="">Todos los productos</option>
+                    </select>
+                </div>
+                <div class="filter-group">
+                    <label>Estado</label>
+                    <select id="filtroEstado">
+                        <option value="">Todos los estados</option>
+                        <option value="ACTIVO">ACTIVO</option>
+                        <option value="EDITADO">EDITADO</option>
+                        <option value="ANULADO">ANULADO</option>
+                    </select>
+                </div>
+            </div>
+            <button class="btn-aplicar-filtros-admin" onclick="aplicarFiltrosAdmin()">
+                Aplicar Filtros
+            </button>
+        </div>
+        
+        <!-- Tabla de Registros -->
+        <div class="tabla-container">
+            <table class="tabla-bitacora-admin">
+                <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>FECHA</th>
+                        <th>USUARIO</th>
+                        <th>PRODUCTO</th>
+                        <th>CANTIDAD</th>
+                        <th>ESTADO</th>
+                        <th>MODIFICADO POR</th>
+                        <th>ACCIONES</th>
+                    </tr>
+                </thead>
+                <tbody id="tablaBodyAdmin">
+                    <tr>
+                        <td colspan="8" style="text-align: center; padding: 40px;">
+                            Cargando registros...
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+    
+    <!-- Modal de Detalle -->
+    <div class="modal-detalle-admin" id="modalDetalleAdmin">
+        <div class="modal-detalle-contenido">
+            <div class="modal-detalle-header">
+                <h3>Detalle del Registro</h3>
+                <button class="btn-cerrar-detalle" onclick="cerrarDetalleAdmin()">Cerrar</button>
+            </div>
+            <div class="detalle-grid" id="detalleContenido">
+                <!-- Se llenará dinámicamente -->
+            </div>
+        </div>
+    </div>
+    
+    <script>
+        let registrosGlobales = [];
+        
+        // Obtener userId del administrador
+        function getUserId() {
+            const urlParams = new URLSearchParams(window.location.search);
+            let userId = urlParams.get('user');
+            if (!userId) {
+                const userData = JSON.parse(localStorage.getItem('userData') || '{}');
+                userId = userData.id_usuario;
+            }
+            if (!userId) {
+                const currentUser = JSON.parse(localStorage.getItem('currentUser') || '{}');
+                userId = currentUser.id_usuario;
+            }
+            return userId || '1'; // Default admin
+        }
+        
+        // Cargar bitácora
+        async function cargarBitacoraAdmin() {
+            try {
+                const userId = getUserId();
+                
+                const fechaInicio = document.getElementById('fechaInicio').value;
+                const fechaFin = document.getElementById('fechaFin').value;
+                const filtroUsuario = document.getElementById('filtroUsuario').value;
+                const filtroProducto = document.getElementById('filtroProducto').value;
+                const filtroEstado = document.getElementById('filtroEstado').value;
+                
+                let url = `/api/bitacora/listar?userId=${userId}`;
+                if (fechaInicio) url += `&fecha_inicio=${fechaInicio}`;
+                if (fechaFin) url += `&fecha_fin=${fechaFin}`;
+                if (filtroUsuario) url += `&id_usuario=${filtroUsuario}`;
+                if (filtroProducto) url += `&id_producto=${filtroProducto}`;
+                if (filtroEstado) url += `&estado=${filtroEstado}`;
+                
+                const response = await fetch(url);
+                const data = await response.json();
+                
+                if (data.success) {
+                    registrosGlobales = data.data;
+                    renderizarTablaAdmin(data.data);
+                    actualizarEstadisticas(data.data);
+                } else {
+                    throw new Error(data.message);
+                }
+            } catch (error) {
+                console.error('Error cargando bitácora:', error);
+                document.getElementById('tablaBodyAdmin').innerHTML = `
+                    <tr>
+                        <td colspan="8" style="text-align: center; padding: 40px; color: #ef4444;">
+                            Error cargando registros: ${error.message}
+                        </td>
+                    </tr>
+                `;
+            }
+        }
+        
+        // Renderizar tabla
+        function renderizarTablaAdmin(registros) {
+            const tbody = document.getElementById('tablaBodyAdmin');
+            
+            if (registros.length === 0) {
+                tbody.innerHTML = `
+                    <tr>
+                        <td colspan="8" style="text-align: center; padding: 40px; color: #64748b;">
+                            No se encontraron registros
+                        </td>
+                    </tr>
+                `;
+                return;
+            }
+            
+            tbody.innerHTML = registros.map(reg => {
+                const fecha = new Date(reg.fecha).toLocaleString('es-PE', {
+                    year: 'numeric',
+                    month: '2-digit',
+                    day: '2-digit',
+                    hour: '2-digit',
+                    minute: '2-digit'
+                });
+                
+                const estadoClass = `estado-${reg.estado.toLowerCase()}-admin`;
+                const modificadoPor = reg.nombre_modificador || '-';
+                
+                return `
+                    <tr>
+                        <td style="font-weight: 600;">#${reg.id}</td>
+                        <td style="white-space: nowrap;">${fecha}</td>
+                        <td>${reg.nombre_usuario || 'Usuario'}</td>
+                        <td><strong>${reg.nombre_producto}</strong></td>
+                        <td style="text-align: center; font-size: 16px; font-weight: 700; color: #059669;">${reg.cantidad}</td>
+                        <td style="text-align: center;">
+                            <span class="estado-badge-admin ${estadoClass}">
+                                ${reg.estado}
+                            </span>
+                        </td>
+                        <td style="font-size: 13px; color: #64748b;">${modificadoPor}</td>
+                        <td>
+                            <div class="acciones-admin">
+                                <button class="btn-accion-admin btn-ver-detalle" onclick='verDetalleAdmin(${JSON.stringify(reg)})'>
+                                    Ver Detalle
+                                </button>
+                            </div>
+                        </td>
+                    </tr>
+                `;
+            }).join('');
+        }
+        
+        // Actualizar estadísticas
+        function actualizarEstadisticas(registros) {
+            const stats = {
+                total: registros.length,
+                activos: registros.filter(r => r.estado === 'ACTIVO').length,
+                editados: registros.filter(r => r.estado === 'EDITADO').length,
+                anulados: registros.filter(r => r.estado === 'ANULADO').length
+            };
+            
+            document.getElementById('statTotal').textContent = stats.total;
+            document.getElementById('statActivos').textContent = stats.activos;
+            document.getElementById('statEditados').textContent = stats.editados;
+            document.getElementById('statAnulados').textContent = stats.anulados;
+        }
+        
+        // Ver detalle
+        function verDetalleAdmin(registro) {
+            const modal = document.getElementById('modalDetalleAdmin');
+            const contenido = document.getElementById('detalleContenido');
+            
+            const fecha = new Date(registro.fecha).toLocaleString('es-PE', {
+                year: 'numeric',
+                month: 'long',
+                day: 'numeric',
+                hour: '2-digit',
+                minute: '2-digit'
+            });
+            
+            const fechaModificacion = registro.fecha_modificacion ? 
+                new Date(registro.fecha_modificacion).toLocaleString('es-PE', {
+                    year: 'numeric',
+                    month: 'long',
+                    day: 'numeric',
+                    hour: '2-digit',
+                    minute: '2-digit'
+                }) : '-';
+            
+            contenido.innerHTML = `
+                <div class="detalle-item">
+                    <div class="detalle-label">ID Registro</div>
+                    <div class="detalle-valor">#${registro.id}</div>
+                </div>
+                <div class="detalle-item">
+                    <div class="detalle-label">Estado</div>
+                    <div class="detalle-valor">
+                        <span class="estado-badge-admin estado-${registro.estado.toLowerCase()}-admin">
+                            ${registro.estado}
+                        </span>
+                    </div>
+                </div>
+                <div class="detalle-item">
+                    <div class="detalle-label">Fecha de Registro</div>
+                    <div class="detalle-valor">${fecha}</div>
+                </div>
+                <div class="detalle-item">
+                    <div class="detalle-label">Usuario</div>
+                    <div class="detalle-valor">${registro.nombre_usuario || 'Usuario'}</div>
+                </div>
+                <div class="detalle-item">
+                    <div class="detalle-label">Producto</div>
+                    <div class="detalle-valor">${registro.nombre_producto}</div>
+                </div>
+                <div class="detalle-item">
+                    <div class="detalle-label">Cantidad</div>
+                    <div class="detalle-valor" style="font-size: 20px; color: #059669; font-weight: 700;">${registro.cantidad}</div>
+                </div>
+                <div class="detalle-item">
+                    <div class="detalle-label">Fecha Modificación</div>
+                    <div class="detalle-valor">${fechaModificacion}</div>
+                </div>
+                <div class="detalle-item">
+                    <div class="detalle-label">Modificado Por</div>
+                    <div class="detalle-valor">${registro.nombre_modificador || '-'}</div>
+                </div>
+                ${registro.motivo_cambio ? `
+                    <div class="detalle-item detalle-full">
+                        <div class="detalle-label">Motivo del Cambio</div>
+                        <div class="detalle-valor">${registro.motivo_cambio}</div>
+                    </div>
+                ` : ''}
+            `;
+            
+            modal.classList.add('active');
+        }
+        
+        // Cerrar modal
+        function cerrarDetalleAdmin() {
+            document.getElementById('modalDetalleAdmin').classList.remove('active');
+        }
+        
+        // Aplicar filtros
+        function aplicarFiltrosAdmin() {
+            cargarBitacoraAdmin();
+        }
+        
+        // Exportar DOCX
+        async function exportarDOCX() {
+            try {
+                const userId = getUserId();
+                
+                const fechaInicio = document.getElementById('fechaInicio').value;
+                const fechaFin = document.getElementById('fechaFin').value;
+                const filtroUsuario = document.getElementById('filtroUsuario').value;
+                const filtroProducto = document.getElementById('filtroProducto').value;
+                const filtroEstado = document.getElementById('filtroEstado').value;
+                
+                let url = `/api/bitacora/exportar-docx?userId=${userId}`;
+                if (fechaInicio) url += `&fecha_inicio=${fechaInicio}`;
+                if (fechaFin) url += `&fecha_fin=${fechaFin}`;
+                if (filtroUsuario) url += `&id_usuario=${filtroUsuario}`;
+                if (filtroProducto) url += `&id_producto=${filtroProducto}`;
+                if (filtroEstado) url += `&estado=${filtroEstado}`;
+                
+                const response = await fetch(url);
+                
+                if (!response.ok) {
+                    throw new Error('Error generando documento');
+                }
+                
+                const blob = await response.blob();
+                const downloadUrl = window.URL.createObjectURL(blob);
+                const a = document.createElement('a');
+                a.href = downloadUrl;
+                a.download = `bitacora_produccion_${new Date().toISOString().split('T')[0]}.docx`;
+                document.body.appendChild(a);
+                a.click();
+                a.remove();
+                window.URL.revokeObjectURL(downloadUrl);
+            } catch (error) {
+                console.error('Error exportando DOCX:', error);
+                alert('Error al generar documento Word');
+            }
+        }
+        
+        // Exportar Excel (placeholder)
+        function exportarExcel() {
+            alert('Funcionalidad de Excel en desarrollo');
+        }
+        
+        // Cargar datos iniciales
+        async function cargarDatosIniciales() {
+            try {
+                // Cargar usuarios
+                const usersResponse = await fetch('/api/admin/users');
+                const usersData = await usersResponse.json();
+                const selectUsuario = document.getElementById('filtroUsuario');
+                usersData.forEach(user => {
+                    const option = document.createElement('option');
+                    option.value = user.id_usuario;
+                    option.textContent = user.nombre_completo || `${user.email}`;
+                    selectUsuario.appendChild(option);
+                });
+                
+                // Cargar productos
+                const prodsResponse = await fetch('/api/productos?all=true');
+                const prodsData = await prodsResponse.json();
+                const selectProducto = document.getElementById('filtroProducto');
+                prodsData.forEach(prod => {
+                    const option = document.createElement('option');
+                    option.value = prod.id_producto;
+                    option.textContent = prod.nombre_producto;
+                    selectProducto.appendChild(option);
+                });
+            } catch (error) {
+                console.error('Error cargando datos iniciales:', error);
+            }
+        }
+        
+        // Inicializar
+        document.addEventListener('DOMContentLoaded', () => {
+            cargarDatosIniciales();
+            cargarBitacoraAdmin();
+        });
+        
+        // Exponer funciones globalmente
+        window.cargarBitacoraAdmin = cargarBitacoraAdmin;
+        window.verDetalleAdmin = verDetalleAdmin;
+        window.cerrarDetalleAdmin = cerrarDetalleAdmin;
+        window.aplicarFiltrosAdmin = aplicarFiltrosAdmin;
+        window.exportarDOCX = exportarDOCX;
+        window.exportarExcel = exportarExcel;
+    </script>
+</body>
+</html>

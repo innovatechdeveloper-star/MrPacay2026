@@ -1572,32 +1572,30 @@
         <div class="header-content">
             <div class="admin-title">
                 <!--LOGO_START<img src="assets/logoicon.png" alt="Logo de la Empresa" class="admin-header-logo">LOGO_END-->
-                🛠️ Panel de Administración
+                Panel de Administración
             </div>
             <div class="admin-info">
                 <div class="status-indicator">
-                    <span id="db-status">🟢 PostgreSQL Conectado</span>
+                    <span id="db-status">PostgreSQL Conectado</span>
                 </div>
                 <div class="status-indicator">
-                    <span id="print-status">🖨️ Impresora Lista</span>
+                    <span id="print-status">Impresora Lista</span>
                 </div>
                 <div class="status-indicator">
-                    <span id="sync-status">🔄 Sincronización Activa</span>
+                    <span id="sync-status">Sincronización Activa</span>
                 </div>
                 <button class="btn btn-secondary" onclick="forceSyncAll()" title="Forzar sincronización completa" 
                         style="padding: 0.5rem; margin-left: 0.5rem;">
-                    🔄 Sync
+                    Sync
                 </button>
                 <div style="display: flex; align-items: center; gap: 0.5rem; margin-left: 1rem;">
-                    <span style="font-size: 0.875rem;">🌙</span>
                     <label class="dark-mode-toggle">
                         <input type="checkbox" id="darkModeToggle" onchange="toggleDarkMode()">
                         <span class="dark-mode-slider"></span>
                     </label>
-                    <span style="font-size: 0.875rem;">☀️</span>
                 </div>
                 <div class="decorations-toggle" onclick="toggleDecorations()" title="Activar/Desactivar decoraciones">
-                    <span id="decorations-toggle-icon">✨</span>
+                    <span id="decorations-toggle-icon">DEC</span>
                 </div>
             </div>
         </div>
@@ -1615,7 +1613,7 @@
             <!-- Filtros de Analytics -->
             <div class="analytics-filters" style="background: white; border-radius: 8px; padding: 1rem; margin-bottom: 1rem; box-shadow: 0 2px 4px rgba(0,0,0,0.1);">
                 <div style="display: flex; gap: 1rem; align-items: center; flex-wrap: wrap;">
-                    <label style="font-weight: 600;">📊 Período de análisis:</label>
+                    <label style="font-weight: 600;">Período de análisis:</label>
                     <select id="analytics-period" onchange="updateAnalytics()" style="padding: 0.5rem; border-radius: 4px; border: 1px solid #ddd;">
                         <option value="7">Últimos 7 días</option>
                         <option value="15">Últimos 15 días</option>
@@ -1639,7 +1637,7 @@
                 <!-- Tendencias Temporales -->
                 <div class="chart-container" style="background: white; border-radius: 8px; padding: 1.5rem; box-shadow: 0 2px 4px rgba(0,0,0,0.1); position: relative;">
                     <h3 style="margin: 0 0 1rem 0; color: #333; display: flex; align-items: center; gap: 0.5rem;">
-                        📈 Tendencia Solicitudes (Últimos 15 días)
+                        Tendencia Solicitudes (Últimos 15 días)
                     </h3>
                     <canvas id="trends-chart" width="400" height="300"></canvas>
                     <div id="trends-tooltip" style="position: absolute; background: rgba(0,0,0,0.8); color: white; padding: 8px; border-radius: 4px; font-size: 12px; pointer-events: none; opacity: 0; transition: opacity 0.2s;"></div>
@@ -1649,7 +1647,7 @@
             <!-- Stats por Departamento -->
             <div class="department-stats" style="background: white; border-radius: 8px; padding: 1.5rem; box-shadow: 0 2px 4px rgba(0,0,0,0.1);">
                 <h3 style="margin: 0 0 1rem 0; color: #333; display: flex; align-items: center; gap: 0.5rem;">
-                    🏢 Estadísticas por Departamento
+                    Estadísticas por Departamento
                 </h3>
                 <div id="department-stats-table">
                     <!-- Loaded dynamically -->
@@ -1660,37 +1658,40 @@
         <!-- Navigation Tabs -->
         <div class="nav-tabs" id="nav-tabs">
             <button class="nav-tab active" onclick="showSection('usuarios')">
-                👥 Usuarios
+                Usuarios
             </button>
             <button class="nav-tab" onclick="showSection('productos')">
-                📦 Productos
+                Productos
             </button>
             <button class="nav-tab" onclick="showSection('solicitudes')">
-                📋 Solicitudes
+                Solicitudes
             </button>
             <button class="nav-tab" onclick="showSection('productos-especiales')">
-                🎁 Productos Especiales
+                Productos Especiales
             </button>
             <button class="nav-tab" onclick="showSection('solicitudes-especiales')">
-                ⭐ Solicitudes Especiales
+                Solicitudes Especiales
             </button>
             <button class="nav-tab" onclick="showSection('departamentos')">
-                🏢 Departamentos
+                Departamentos
             </button>
             <button class="nav-tab" onclick="showSection('estadisticas')">
-                📊 Estadísticas
+                Estadísticas
             </button>
             <button class="nav-tab" onclick="showSection('impresora')">
-                🖨️ Gestión Impresora
+                Gestión Impresora
             </button>
             <button class="nav-tab" onclick="showSection('mantenimiento')">
-                🔧 Mantenimiento
+                Mantenimiento
+            </button>
+            <button class="nav-tab" onclick="showSection('bitacora')">
+                Bitácora de Producción
             </button>
             <button class="nav-tab" onclick="showSection('chat')">
-                💬 Chat <span id="chat-badge" class="notification-badge" style="display: none;">0</span>
+                Chat <span id="chat-badge" class="notification-badge" style="display: none;">0</span>
             </button>
             <button class="nav-tab" onclick="showSection('configuracion')">
-                ⚙️ Configuración
+                Configuración
             </button>
         </div>
 
@@ -1700,7 +1701,7 @@
         <div id="section-usuarios" class="content-section active">
             <div class="table-container">
                 <div class="table-header">
-                    <h2 class="table-title">👥 Gestión de Usuarios</h2>
+                    <h2 class="table-title">Gestión de Usuarios</h2>
                     <div class="table-actions">
                         <button class="btn btn-primary" onclick="showCreateUserModal()">
                             ➕ Nuevo Usuario
@@ -1712,7 +1713,7 @@
                 </div>
                 
                 <div class="search-filters">
-                    <input type="text" class="search-input" placeholder="🔍 Buscar usuarios..." 
+                    <input type="text" class="search-input" placeholder="Buscar usuarios..." 
                            onkeyup="searchUsers(this.value)">
                     <select class="filter-select" onchange="filterUsers(this.value)">
                         <option value="">Todos los roles</option>
@@ -1755,7 +1756,7 @@
         <div id="section-productos" class="content-section">
             <div class="table-container">
                 <div class="table-header">
-                    <h2 class="table-title">📦 Gestión de Productos</h2>
+                    <h2 class="table-title">Gestión de Productos</h2>
                     <div class="table-actions">
                         <button class="btn btn-primary" onclick="showCreateProductModal()">
                             ➕ Nuevo Producto
@@ -1770,7 +1771,7 @@
                 </div>
                 
                 <div class="search-filters">
-                    <input type="text" class="search-input" placeholder="🔍 Buscar productos..." 
+                    <input type="text" class="search-input" placeholder="Buscar productos..." 
                            onkeyup="searchProducts(this.value)">
                     <select class="filter-select" onchange="filterProductStatus(this.value)">
                         <option value="">Todos los estados</option>
@@ -1805,7 +1806,7 @@
         <div id="section-solicitudes" class="content-section">
             <div class="table-container">
                 <div class="table-header">
-                    <h2 class="table-title">📋 Gestión de Solicitudes</h2>
+                    <h2 class="table-title">Gestión de Solicitudes</h2>
                     <div class="table-actions">
                         <button class="btn btn-secondary" onclick="exportSolicitudes()">
                             📤 Exportar
@@ -1814,7 +1815,7 @@
                 </div>
                 
                 <div class="search-filters">
-                    <input type="text" class="search-input" placeholder="🔍 Buscar solicitudes..." 
+                    <input type="text" class="search-input" placeholder="Buscar solicitudes..." 
                            onkeyup="searchSolicitudes(this.value)">
                     <select class="filter-select" onchange="filterSolicitudStatus(this.value)">
                         <option value="">Todos los estados</option>
@@ -1853,7 +1854,7 @@
         <div id="section-productos-especiales" class="content-section">
             <div class="table-container">
                 <div class="table-header">
-                    <h2 class="table-title">🎁 Gestión de Productos Especiales (Juegos/Combos)</h2>
+                    <h2 class="table-title">Gestión de Productos Especiales (Juegos/Combos)</h2>
                     <div class="table-actions">
                         <button class="btn btn-primary" onclick="refreshProductosEspeciales()">
                             🔄 Actualizar
@@ -1866,12 +1867,12 @@
                 
                 <!-- Filtros -->
                 <div style="padding: 1.5rem; background: var(--bg-primary); border-bottom: 1px solid var(--border-color); display: flex; gap: 1rem; flex-wrap: wrap;">
-                    <input type="text" class="search-input" placeholder="🔍 Buscar por código o nombre..." 
+                    <input type="text" class="search-input" placeholder="Buscar por código o nombre..." 
                            onkeyup="searchProductosEspeciales(this.value)" style="flex: 1; min-width: 300px;">
                     <select class="filter-select" onchange="filterProductosEspecialesByEstado(this.value)" style="padding: 0.75rem; border: 1px solid var(--border-color); border-radius: var(--radius);">
                         <option value="">🏷️ Todos los estados</option>
-                        <option value="activo">✅ Activos</option>
-                        <option value="inactivo">❌ Inactivos</option>
+                        <option value="activo">Activos</option>
+                        <option value="inactivo">Inactivos</option>
                     </select>
                 </div>
 
@@ -1927,7 +1928,7 @@
         <div id="section-solicitudes-especiales" class="content-section">
             <div class="table-container">
                 <div class="table-header">
-                    <h2 class="table-title">⭐ Gestión de Solicitudes Especiales</h2>
+                    <h2 class="table-title">Gestión de Solicitudes Especiales</h2>
                     <div class="table-actions">
                         <button class="btn btn-primary" onclick="refreshSolicitudesEspeciales()">
                             🔄 Actualizar
@@ -1940,19 +1941,19 @@
                 
                 <!-- Filtros -->
                 <div style="padding: 1.5rem; background: var(--bg-primary); border-bottom: 1px solid var(--border-color); display: flex; gap: 1rem; flex-wrap: wrap;">
-                    <input type="text" class="search-input" placeholder="🔍 Buscar por producto o costurera..." 
+                    <input type="text" class="search-input" placeholder="Buscar por producto o costurera..." 
                            onkeyup="searchSolicitudesEspeciales(this.value)" style="flex: 1; min-width: 300px;">
                     <select class="filter-select" onchange="filterSolicitudesEspecialesByEstado(this.value)" style="padding: 0.75rem; border: 1px solid var(--border-color); border-radius: var(--radius);">
-                        <option value="">📊 Todos los estados</option>
+                        <option value="">Todos los estados</option>
                         <option value="pendiente">⏳ Pendientes</option>
                         <option value="proceso">🔄 En Proceso</option>
-                        <option value="completada">✅ Completadas</option>
-                        <option value="cancelada">❌ Canceladas</option>
+                        <option value="completada">Completadas</option>
+                        <option value="cancelada">Canceladas</option>
                     </select>
                     <input type="date" id="filter-fecha-desde" class="filter-select" style="padding: 0.75rem; border: 1px solid var(--border-color); border-radius: var(--radius);">
                     <input type="date" id="filter-fecha-hasta" class="filter-select" style="padding: 0.75rem; border: 1px solid var(--border-color); border-radius: var(--radius);">
                     <button class="btn btn-secondary" onclick="applyDateFilterSolicitudesEspeciales()">
-                        🔍 Filtrar Fechas
+                        Filtrar Fechas
                     </button>
                 </div>
 
@@ -2019,13 +2020,13 @@
         <div id="section-estadisticas" class="content-section">
             <div class="table-container">
                 <div class="table-header">
-                    <h2 class="table-title">📊 Estadísticas y Análisis</h2>
+                    <h2 class="table-title">Estadísticas y Análisis</h2>
                     <div class="table-actions">
                         <button class="btn btn-primary" onclick="refreshStats()">
                             🔄 Actualizar
                         </button>
                         <button class="btn btn-secondary" onclick="exportStatsReport()">
-                            📤 Exportar Reporte
+                            Exportar Reporte
                         </button>
                     </div>
                 </div>
@@ -2115,13 +2116,13 @@
                 <div class="charts-container" style="display: grid; grid-template-columns: 1fr 1fr; gap: 2rem; margin-bottom: 2rem;">
                     <!-- Gráfico de Solicitudes por Día -->
                     <div class="chart-card" style="background: white; padding: 1.5rem; border-radius: var(--radius); box-shadow: var(--shadow-md);">
-                        <h3 style="margin-bottom: 1rem; color: var(--text-primary);">📈 Solicitudes por Día</h3>
+                        <h3 style="margin-bottom: 1rem; color: var(--text-primary);">Solicitudes por Día</h3>
                         <canvas id="chart-solicitudes-dia" width="400" height="200"></canvas>
                     </div>
                     
                     <!-- Gráfico de Top Costureras -->
                     <div class="chart-card" style="background: white; padding: 1.5rem; border-radius: var(--radius); box-shadow: var(--shadow-md);">
-                        <h3 style="margin-bottom: 1rem; color: var(--text-primary);">👥 Top Costureras</h3>
+                        <h3 style="margin-bottom: 1rem; color: var(--text-primary);">Top Costureras</h3>
                         <canvas id="chart-top-costureras" width="400" height="200"></canvas>
                     </div>
                 </div>
@@ -2129,13 +2130,13 @@
                 <div class="charts-container" style="display: grid; grid-template-columns: 1fr 1fr; gap: 2rem; margin-bottom: 2rem;">
                     <!-- Gráfico de Productos Más Solicitados -->
                     <div class="chart-card" style="background: white; padding: 1.5rem; border-radius: var(--radius); box-shadow: var(--shadow-md);">
-                        <h3 style="margin-bottom: 1rem; color: var(--text-primary);">📦 Productos Más Solicitados</h3>
+                        <h3 style="margin-bottom: 1rem; color: var(--text-primary);">Productos Más Solicitados</h3>
                         <canvas id="chart-productos-populares" width="400" height="200"></canvas>
                     </div>
                     
                     <!-- Gráfico de Estados -->
                     <div class="chart-card" style="background: white; padding: 1.5rem; border-radius: var(--radius); box-shadow: var(--shadow-md);">
-                        <h3 style="margin-bottom: 1rem; color: var(--text-primary);">📊 Distribución por Estado</h3>
+                        <h3 style="margin-bottom: 1rem; color: var(--text-primary);">Distribución por Estado</h3>
                         <canvas id="chart-estados" width="400" height="200"></canvas>
                     </div>
                 </div>
@@ -2145,7 +2146,7 @@
                     <!-- Análisis por Costurera -->
                     <div class="analysis-card" style="background: white; border-radius: var(--radius); box-shadow: var(--shadow-md); overflow: hidden;">
                         <div style="padding: 1.5rem; border-bottom: 1px solid var(--border-color);">
-                            <h3 style="color: var(--text-primary);">👥 Análisis Detallado por Costurera</h3>
+                            <h3 style="color: var(--text-primary);">Análisis Detallado por Costurera</h3>
                         </div>
                         <div style="overflow-x: auto;">
                             <table class="data-table">
@@ -2171,7 +2172,7 @@
                     <!-- Análisis por Producto -->
                     <div class="analysis-card" style="background: white; border-radius: var(--radius); box-shadow: var(--shadow-md); overflow: hidden;">
                         <div style="padding: 1.5rem; border-bottom: 1px solid var(--border-color);">
-                            <h3 style="color: var(--text-primary);">📦 Análisis Detallado por Producto</h3>
+                            <h3 style="color: var(--text-primary);">Análisis Detallado por Producto</h3>
                         </div>
                         <div style="overflow-x: auto;">
                             <table class="data-table">
@@ -2200,7 +2201,7 @@
         <div id="section-departamentos" class="content-section">
             <div class="table-container">
                 <div class="table-header">
-                    <h2 class="table-title">🏢 Gestión de Departamentos</h2>
+                    <h2 class="table-title">Gestión de Departamentos</h2>
                     <div class="table-actions">
                         <button class="btn btn-primary" onclick="showCreateDepartmentModal()">
                             ➕ Nuevo Departamento
@@ -2231,13 +2232,13 @@
         <div id="section-impresora" class="content-section">
             <div class="table-container">
                 <div class="table-header">
-                    <h2 class="table-title">🖨️ Gestión Avanzada de Impresora</h2>
+                    <h2 class="table-title">Gestión Avanzada de Impresora</h2>
                     <div class="table-actions">
                         <button class="btn btn-secondary" onclick="verificarEstadoImpresora()">
                             🔍 Diagnosticar
                         </button>
                         <button class="btn btn-primary" onclick="procesarColaManual()">
-                            🚀 Procesar Cola
+                            Procesar Cola
                         </button>
                     </div>
                 </div>
@@ -2259,14 +2260,14 @@
                     </div>
                     
                     <div class="status-card" style="background: white; padding: 1rem; border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.1);">
-                        <h3 style="margin: 0 0 0.5rem 0; color: #333; font-size: 0.9rem;">⚡ Prioridad Alta</h3>
+                        <h3 style="margin: 0 0 0.5rem 0; color: #333; font-size: 0.9rem;">Prioridad Alta</h3>
                         <div id="printer-urgent-count" style="font-size: 1.2rem; font-weight: 600; color: #ef4444;">
                             0 urgentes
                         </div>
                     </div>
                     
                     <div class="status-card" style="background: white; padding: 1rem; border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.1);">
-                        <h3 style="margin: 0 0 0.5rem 0; color: #333; font-size: 0.9rem;">📈 Etiquetas Hoy</h3>
+                        <h3 style="margin: 0 0 0.5rem 0; color: #333; font-size: 0.9rem;">Etiquetas Hoy</h3>
                         <div id="printer-labels-today" style="font-size: 1.2rem; font-weight: 600; color: #10b981;">
                             0 impresas
                         </div>
@@ -2283,7 +2284,7 @@
                     
                     <!-- Cola de Prioridades -->
                     <div class="queue-container" style="background: white; border-radius: 8px; padding: 1.5rem; box-shadow: 0 2px 4px rgba(0,0,0,0.1);">
-                        <h3 style="margin: 0 0 1rem 0; color: #333;">🎯 Cola Priorizada</h3>
+                        <h3 style="margin: 0 0 1rem 0; color: #333;">Cola Priorizada</h3>
                         <div id="printer-priority-queue">
                             <!-- Loaded dynamically -->
                         </div>
@@ -2292,7 +2293,7 @@
                 
                 <!-- Diagnóstico y Errores -->
                 <div style="background: white; border-radius: 8px; padding: 1.5rem; box-shadow: 0 2px 4px rgba(0,0,0,0.1); margin-bottom: 2rem;">
-                    <h3 style="margin: 0 0 1rem 0; color: #333;">🔍 Diagnóstico y Recomendaciones</h3>
+                    <h3 style="margin: 0 0 1rem 0; color: #333;">Diagnóstico y Recomendaciones</h3>
                     <div id="printer-diagnostics">
                         <div style="text-align: center; color: #666; padding: 2rem;">
                             <p>Haz clic en "Diagnosticar" para verificar el estado de la impresora</p>
@@ -2327,7 +2328,7 @@
         <div id="section-mantenimiento" class="content-section">
             <div class="table-container">
                 <div class="table-header">
-                    <h2 class="table-title">🔧 Herramientas de Mantenimiento</h2>
+                    <h2 class="table-title">Herramientas de Mantenimiento</h2>
                 </div>
                 
                 <div style="padding: 2rem;">
@@ -2336,7 +2337,7 @@
                         <!-- Limpieza de Documentos -->
                         <div class="maintenance-card" style="background: white; padding: 2rem; border-radius: var(--radius); box-shadow: var(--shadow-md); border-left: 4px solid var(--warning-color);">
                             <h3 style="margin-bottom: 1.5rem; color: var(--text-primary); display: flex; align-items: center; gap: 0.5rem;">
-                                🗑️ Limpieza de Documentos
+                                Limpieza de Documentos
                             </h3>
                             <p style="color: var(--text-secondary); margin-bottom: 1.5rem;">
                                 Eliminar solicitudes de etiquetas y registros de impresión por rango de fechas.
@@ -2360,7 +2361,7 @@
                             </div>
                             
                             <button class="btn btn-warning" onclick="executeMaintenance('cleanup')" style="width: 100%;">
-                                🗑️ Ejecutar Limpieza
+                                Ejecutar Limpieza
                             </button>
                             
                             <div id="cleanup-result" class="maintenance-result" style="margin-top: 1rem; display: none;"></div>
@@ -2369,7 +2370,7 @@
                         <!-- Optimización de Base de Datos -->
                         <div class="maintenance-card" style="background: white; padding: 2rem; border-radius: var(--radius); box-shadow: var(--shadow-md); border-left: 4px solid var(--success-color);">
                             <h3 style="margin-bottom: 1.5rem; color: var(--text-primary); display: flex; align-items: center; gap: 0.5rem;">
-                                ⚡ Optimización de BD
+                                Optimización de BD
                             </h3>
                             <p style="color: var(--text-secondary); margin-bottom: 1.5rem;">
                                 Ejecutar mantenimiento automático de la base de datos.
@@ -2431,7 +2432,7 @@
                         <!-- Backup y Exportación -->
                         <div class="maintenance-card" style="background: white; padding: 2rem; border-radius: var(--radius); box-shadow: var(--shadow-md); border-left: 4px solid var(--error-color);">
                             <h3 style="margin-bottom: 1.5rem; color: var(--text-primary); display: flex; align-items: center; gap: 0.5rem;">
-                                💾 Backup y Exportación
+                                Backup y Exportación
                             </h3>
                             <p style="color: var(--text-secondary); margin-bottom: 1.5rem;">
                                 Crear respaldos y exportar datos del sistema.
@@ -2462,7 +2463,7 @@
                             </div>
                             <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 0.5rem;">
                                 <button class="btn btn-info" onclick="showExportReportModal()" style="font-size: 0.875rem;">
-                                    📈 Exportar Informe
+                                    Exportar Informe
                                 </button>
                                 <button class="btn btn-success" onclick="showImportDatabaseModal()" style="font-size: 0.875rem;">
                                     � Importar Base de Datos
@@ -2522,7 +2523,7 @@
                             <h4 style="margin-bottom: 1rem; color: var(--text-primary);">📊 Configuración de Reportes</h4>
                             <div class="form-group">
                                 <button class="btn btn-primary" onclick="backupDatabase()">
-                                    💾 Respaldar Base de Datos
+                                    Respaldar Base de Datos
                                 </button>
                             </div>
                             <div class="form-group">
@@ -2532,7 +2533,7 @@
                             </div>
                             <div class="form-group">
                                 <button class="btn btn-warning" onclick="optimizeDatabase()">
-                                    ⚡ Optimizar Base de Datos
+                                    Optimizar Base de Datos
                                 </button>
                             </div>
                         </div>
@@ -2540,231 +2541,12 @@
                 </div>
             </div>
         </div>
-        
-        <!-- Maintenance Tools Section -->
-        <div class="dashboard-section">
-            <div class="table-container">
-                <div class="table-header">
-                    <h2 class="table-title">🔧 Herramientas de Mantenimiento</h2>
-                    <p class="table-subtitle">Limpiar datos antiguos y optimizar el sistema</p>
-                </div>
-                
-                <div class="maintenance-grid">
-                    <!-- Limpieza de Solicitudes -->
-                    <div class="maintenance-card">
-                        <div class="maintenance-header">
-                            <h3>🗑️ Limpieza de Solicitudes</h3>
-                            <p>Eliminar solicitudes de etiquetas antiguas (mantiene usuarios, productos y diseños)</p>
-                        </div>
-                        
-                        <div class="maintenance-content">
-                            <div class="form-group">
-                                <label class="form-label">Eliminar solicitudes por estado:</label>
-                                <div class="checkbox-group">
-                                    <label class="checkbox-label">
-                                        <input type="checkbox" id="cleanup-completadas" checked>
-                                        <span>Completadas</span>
-                                    </label>
-                                    <label class="checkbox-label">
-                                        <input type="checkbox" id="cleanup-proceso">
-                                        <span>En proceso</span>
-                                    </label>
-                                    <label class="checkbox-label">
-                                        <input type="checkbox" id="cleanup-pendientes">
-                                        <span>Pendientes</span>
-                                    </label>
-                                    <label class="checkbox-label">
-                                        <input type="checkbox" id="cleanup-rechazadas" checked>
-                                        <span>Rechazadas</span>
-                                    </label>
-                                </div>
-                            </div>
+    
+    </div>
 
-                            <div class="form-group">
-                                <label class="form-label">Eliminar solicitudes anteriores a:</label>
-                                <input type="date" id="cleanup-date" class="form-input">
-                            </div>
-                            
-                            <div class="maintenance-stats" id="cleanup-stats">
-                                <div class="stat-item">
-                                    <span class="stat-label">Total solicitudes:</span>
-                                    <span class="stat-value" id="total-requests">Cargando...</span>
-                                </div>
-                                <div class="stat-item">
-                                    <span class="stat-label">Para eliminar:</span>
-                                    <span class="stat-value" id="requests-to-delete">0</span>
-                                </div>
-                                <div class="stat-item">
-                                    <span class="stat-label">Se conservará:</span>
-                                    <span class="stat-value" style="color: #10b981;">Usuarios, productos y diseños</span>
-                                </div>
-                            </div>
-                            
-                            <div class="maintenance-actions">
-                                <button class="btn btn-secondary" onclick="previewRequestsCleanup()">
-                                    👁️ Vista Previa
-                                </button>
-                                <button class="btn btn-warning" onclick="executeRequestsCleanup()">
-                                    🗑️ Limpiar Solicitudes
-                                </button>
-                                <button class="btn btn-danger" onclick="clearAllRequests()">
-                                    🚨 Eliminar TODAS
-                                </button>
-                            </div>
-                        </div>
-                    </div>
-                    
-                    <!-- Optimización de Base de Datos -->
-                    <div class="maintenance-card">
-                        <div class="maintenance-header">
-                            <h3>⚡ Optimización</h3>
-                            <p>Optimizar rendimiento de la base de datos</p>
-                        </div>
-                        
-                        <div class="maintenance-content">
-                            <div class="maintenance-stats" id="db-stats">
-                                <div class="stat-item">
-                                    <span class="stat-label">Tamaño BD:</span>
-                                    <span class="stat-value" id="db-size">Cargando...</span>
-                                </div>
-                                <div class="stat-item">
-                                    <span class="stat-label">Índices:</span>
-                                    <span class="stat-value" id="db-indexes">Cargando...</span>
-                                </div>
-                                <div class="stat-item">
-                                    <span class="stat-label">Última optimización:</span>
-                                    <span class="stat-value" id="last-optimization">Nunca</span>
-                                </div>
-                            </div>
-                            
-                            <div class="maintenance-actions">
-                                <button class="btn btn-info" onclick="analyzeDatabase()">
-                                    📊 Analizar BD
-                                </button>
-                                <button class="btn btn-warning" onclick="optimizeDatabase()">
-                                    ⚡ Optimizar BD
-                                </button>
-                            </div>
-                        </div>
-                    </div>
-                    
-                    <!-- Respaldos -->
-                    <div class="maintenance-card">
-                        <div class="maintenance-header">
-                            <h3>💾 Respaldos</h3>
-                            <p>Crear y gestionar respaldos del sistema</p>
-                        </div>
-                        
-                        <div class="maintenance-content">
-                            <div class="maintenance-stats" id="backup-stats">
-                                <div class="stat-item">
-                                    <span class="stat-label">Último respaldo:</span>
-                                    <span class="stat-value" id="last-backup">Nunca</span>
-                                </div>
-                                <div class="stat-item">
-                                    <span class="stat-label">Tamaño respaldo:</span>
-                                    <span class="stat-value" id="backup-size">-</span>
-                                </div>
-                            </div>
-                            
-                            <div class="maintenance-actions">
-                                <button class="btn btn-success" onclick="createBackup()">
-                                    💾 Crear Respaldo
-                                </button>
-                                <button class="btn btn-primary" onclick="downloadBackup()">
-                                    📥 Descargar
-                                </button>
-                            </div>
-                            
-                            <div class="form-group" style="margin-top: 1rem;">
-                                <label class="form-label">Restaurar respaldo:</label>
-                                <input type="file" id="backup-file" accept=".sql" class="form-input">
-                                <button class="btn btn-warning" onclick="restoreBackup()" style="margin-top: 0.5rem;">
-                                    📤 Restaurar
-                                </button>
-                            </div>
-                        </div>
-                    </div>
-                    
-                    <!-- Exportación de Datos -->
-                    <div class="maintenance-card">
-                        <div class="maintenance-header">
-                            <h3>📊 Exportación</h3>
-                            <p>Exportar datos para análisis externo</p>
-                        </div>
-                        
-                        <div class="maintenance-content">
-                            <div class="form-group">
-                                <label class="form-label">Formato de exportación:</label>
-                                <select id="export-format" class="form-select">
-                                    <option value="csv">CSV</option>
-                                    <option value="excel">Excel</option>
-                                    <option value="json">JSON</option>
-                                </select>
-                            </div>
-                            
-                            <div class="form-group">
-                                <label class="form-label">Rango de fechas:</label>
-                                <div class="date-range">
-                                    <input type="date" id="export-from" class="form-input">
-                                    <span>a</span>
-                                    <input type="date" id="export-to" class="form-input">
-                                </div>
-                            </div>
-                            
-                            <div class="maintenance-actions">
-                                <button class="btn btn-primary" onclick="exportData()">
-                                    📊 Exportar Datos
-                                </button>
-                            </div>
-                        </div>
-                    </div>
-                    
-                    <!-- Refresh de Datos -->
-                    <div class="maintenance-card">
-                        <div class="maintenance-header">
-                            <h3>🔄 Refresh de Datos</h3>
-                            <p>Forzar actualización de datos desde PostgreSQL</p>
-                        </div>
-                        
-                        <div class="maintenance-content">
-                            <div class="maintenance-stats" id="refresh-stats">
-                                <div class="stat-item">
-                                    <span class="stat-label">Último refresh:</span>
-                                    <span class="stat-value" id="last-refresh">Nunca</span>
-                                </div>
-                                <div class="stat-item">
-                                    <span class="stat-label">Estado cache:</span>
-                                    <span class="stat-value" id="cache-status" style="color: #ef4444;">Con cache</span>
-                                </div>
-                                <div class="stat-item">
-                                    <span class="stat-label">Conexión BD:</span>
-                                    <span class="stat-value" id="db-connection" style="color: #10b981;">Activa</span>
-                                </div>
-                            </div>
-                            
-                            <div class="maintenance-actions">
-                                <button class="btn btn-primary" onclick="refreshSystemData()">
-                                    🔄 Refresh Datos
-                                </button>
-                                <button class="btn btn-secondary" onclick="clearAllCache()">
-                                    🗑️ Limpiar Cache
-                                </button>
-                                <button class="btn btn-warning" onclick="diagnosticarRestauracion()">
-                                    🔍 Diagnosticar Auto-Restauración
-                                </button>
-                                <button class="btn btn-danger" onclick="deshabilitarAutoRestauracion()">
-                                    🛑 Deshabilitar Auto-Restauración
-                                </button>
-                            </div>
-                            
-                            <div id="refresh-result" class="maintenance-result" style="margin-top: 1rem; display: none;"></div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-        
+    <!-- Bitácora de Producción Section -->
+    <div id="section-bitacora" class="content-section">
+        <div id="bitacora-admin-container"></div>
     </div>
 
     <!-- Chat Section -->
@@ -2772,7 +2554,7 @@
         <div class="chat-container">
             <div class="chat-sidebar">
                 <div class="chat-header">
-                    <h3>💬 Chat Interno</h3>
+                    <h3>Chat Interno</h3>
                     <div class="user-status">
                         <span id="current-user-status" class="status-indicator status-online"></span>
                         <span id="current-user-name">Usuario</span>
@@ -2809,17 +2591,17 @@
                     <h3 id="current-channel-name">Selecciona un canal</h3>
                     <div class="chat-actions">
                         <button class="btn btn-secondary" onclick="loadChatMessages()" title="Actualizar">
-                            🔄
+                            Actualizar
                         </button>
                         <button class="btn btn-secondary" onclick="markAllAsRead()" title="Marcar todo como leído">
-                            ✓
+                            Leer
                         </button>
                     </div>
                 </div>
                 
                 <div id="chat-messages" class="chat-messages">
                     <div class="welcome-message">
-                        <h3>¡Bienvenido al Chat Interno! 👋</h3>
+                        <h3>¡Bienvenido al Chat Interno!</h3>
                         <p>Selecciona un canal de la barra lateral para comenzar a chatear con tu equipo.</p>
                     </div>
                 </div>
@@ -2830,7 +2612,7 @@
                                 placeholder="Escribe tu mensaje..." 
                                 onkeypress="handleMessageKeypress(event)"></textarea>
                         <button class="send-button" onclick="sendMessage()">
-                            📤
+                            Enviar
                         </button>
                     </div>
                     <div class="chat-input-actions">
@@ -3051,11 +2833,64 @@
                 loadProductosEspeciales();
             } else if (sectionName === 'solicitudes-especiales') {
                 loadSolicitudesEspeciales();
+            } else if (sectionName === 'bitacora') {
+                loadBitacoraAdmin();
             }
             
             // Activate selected tab
             if (window.event && window.event.target) {
                 window.event.target.classList.add('active');
+            }
+        }
+        
+        // Cargar componente de bitácora para administración
+        async function loadBitacoraAdmin() {
+            const container = document.getElementById('bitacora-admin-container');
+            if (container.innerHTML.trim() !== '') {
+                // Ya está cargado, solo refrescar
+                if (typeof window.cargarBitacoraAdmin === 'function') {
+                    window.cargarBitacoraAdmin();
+                }
+                return;
+            }
+            
+            try {
+                const response = await fetch('/components/bitacora-admin.html');
+                const html = await response.text();
+                
+                // Separar HTML y scripts
+                const tempDiv = document.createElement('div');
+                tempDiv.innerHTML = html;
+                
+                // Extraer scripts
+                const scripts = Array.from(tempDiv.querySelectorAll('script'));
+                
+                // Remover scripts del HTML
+                scripts.forEach(script => script.remove());
+                
+                // Insertar HTML
+                container.innerHTML = tempDiv.innerHTML;
+                
+                // Ejecutar scripts
+                scripts.forEach(script => {
+                    const newScript = document.createElement('script');
+                    if (script.src) {
+                        newScript.src = script.src;
+                    } else {
+                        newScript.textContent = script.textContent;
+                    }
+                    document.body.appendChild(newScript);
+                });
+                
+                console.log('✅ Componente de bitácora admin cargado');
+            } catch (error) {
+                console.error('❌ Error cargando bitácora admin:', error);
+                container.innerHTML = `
+                    <div style="padding: 40px; text-align: center; color: #ef4444;">
+                        <h3>Error cargando bitácora</h3>
+                        <p>${error.message}</p>
+                    </div>
+                `;
             }
         }
 
@@ -6277,13 +6112,6 @@
 
         // Initialize maintenance info when the page loads
         document.addEventListener('DOMContentLoaded', function() {
-            // Set default export dates
-            const today = new Date();
-            const oneMonthAgo = new Date(today.getFullYear(), today.getMonth() - 1, today.getDate());
-            
-            document.getElementById('export-from').value = oneMonthAgo.toISOString().split('T')[0];
-            document.getElementById('export-to').value = today.toISOString().split('T')[0];
-            
             // Initialize chat if user is logged in
             if (localStorage.getItem('token')) {
                 initializeChat();
@@ -6572,15 +6400,32 @@
         // Update notification badge
         async function updateNotificationBadge() {
             try {
-                const response = await fetch('/api/chat/no-leidos', {
-                    headers: {
-                        'Authorization': `Bearer ${localStorage.getItem('token')}`
-                    }
-                });
+                // Obtener userId de múltiples fuentes
+                const urlParams = new URLSearchParams(window.location.search);
+                let userId = urlParams.get('user');
+                
+                // Si no está en URL, intentar desde localStorage
+                if (!userId) {
+                    const userData = JSON.parse(localStorage.getItem('userData') || '{}');
+                    userId = userData.id_usuario;
+                }
+                
+                // Si aún no hay userId, intentar currentUser
+                if (!userId) {
+                    const currentUser = JSON.parse(localStorage.getItem('currentUser') || '{}');
+                    userId = currentUser.id_usuario;
+                }
+                
+                // Default a admin si no se encuentra
+                if (!userId) {
+                    userId = '1';
+                }
+                
+                const response = await fetch(`/api/chat/no-leidos?userId=${userId}`);
 
                 if (response.ok) {
-                    const noLeidos = await response.json();
-                    const totalNoLeidos = noLeidos.reduce((sum, canal) => sum + canal.mensajes_no_leidos, 0);
+                    const data = await response.json();
+                    const totalNoLeidos = data.total || 0;
                     
                     const badge = document.getElementById('chat-badge');
                     if (totalNoLeidos > 0) {

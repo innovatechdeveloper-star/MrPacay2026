@@ -166,7 +166,7 @@ CREATE TABLE IF NOT EXISTS gestion_impresora (
     etiquetas_impresas_dia INTEGER DEFAULT 0,
     tiempo_respuesta_ms INTEGER DEFAULT 0,
     usuario_responsable INTEGER,
-    ip_impresora INET DEFAULT '192.168.1.34'::inet,
+    ip_impresora INET DEFAULT '192.168.15.34'::inet,
     puerto_impresora INTEGER DEFAULT 9100,
     version_firmware VARCHAR(50),
     creado_por VARCHAR(100),

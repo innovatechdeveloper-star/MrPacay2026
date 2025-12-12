@@ -53,3 +53,9 @@ build/
 # Daemon ejecutables
 daemon/*.exe
 daemon/*.dll
+
+# Archivos multimedia pesados (videos)
+*.mp4
+*.webm
+founds/animations-info/*.mp4
+founds/animations/*.webm

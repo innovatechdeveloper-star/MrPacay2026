@@ -1,0 +1,646 @@
+<!-- ========================================== -->
+<!-- COMPONENTE: REPORTES PARA EL DUEÑO -->
+<!-- ========================================== -->
+
+<style>
+.seccion-reportes {
+    background: white;
+    border-radius: 12px;
+    padding: 30px;
+    margin: 20px 0;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+.reportes-header {
+    margin-bottom: 24px;
+}
+
+.reportes-header h2 {
+    color: #1e293b;
+    font-size: 24px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.reportes-header p {
+    color: #64748b;
+    margin-top: 8px;
+}
+
+.filtros-reporte {
+    background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%);
+    padding: 24px;
+    border-radius: 12px;
+    margin-bottom: 24px;
+}
+
+.filtros-reporte h3 {
+    color: #1e293b;
+    font-size: 18px;
+    margin-bottom: 16px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.filtros-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+    gap: 16px;
+    margin-bottom: 20px;
+}
+
+.filtro-item {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.filtro-item label {
+    font-size: 14px;
+    font-weight: 600;
+    color: #475569;
+}
+
+.filtro-item input,
+.filtro-item select {
+    padding: 12px;
+    border: 2px solid #cbd5e1;
+    border-radius: 8px;
+    font-size: 14px;
+    background: white;
+    transition: all 0.2s;
+}
+
+.filtro-item input:focus,
+.filtro-item select:focus {
+    outline: none;
+    border-color: #3b82f6;
+    box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+}
+
+.acciones-reporte {
+    display: flex;
+    gap: 12px;
+    justify-content: flex-end;
+    flex-wrap: wrap;
+}
+
+.btn-reporte {
+    padding: 12px 24px;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    font-weight: 600;
+    font-size: 14px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    transition: all 0.3s ease;
+}
+
+.btn-generar-reporte {
+    background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%);
+    color: white;
+}
+
+.btn-generar-reporte:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(59, 130, 246, 0.4);
+}
+
+.btn-exportar-excel {
+    background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+    color: white;
+}
+
+.btn-exportar-excel:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(16, 185, 129, 0.4);
+}
+
+.btn-limpiar-filtros {
+    background: #e2e8f0;
+    color: #64748b;
+}
+
+.btn-limpiar-filtros:hover {
+    background: #cbd5e1;
+}
+
+/* Resultados del reporte */
+.resultados-reporte {
+    margin-top: 24px;
+}
+
+.estadisticas-resumen {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 16px;
+    margin-bottom: 24px;
+}
+
+.stat-card {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+    padding: 20px;
+    border-radius: 12px;
+    box-shadow: 0 4px 12px rgba(102, 126, 234, 0.3);
+}
+
+.stat-card.success {
+    background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+}
+
+.stat-card.warning {
+    background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);
+}
+
+.stat-card.error {
+    background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
+}
+
+.stat-card-titulo {
+    font-size: 14px;
+    opacity: 0.9;
+    margin-bottom: 8px;
+}
+
+.stat-card-valor {
+    font-size: 32px;
+    font-weight: 700;
+}
+
+.tabla-reporte {
+    width: 100%;
+    border-collapse: collapse;
+    overflow-x: auto;
+    display: block;
+    margin-top: 20px;
+}
+
+.tabla-reporte thead {
+    background: linear-gradient(135deg, #1e293b 0%, #334155 100%);
+    color: white;
+}
+
+.tabla-reporte th,
+.tabla-reporte td {
+    padding: 12px;
+    text-align: left;
+    border-bottom: 1px solid #e2e8f0;
+}
+
+.tabla-reporte tbody tr:hover {
+    background: #f8fafc;
+}
+
+.tabla-reporte tbody tr:nth-child(even) {
+    background: #fafbfc;
+}
+
+/* Loading */
+.loading-reporte {
+    text-align: center;
+    padding: 60px 20px;
+    color: #94a3b8;
+}
+
+.spinner {
+    width: 50px;
+    height: 50px;
+    border: 4px solid #e2e8f0;
+    border-top: 4px solid #3b82f6;
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+    margin: 0 auto 20px;
+}
+
+@keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
+
+.mensaje-vacio {
+    text-align: center;
+    padding: 60px 20px;
+    color: #94a3b8;
+    font-size: 16px;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+    .filtros-grid {
+        grid-template-columns: 1fr;
+    }
+    
+    .acciones-reporte {
+        flex-direction: column;
+    }
+    
+    .btn-reporte {
+        width: 100%;
+        justify-content: center;
+    }
+    
+    .estadisticas-resumen {
+        grid-template-columns: 1fr;
+    }
+    
+    .tabla-reporte {
+        font-size: 12px;
+    }
+    
+    .tabla-reporte th,
+    .tabla-reporte td {
+        padding: 8px 4px;
+    }
+}
+</style>
+
+<!-- Sección de Reportes -->
+<div class="seccion-reportes">
+    <div class="reportes-header">
+        <h2>
+            📊 Reportes de Producción
+        </h2>
+        <p>Genera reportes personalizados con filtros avanzados y exportación a Excel</p>
+    </div>
+    
+    <!-- Filtros -->
+    <div class="filtros-reporte">
+        <h3>🔍 Filtros de Búsqueda</h3>
+        
+        <div class="filtros-grid">
+            <div class="filtro-item">
+                <label>📅 Fecha Inicio</label>
+                <input type="date" id="reporte-fecha-inicio" />
+            </div>
+            
+            <div class="filtro-item">
+                <label>📅 Fecha Fin</label>
+                <input type="date" id="reporte-fecha-fin" />
+            </div>
+            
+            <div class="filtro-item">
+                <label>👤 Usuario/Costurera</label>
+                <select id="reporte-usuario">
+                    <option value="">Todos los usuarios</option>
+                </select>
+            </div>
+            
+            <div class="filtro-item">
+                <label>📦 Producto</label>
+                <select id="reporte-producto">
+                    <option value="">Todos los productos</option>
+                </select>
+            </div>
+            
+            <div class="filtro-item">
+                <label>🏷️ Estado</label>
+                <select id="reporte-estado">
+                    <option value="">Todos los estados</option>
+                    <option value="ACTIVO">✅ Activo</option>
+                    <option value="EDITADO">✏️ Editado</option>
+                    <option value="ANULADO">🚫 Anulado</option>
+                </select>
+            </div>
+        </div>
+        
+        <div class="acciones-reporte">
+            <button class="btn-reporte btn-limpiar-filtros" onclick="limpiarFiltrosReporte()">
+                🔄 Limpiar Filtros
+            </button>
+            <button class="btn-reporte btn-generar-reporte" onclick="generarReporte()">
+                📊 Generar Reporte
+            </button>
+            <button class="btn-reporte btn-exportar-excel" onclick="exportarReporteExcel()" style="display: none;" id="btn-exportar-visible">
+                📥 Exportar a Excel
+            </button>
+        </div>
+    </div>
+    
+    <!-- Resultados -->
+    <div class="resultados-reporte" id="resultados-reporte" style="display: none;">
+        <h3 style="color: #1e293b; margin-bottom: 16px;">📈 Estadísticas Resumidas</h3>
+        
+        <div class="estadisticas-resumen" id="estadisticas-resumen">
+            <!-- Se llenarán dinámicamente -->
+        </div>
+        
+        <h3 style="color: #1e293b; margin-top: 32px; margin-bottom: 16px;">📋 Detalle de Registros</h3>
+        
+        <div style="overflow-x: auto;">
+            <table class="tabla-reporte">
+                <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>Fecha</th>
+                        <th>Usuario</th>
+                        <th>Producto</th>
+                        <th>Cantidad</th>
+                        <th>Estado</th>
+                        <th>Motivo/Observación</th>
+                        <th>Modificado por</th>
+                    </tr>
+                </thead>
+                <tbody id="tabla-reporte-body">
+                    <!-- Se llenará dinámicamente -->
+                </tbody>
+            </table>
+        </div>
+    </div>
+    
+    <div class="loading-reporte" id="loading-reporte" style="display: none;">
+        <div class="spinner"></div>
+        <p>Generando reporte...</p>
+    </div>
+    
+    <div class="mensaje-vacio" id="mensaje-vacio-reporte" style="display: none;">
+        📊 Selecciona los filtros y haz clic en "Generar Reporte" para ver los resultados
+    </div>
+</div>
+
+<script>
+let datosReporteActual = null;
+
+// ========================================
+// INICIALIZACIÓN
+// ========================================
+async function inicializarReportes() {
+    console.log('🚀 Inicializando módulo de reportes...');
+    
+    try {
+        // Cargar usuarios para filtro
+        const usuariosResponse = await fetch('/api/usuarios');
+        const usuariosResult = await usuariosResponse.json();
+        const usuarios = usuariosResult.data || usuariosResult.usuarios || usuariosResult;
+        
+        const selectorUsuario = document.getElementById('reporte-usuario');
+        if (Array.isArray(usuarios)) {
+            usuarios.forEach(u => {
+                const option = document.createElement('option');
+                option.value = u.id_usuario;
+                option.textContent = `${u.nombre} ${u.apellido} (${u.rol})`;
+                selectorUsuario.appendChild(option);
+            });
+        }
+        
+        // Cargar productos para filtro
+        const productosResponse = await fetch('/api/productos?all=true');
+        const productosResult = await productosResponse.json();
+        const productos = productosResult.data || productosResult.productos || productosResult;
+        
+        const selectorProducto = document.getElementById('reporte-producto');
+        if (Array.isArray(productos)) {
+            productos.forEach(p => {
+                const option = document.createElement('option');
+                option.value = p.id_producto;
+                option.textContent = p.nombre_producto;
+                selectorProducto.appendChild(option);
+            });
+        }
+        
+        // Establecer fechas por defecto (último mes)
+        const hoy = new Date();
+        const haceUnMes = new Date(hoy);
+        haceUnMes.setMonth(haceUnMes.getMonth() - 1);
+        
+        document.getElementById('reporte-fecha-inicio').valueAsDate = haceUnMes;
+        document.getElementById('reporte-fecha-fin').valueAsDate = hoy;
+        
+        // Mostrar mensaje inicial
+        document.getElementById('mensaje-vacio-reporte').style.display = 'block';
+        
+        console.log('✅ Reportes inicializados');
+    } catch (error) {
+        console.error('❌ Error inicializando reportes:', error);
+    }
+}
+
+// ========================================
+// GENERAR REPORTE
+// ========================================
+async function generarReporte() {
+    console.log('📊 Generando reporte...');
+    
+    // Mostrar loading
+    document.getElementById('resultados-reporte').style.display = 'none';
+    document.getElementById('mensaje-vacio-reporte').style.display = 'none';
+    document.getElementById('loading-reporte').style.display = 'block';
+    document.getElementById('btn-exportar-visible').style.display = 'none';
+    
+    try {
+        const userEmail = localStorage.getItem('user_email') || 'admin@sistema.com';
+        
+        // Construir URL con filtros
+        const params = new URLSearchParams();
+        
+        const fechaInicio = document.getElementById('reporte-fecha-inicio').value;
+        const fechaFin = document.getElementById('reporte-fecha-fin').value;
+        const usuario = document.getElementById('reporte-usuario').value;
+        const producto = document.getElementById('reporte-producto').value;
+        const estado = document.getElementById('reporte-estado').value;
+        
+        if (fechaInicio) params.append('fecha_inicio', fechaInicio);
+        if (fechaFin) params.append('fecha_fin', fechaFin);
+        if (usuario) params.append('id_usuario', usuario);
+        if (producto) params.append('id_producto', producto);
+        if (estado) params.append('estado', estado);
+        
+        const response = await fetch(`/api/bitacora/reporte?${params.toString()}`, {
+            headers: {
+                'user-email': userEmail
+            }
+        });
+        
+        const result = await response.json();
+        datosReporteActual = result.data || [];
+        
+        // Ocultar loading
+        document.getElementById('loading-reporte').style.display = 'none';
+        
+        if (datosReporteActual.length === 0) {
+            document.getElementById('mensaje-vacio-reporte').innerHTML = '📭 No se encontraron registros con los filtros seleccionados';
+            document.getElementById('mensaje-vacio-reporte').style.display = 'block';
+            return;
+        }
+        
+        // Calcular estadísticas
+        calcularEstadisticas(datosReporteActual);
+        
+        // Renderizar tabla
+        renderizarTablaReporte(datosReporteActual);
+        
+        // Mostrar resultados
+        document.getElementById('resultados-reporte').style.display = 'block';
+        document.getElementById('btn-exportar-visible').style.display = 'flex';
+        
+        console.log(`✅ Reporte generado: ${datosReporteActual.length} registros`);
+        
+    } catch (error) {
+        console.error('❌ Error generando reporte:', error);
+        document.getElementById('loading-reporte').style.display = 'none';
+        document.getElementById('mensaje-vacio-reporte').innerHTML = '❌ Error generando el reporte. Intenta nuevamente.';
+        document.getElementById('mensaje-vacio-reporte').style.display = 'block';
+    }
+}
+
+function calcularEstadisticas(datos) {
+    const totalRegistros = datos.length;
+    const totalActivos = datos.filter(d => d.estado === 'ACTIVO').length;
+    const totalEditados = datos.filter(d => d.estado === 'EDITADO').length;
+    const totalAnulados = datos.filter(d => d.estado === 'ANULADO').length;
+    
+    // Calcular total de cantidad producida (solo activos y editados)
+    const totalProduccion = datos
+        .filter(d => d.estado === 'ACTIVO' || d.estado === 'EDITADO')
+        .reduce((sum, d) => sum + parseInt(d.cantidad || 0), 0);
+    
+    const container = document.getElementById('estadisticas-resumen');
+    container.innerHTML = `
+        <div class="stat-card">
+            <div class="stat-card-titulo">Total Registros</div>
+            <div class="stat-card-valor">${totalRegistros}</div>
+        </div>
+        
+        <div class="stat-card success">
+            <div class="stat-card-titulo">Total Producción</div>
+            <div class="stat-card-valor">${totalProduccion.toLocaleString()}</div>
+        </div>
+        
+        <div class="stat-card success">
+            <div class="stat-card-titulo">Registros Activos</div>
+            <div class="stat-card-valor">${totalActivos}</div>
+        </div>
+        
+        <div class="stat-card warning">
+            <div class="stat-card-titulo">Registros Editados</div>
+            <div class="stat-card-valor">${totalEditados}</div>
+        </div>
+        
+        <div class="stat-card error">
+            <div class="stat-card-titulo">Registros Anulados</div>
+            <div class="stat-card-valor">${totalAnulados}</div>
+        </div>
+    `;
+}
+
+function renderizarTablaReporte(datos) {
+    const tbody = document.getElementById('tabla-reporte-body');
+    
+    tbody.innerHTML = datos.map(reg => {
+        const fecha = new Date(reg.fecha).toLocaleString('es-PE', {
+            day: '2-digit',
+            month: '2-digit',
+            year: 'numeric',
+            hour: '2-digit',
+            minute: '2-digit'
+        });
+        
+        let estadoBadge = '';
+        if (reg.estado === 'ACTIVO') {
+            estadoBadge = '<span class="estado-badge estado-activo">✅ ACTIVO</span>';
+        } else if (reg.estado === 'EDITADO') {
+            estadoBadge = '<span class="estado-badge estado-editado">✏️ EDITADO</span>';
+        } else if (reg.estado === 'ANULADO') {
+            estadoBadge = '<span class="estado-badge estado-anulado">🚫 ANULADO</span>';
+        }
+        
+        return `
+            <tr>
+                <td><strong>#${reg.id}</strong></td>
+                <td>${fecha}</td>
+                <td>${reg.usuario}</td>
+                <td>${reg.nombre_producto}</td>
+                <td><strong>${reg.cantidad}</strong></td>
+                <td>${estadoBadge}</td>
+                <td style="max-width: 200px; font-size: 12px;">${reg.motivo_cambio || '-'}</td>
+                <td>${reg.modificado_por || '-'}</td>
+            </tr>
+        `;
+    }).join('');
+}
+
+// ========================================
+// EXPORTAR A EXCEL
+// ========================================
+async function exportarReporteExcel() {
+    if (!datosReporteActual || datosReporteActual.length === 0) {
+        alert('No hay datos para exportar');
+        return;
+    }
+    
+    console.log('📥 Exportando reporte a Excel...');
+    
+    // Por ahora, descargar como CSV (más simple)
+    // Para Excel real, necesitarías una librería como ExcelJS en el backend
+    
+    const headers = ['ID', 'Fecha', 'Usuario', 'Producto', 'Cantidad', 'Estado', 'Motivo', 'Modificado Por'];
+    const rows = datosReporteActual.map(reg => [
+        reg.id,
+        new Date(reg.fecha).toLocaleString('es-PE'),
+        reg.usuario,
+        reg.nombre_producto,
+        reg.cantidad,
+        reg.estado,
+        reg.motivo_cambio || '',
+        reg.modificado_por || ''
+    ]);
+    
+    let csvContent = headers.join(',') + '\n';
+    rows.forEach(row => {
+        csvContent += row.map(cell => `"${cell}"`).join(',') + '\n';
+    });
+    
+    const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+    const link = document.createElement('a');
+    const url = URL.createObjectURL(blob);
+    
+    const fechaActual = new Date().toISOString().split('T')[0];
+    link.setAttribute('href', url);
+    link.setAttribute('download', `reporte_produccion_${fechaActual}.csv`);
+    link.style.visibility = 'hidden';
+    
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+    
+    console.log('✅ Reporte exportado como CSV');
+    alert('✅ Reporte exportado exitosamente como CSV');
+}
+
+// ========================================
+// LIMPIAR FILTROS
+// ========================================
+function limpiarFiltrosReporte() {
+    // Restablecer fechas al último mes
+    const hoy = new Date();
+    const haceUnMes = new Date(hoy);
+    haceUnMes.setMonth(haceUnMes.getMonth() - 1);
+    
+    document.getElementById('reporte-fecha-inicio').valueAsDate = haceUnMes;
+    document.getElementById('reporte-fecha-fin').valueAsDate = hoy;
+    document.getElementById('reporte-usuario').value = '';
+    document.getElementById('reporte-producto').value = '';
+    document.getElementById('reporte-estado').value = '';
+    
+    // Ocultar resultados
+    document.getElementById('resultados-reporte').style.display = 'none';
+    document.getElementById('btn-exportar-visible').style.display = 'none';
+    document.getElementById('mensaje-vacio-reporte').innerHTML = '📊 Selecciona los filtros y haz clic en "Generar Reporte" para ver los resultados';
+    document.getElementById('mensaje-vacio-reporte').style.display = 'block';
+    
+    datosReporteActual = null;
+    
+    console.log('🔄 Filtros limpiados');
+}
+
+// Inicializar cuando cargue la página
+if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', inicializarReportes);
+} else {
+    inicializarReportes();
+}
+</script>

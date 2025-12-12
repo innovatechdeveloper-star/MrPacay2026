@@ -4177,13 +4177,32 @@
         // Update notification badge
         async function updateNotificationBadgeCosturera() {
             try {
-                const response = await fetch('/api/chat/no-leidos', {
-                    headers: getAuthHeaders()
-                });
+                // Obtener userId de múltiples fuentes
+                const urlParams = new URLSearchParams(window.location.search);
+                let userId = urlParams.get('user');
+                
+                // Si no está en URL, intentar desde localStorage
+                if (!userId) {
+                    const userData = JSON.parse(localStorage.getItem('userData') || '{}');
+                    userId = userData.id_usuario;
+                }
+                
+                // Si aún no hay userId, intentar currentUser
+                if (!userId) {
+                    const currentUser = JSON.parse(localStorage.getItem('currentUser') || '{}');
+                    userId = currentUser.id_usuario;
+                }
+                
+                if (!userId) {
+                    console.log('No se pudo obtener userId para notificaciones');
+                    return;
+                }
+                
+                const response = await fetch(`/api/chat/no-leidos?userId=${userId}`);
 
                 if (response.ok) {
-                    const noLeidos = await response.json();
-                    const totalNoLeidos = noLeidos.reduce((sum, canal) => sum + canal.mensajes_no_leidos, 0);
+                    const data = await response.json();
+                    const totalNoLeidos = data.total || 0;
                     
                     const badge = document.getElementById('chat-badge-costurera');
                     if (totalNoLeidos > 0) {
@@ -4519,5 +4538,243 @@
         <span class="icon">?</span>
         <span class="tooltip">Ayuda</span>
     </a>
+
+    <!-- Botón Flotante: Bitácora de Producción -->
+    <button class="bitacora-button" onclick="toggleBitacoraModal()">
+        <span class="icon">📋</span>
+        <span class="tooltip">Bitácora de Producción</span>
+    </button>
+
+    <!-- Modal: Bitácora de Producción -->
+    <div id="modal-bitacora-fullscreen" class="modal-bitacora-fullscreen">
+        <div class="modal-bitacora-content">
+            <div class="modal-bitacora-header">
+                <h2>📋 Bitácora de Producción</h2>
+                <button class="btn-cerrar-bitacora" onclick="toggleBitacoraModal()">✕</button>
+            </div>
+            <div id="bitacora-component"></div>
+        </div>
+    </div>
+
+    <script>
+        // Toggle modal de bitácora
+        function toggleBitacoraModal() {
+            const modal = document.getElementById('modal-bitacora-fullscreen');
+            modal.classList.toggle('active');
+            
+            // Si se abre el modal, cargar datos
+            if (modal.classList.contains('active')) {
+                if (typeof cargarBitacora === 'function') {
+                    cargarBitacora();
+                }
+            }
+        }
+
+        // Cargar componente de bitácora
+        fetch('/components/bitacora-produccion.html')
+            .then(response => response.text())
+            .then(html => {
+                // Separar HTML y Scripts
+                const tempDiv = document.createElement('div');
+                tempDiv.innerHTML = html;
+                
+                // Insertar HTML
+                const container = document.getElementById('bitacora-component');
+                container.innerHTML = '';
+                
+                // Copiar todos los nodos excepto scripts
+                Array.from(tempDiv.children).forEach(child => {
+                    if (child.tagName !== 'SCRIPT') {
+                        container.appendChild(child.cloneNode(true));
+                    }
+                });
+                
+                // Ejecutar scripts
+                const scripts = tempDiv.querySelectorAll('script');
+                scripts.forEach(oldScript => {
+                    const newScript = document.createElement('script');
+                    if (oldScript.src) {
+                        newScript.src = oldScript.src;
+                    } else {
+                        newScript.textContent = oldScript.textContent;
+                    }
+                    document.body.appendChild(newScript);
+                });
+                
+                console.log('✅ Componente de bitácora cargado');
+            })
+            .catch(error => console.error('❌ Error cargando bitácora:', error));
+    </script>
+
+    <style>
+        /* Botón flotante de bitácora */
+        .bitacora-button {
+            position: fixed;
+            bottom: 170px; /* Debajo del botón de ayuda */
+            right: 24px;
+            width: 56px;
+            height: 56px;
+            background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 4px 15px rgba(16, 185, 129, 0.4);
+            cursor: pointer;
+            transition: all 0.3s ease;
+            z-index: 1069;
+            border: 3px solid rgba(255, 255, 255, 0.3);
+        }
+
+        .bitacora-button:hover {
+            transform: scale(1.1) rotate(5deg);
+            box-shadow: 0 6px 20px rgba(16, 185, 129, 0.6);
+            border-color: rgba(255, 255, 255, 0.6);
+        }
+
+        .bitacora-button .icon {
+            font-size: 26px;
+        }
+
+        .bitacora-button .tooltip {
+            position: absolute;
+            right: 70px;
+            background: rgba(0, 0, 0, 0.85);
+            color: white;
+            padding: 8px 15px;
+            border-radius: 8px;
+            font-size: 13px;
+            white-space: nowrap;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.3s ease;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+        }
+
+        .bitacora-button:hover .tooltip {
+            opacity: 1;
+        }
+
+        .bitacora-button .tooltip::after {
+            content: '';
+            position: absolute;
+            right: -8px;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 0;
+            height: 0;
+            border-left: 8px solid rgba(0, 0, 0, 0.85);
+            border-top: 8px solid transparent;
+            border-bottom: 8px solid transparent;
+        }
+
+        /* Modal fullscreen de bitácora */
+        .modal-bitacora-fullscreen {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.7);
+            z-index: 10000;
+            backdrop-filter: blur(5px);
+            animation: fadeIn 0.3s ease;
+        }
+
+        .modal-bitacora-fullscreen.active {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .modal-bitacora-content {
+            background: white;
+            width: 95%;
+            max-width: 1400px;
+            height: 90vh;
+            border-radius: 20px;
+            overflow-y: auto;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.4);
+            animation: slideUp 0.3s ease;
+        }
+
+        .modal-bitacora-header {
+            position: sticky;
+            top: 0;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 20px 30px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-radius: 20px 20px 0 0;
+            z-index: 10;
+        }
+
+        .modal-bitacora-header h2 {
+            margin: 0;
+            font-size: 24px;
+        }
+
+        .btn-cerrar-bitacora {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            border: none;
+            background: rgba(255, 255, 255, 0.2);
+            color: white;
+            font-size: 24px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .btn-cerrar-bitacora:hover {
+            background: rgba(255, 255, 255, 0.3);
+            transform: rotate(90deg);
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        @keyframes slideUp {
+            from {
+                transform: translateY(50px);
+                opacity: 0;
+            }
+            to {
+                transform: translateY(0);
+                opacity: 1;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .bitacora-button {
+                width: 48px;
+                height: 48px;
+                bottom: 145px;
+                right: 16px;
+            }
+
+            .bitacora-button .icon {
+                font-size: 22px;
+            }
+
+            .modal-bitacora-content {
+                width: 100%;
+                height: 100vh;
+                border-radius: 0;
+            }
+
+            .modal-bitacora-header {
+                border-radius: 0;
+            }
+        }
+    </style>
 </body>
 </html>

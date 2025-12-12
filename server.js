@@ -14,6 +14,8 @@ const os = require('os'); // Para obtener interfaces de red
 const fs = require('fs'); // Para leer configuraciones
 const logger = require('./logger'); // Sistema de logging profesional
 const ExcelJS = require('exceljs'); // Para generación de Excel
+const NodeCache = require('node-cache'); // Sistema de caché inteligente
+const compression = require('compression'); // Compresión de respuestas
 
 // =============================================
 // FUNCIÓN PARA LEER CONFIGURACIÓN DINÁMICA
@@ -25,7 +27,7 @@ function loadSystemConfig() {
     const defaultConfig = {
         zebra: {
             MODEL: 'ZD230',
-            PRINTER_IP: '192.168.1.34',
+            PRINTER_IP: '192.168.15.34',
             PORT_NUMBER: 9100,
             DPI: 203,
             WIDTH_MM: 100,
@@ -174,7 +176,7 @@ const ZEBRA_CONFIG = {
 
 console.log('✅ Configuración para Zebra ZD230:');
 console.log('   MODELO: ZDesigner ZD230-203dpi ZPL');
-console.log('   PUERTO: ZEBRA_ZD230_34 (192.168.1.34:9100)');
+console.log('   PUERTO: ZEBRA_ZD230_34 (192.168.15.34:9100)');
 console.log('   DPI: 203');
 
 // =============================================
@@ -196,6 +198,32 @@ pool = new Pool({
     statement_timeout: 60000,   // Timeout de 60s para consultas (prevenir bloqueos)
     query_timeout: 60000,       // Timeout de 60s para queries
 });
+
+// =============================================
+// 🚀 SISTEMA DE CACHÉ INTELIGENTE
+// =============================================
+const cache = new NodeCache({
+    stdTTL: 300,           // 5 minutos por defecto
+    checkperiod: 60,       // Revisar cada 60 segundos
+    useClones: false       // Más rápido, no clona objetos
+});
+
+// Configuración de TTL por tipo de dato
+const CACHE_TTL = {
+    PRODUCTOS: 3600,       // 1 hora - casi nunca cambian
+    USUARIOS: 1800,        // 30 minutos - cambian poco
+    DEPARTAMENTOS: 3600,   // 1 hora
+    ESTADISTICAS_DIA: 300, // 5 minutos
+    BITACORA: 60,          // 1 minuto - cambia frecuente
+    SOLICITUDES: 30,       // 30 segundos - cambia muy frecuente
+    IMPRESORAS: 10         // 10 segundos - estado en tiempo real
+};
+
+console.log('✅ Sistema de caché inicializado');
+console.log('   📦 Productos: 1 hora');
+console.log('   👥 Usuarios: 30 minutos');
+console.log('   📊 Estadísticas: 5 minutos');
+console.log('   📋 Bitácora: 1 minuto');
 
 console.log(`🗄️  PostgreSQL: ${CONFIG.database.USER}@${CONFIG.database.HOST}:${CONFIG.database.PORT}/${CONFIG.database.DATABASE}`);
 logger.dbConnect('success', {
@@ -229,45 +257,36 @@ let printQueue = [];
 let printerConnected = false;
 let isProcessingQueue = false; // 🆕 Bandera para evitar múltiples procesos simultáneos
 
-// 💾 CACHÉ EN MEMORIA para datos que no cambian frecuentemente
-const cache = {
-    productos: { data: null, timestamp: null, ttl: 300000 }, // 5 minutos
-    usuarios: { data: null, timestamp: null, ttl: 300000 },  // 5 minutos
-    entidades: { data: null, timestamp: null, ttl: 600000 }, // 10 minutos
-};
+// Helper: Generar clave de caché con parámetros
+function getCacheKey(prefix, params = {}) {
+    const sortedKeys = Object.keys(params).sort();
+    const paramString = sortedKeys.map(key => `${key}:${params[key]}`).join('|');
+    return paramString ? `${prefix}:${paramString}` : prefix;
+}
 
-// Función para obtener datos del caché
+// Helper: Obtener desde caché
 function getFromCache(key) {
-    const cached = cache[key];
-    if (!cached || !cached.data || !cached.timestamp) return null;
-    
-    const age = Date.now() - cached.timestamp;
-    if (age > cached.ttl) {
-        console.log(`⚠️ Caché expirado para ${key} (${Math.round(age/1000)}s)`);
-        return null;
+    const cached = cache.get(key);
+    if (cached) {
+        console.log(`✅ Cache HIT: ${key}`);
+        return cached;
     }
-    
-    console.log(`✅ Cache HIT para ${key} (${Math.round(age/1000)}s de antigüedad)`);
-    return cached.data;
+    console.log(`❌ Cache MISS: ${key}`);
+    return null;
 }
 
-// Función para guardar en caché
-function setCache(key, data) {
-    cache[key] = {
-        data: data,
-        timestamp: Date.now(),
-        ttl: cache[key].ttl
-    };
-    console.log(`💾 Datos guardados en caché: ${key} (${data?.length || 0} registros)`);
+// Helper: Guardar en caché con TTL específico
+function setInCache(key, data, ttl = CACHE_TTL.PRODUCTOS) {
+    cache.set(key, data, ttl);
+    console.log(`💾 Cache SET: ${key} (TTL: ${ttl}s, Size: ${JSON.stringify(data).length} bytes)`);
 }
 
-// Función para invalidar caché
-function invalidateCache(key) {
-    if (cache[key]) {
-        cache[key].data = null;
-        cache[key].timestamp = null;
-        console.log(`🗑️ Caché invalidado: ${key}`);
-    }
+// Helper: Invalidar patrón de caché
+function invalidateCachePattern(pattern) {
+    const keys = cache.keys();
+    const matched = keys.filter(key => key.includes(pattern));
+    matched.forEach(key => cache.del(key));
+    console.log(`🗑️ Cache INVALIDADO: ${pattern} (${matched.length} claves eliminadas)`);
 }
 
 // =============================================
@@ -306,53 +325,70 @@ function generateDoubleZPL(data, config = {}) {
     // Asegurar que tenemos unidad_medida o usar default
     const um = unidad_medida || 'UNIDAD';
     
-    // 🎯 Dividir el nombre del producto en hasta 4 líneas de forma inteligente
-    // Límite: 17 caracteres por línea (basado en "FUNDAS DE COLCHO")
-    const palabras = nombre_producto.split(' ');
+    // 🎯 DIVISIÓN INTELIGENTE CON WORD WRAP - Respeta palabras completas
+    // Límite: 15 caracteres por línea (tu ejemplo: "FUNDAS DE" = 9 chars OK, "COLCHON" no cabe)
+    const palabras = nombre_producto.split(' ').filter(p => p.length > 0); // Eliminar espacios vacíos
     const lineasNombre = [];
     
-    const MAX_CHARS_POR_LINEA = 17; // Basado en tu ejemplo "FUNDAS DE COLCHO"
+    const MAX_CHARS_POR_LINEA = 15; // Máximo de caracteres que entran por línea
     
-    // Función helper para agregar palabras a una línea
-    function construirLinea(palabrasRestantes, maxChars) {
-        let linea = '';
-        let indice = 0;
+    console.log(`📝 [WORD WRAP] Procesando: "${nombre_producto}" (${nombre_producto.length} chars total)`);
+    console.log(`📝 [WORD WRAP] Palabras detectadas: [${palabras.map(p => `"${p}"`).join(', ')}]`);
+    console.log(`📝 [WORD WRAP] Límite por línea: ${MAX_CHARS_POR_LINEA} caracteres`);
+    
+    // 🔥 ALGORITMO DE WORD WRAP INTELIGENTE
+    let lineaActual = '';
+    let palabraIndex = 0;
+    
+    while (palabraIndex < palabras.length && lineasNombre.length < 4) {
+        const palabra = palabras[palabraIndex];
         
-        for (let i = 0; i < palabrasRestantes.length; i++) {
-            const palabra = palabrasRestantes[i];
-            const test = linea + (linea ? ' ' : '') + palabra;
+        // Caso especial: palabra sola más larga que el límite
+        if (palabra.length > MAX_CHARS_POR_LINEA) {
+            console.log(`   ⚠️ Palabra "${palabra}" (${palabra.length} chars) excede límite ${MAX_CHARS_POR_LINEA}`);
             
-            // Si la palabra sola es más larga que maxChars, la truncamos
-            if (palabra.length > maxChars && linea === '') {
-                linea = palabra.substring(0, maxChars);
-                indice = i + 1;
-                break;
-            }
-            
-            // Si agregando esta palabra no excedemos el límite, la agregamos
-            if (test.length <= maxChars) {
-                linea = test;
-                indice = i + 1;
+            if (lineaActual.length === 0) {
+                // Si la línea está vacía, forzar la palabra truncada
+                lineasNombre.push(palabra.substring(0, MAX_CHARS_POR_LINEA));
+                console.log(`   ✂️ Línea ${lineasNombre.length}: "${lineasNombre[lineasNombre.length - 1]}" (truncada)`);
+                palabraIndex++;
+                continue;
             } else {
-                // Esta palabra no cabe, terminamos esta línea
-                break;
+                // Si hay contenido, guardar línea actual y procesar palabra en siguiente iteración
+                lineasNombre.push(lineaActual);
+                console.log(`   ✅ Línea ${lineasNombre.length}: "${lineasNombre[lineasNombre.length - 1]}" (${lineasNombre[lineasNombre.length - 1].length} chars)`);
+                lineaActual = '';
+                continue;
             }
         }
         
-        return { linea, indice };
+        // Probar agregar palabra a línea actual
+        const pruebaLinea = lineaActual.length === 0 
+            ? palabra 
+            : `${lineaActual} ${palabra}`;
+        
+        console.log(`   🔍 Probando: "${pruebaLinea}" (${pruebaLinea.length} chars vs ${MAX_CHARS_POR_LINEA} max)`);
+        
+        if (pruebaLinea.length <= MAX_CHARS_POR_LINEA) {
+            // ✅ Cabe! Agregar palabra a línea actual
+            lineaActual = pruebaLinea;
+            console.log(`   ✅ Palabra "${palabra}" agregada. Línea actual: "${lineaActual}" (${lineaActual.length} chars)`);
+            palabraIndex++;
+        } else {
+            // ❌ NO cabe! Guardar línea actual y mover palabra a siguiente línea
+            if (lineaActual.length > 0) {
+                lineasNombre.push(lineaActual);
+                console.log(`   📦 Línea ${lineasNombre.length} completa: "${lineasNombre[lineasNombre.length - 1]}" (${lineasNombre[lineasNombre.length - 1].length} chars)`);
+                lineaActual = '';
+            }
+            // No incrementar palabraIndex, procesar misma palabra en siguiente iteración
+        }
     }
     
-    // 🔥 Construir hasta 4 líneas dinámicamente
-    let palabrasRestantes = palabras;
-    let contadorIndice = 0;
-    
-    while (palabrasRestantes.length > 0 && lineasNombre.length < 4) {
-        const resultado = construirLinea(palabrasRestantes, MAX_CHARS_POR_LINEA);
-        if (resultado.linea) {
-            lineasNombre.push(resultado.linea);
-        }
-        contadorIndice += resultado.indice;
-        palabrasRestantes = palabras.slice(contadorIndice);
+    // Agregar última línea si quedó contenido
+    if (lineaActual.length > 0 && lineasNombre.length < 4) {
+        lineasNombre.push(lineaActual);
+        console.log(`   📦 Línea final ${lineasNombre.length}: "${lineasNombre[lineasNombre.length - 1]}" (${lineasNombre[lineasNombre.length - 1].length} chars)`);
     }
     
     // Asignar a variables individuales (compatibilidad con código existente)
@@ -362,7 +398,7 @@ function generateDoubleZPL(data, config = {}) {
     const linea4 = lineasNombre[3] || '';
     
     // Detectar si quedan palabras sin mostrar
-    const palabrasSobrantes = palabrasRestantes.filter(p => p && p.length > 0);
+    const palabrasSobrantes = palabras.slice(palabraIndex);
     const necesitaMasLineas = palabrasSobrantes.length > 0;
     
     // Ajustar tamaño de fuente si necesita más de 3 líneas
@@ -378,14 +414,25 @@ function generateDoubleZPL(data, config = {}) {
         fontSizeSecundario = Math.round(fontSizeSecundario * 0.8);
     }
     
-    console.log(`📄 División inteligente: "${nombre_producto}" (${nombre_producto.length} chars)`);
-    console.log(`   L1: "${linea1}" (${linea1.length}/${MAX_CHARS_POR_LINEA} chars)`);
-    console.log(`   L2: "${linea2}" (${linea2.length}/${MAX_CHARS_POR_LINEA} chars)`);
-    console.log(`   L3: "${linea3}" (${linea3.length}/${MAX_CHARS_POR_LINEA} chars)`);
+    console.log(`\n╔═══════════════════════════════════════════════════════════════╗`);
+    console.log(`║  📄 RESULTADO FINAL DEL WORD WRAP                             ║`);
+    console.log(`╠═══════════════════════════════════════════════════════════════╣`);
+    console.log(`║  Producto original: "${nombre_producto}" (${nombre_producto.length} chars)           ║`);
+    console.log(`║  Límite por línea: ${MAX_CHARS_POR_LINEA} caracteres                               ║`);
+    console.log(`╠═══════════════════════════════════════════════════════════════╣`);
+    if (linea1) console.log(`║  ✅ LÍNEA 1: "${linea1.padEnd(30)}" (${String(linea1.length).padStart(2)} chars) ║`);
+    if (linea2) console.log(`║  ✅ LÍNEA 2: "${linea2.padEnd(30)}" (${String(linea2.length).padStart(2)} chars) ║`);
+    if (linea3) console.log(`║  ✅ LÍNEA 3: "${linea3.padEnd(30)}" (${String(linea3.length).padStart(2)} chars) ║`);
+    if (linea4) console.log(`║  ✅ LÍNEA 4: "${linea4.padEnd(30)}" (${String(linea4.length).padStart(2)} chars) ║`);
     if (necesitaMasLineas) {
-        console.log(`   ⚠️ Palabras sobrantes: ${palabrasSobrantes.join(' ')}`);
-        console.log(`   📏 Fuentes ajustadas: Principal=${fontSizePrincipal}, Modelo=${fontSizeModelo}, Secundario=${fontSizeSecundario}`);
+        console.log(`╠═══════════════════════════════════════════════════════════════╣`);
+        console.log(`║  ⚠️  ADVERTENCIA: Texto demasiado largo                        ║`);
+        console.log(`║  Palabras sobrantes: ${palabrasSobrantes.join(' ').substring(0, 30).padEnd(30)} ║`);
+        console.log(`║  Fuentes reducidas: P=${fontSizePrincipal}, M=${fontSizeModelo}, S=${fontSizeSecundario}           ║`);
     }
+    console.log(`╠═══════════════════════════════════════════════════════════════╣`);
+    console.log(`║  ⚡ AMBAS ETIQUETAS IMPRIMIRÁN EXACTAMENTE LO MISMO           ║`);
+    console.log(`╚═══════════════════════════════════════════════════════════════╝\n`);
     
     // Template ZPL adaptado al modelo específico de Zebra con configuración dinámica
     console.log(`📄 [generateDoubleZPL] Usando configuración para ${ZEBRA_CONFIG.MODEL}: ${ZEBRA_CONFIG.TOTAL_WIDTH}x${ZEBRA_CONFIG.LABEL_HEIGHT_DOTS} dots`);
@@ -760,26 +807,72 @@ function generarRotuladoZPL(data, opciones = {}) {
         }
     }
     
-    // 🔪 CONFIGURACIÓN DE CORTE:
-    // SIN CORTE: ^MNN, ^LL590 (50mm), datos en Y=0-590
-    // CON CORTE: ^MMC, ^LL650 (55mm), datos en Y=60-650 (offset +60 para 5mm buffer)
-    const OFFSET_CORTE = conCorte ? 60 : 0;
-    const ALTURA_LABEL = conCorte ? 650 : 590;
+    // 🔪 CONFIGURACIÓN DE CORTE Y MÁRGENES:
+    // SIN CORTE: ^MNN, ^LL826 (70mm = 7.0cm), márgenes 1cm arriba/abajo
+    // CON CORTE: ^MMC, ^LL826 (70mm = 7.0cm), mismo tamaño pero con comando de corte
+    const ALTURA_LABEL = 826;  // 7.0cm SIEMPRE (70mm)
     const MODO_MEDIA = conCorte ? '^MMC' : '^MNN';
     
-    // 📐 POSICIONES DINÁMICAS (se ajustan con offset de corte)
-    const Y_LOGO = 10 + OFFSET_CORTE;
-    const Y_PRODUCTO_1 = 144 + OFFSET_CORTE;  // ⬆️ Movido 6 dots arriba (más equilibrado)
-    const Y_PRODUCTO_2 = 184 + OFFSET_CORTE;  // ⬆️ Ajustado proporcionalmente
-    const Y_TELA = (productoLinea2 ? 224 : 189) + OFFSET_CORTE;  // ⬆️ Ajustado
-    const Y_MODELO = (productoLinea2 ? 254 : 219) + OFFSET_CORTE;  // ⬆️ Ajustado
-    const Y_HECHO_PERU = (productoLinea2 ? 284 : 249) + OFFSET_CORTE;  // ⬆️ Ajustado
-    const Y_ICONOS_1 = 309 + OFFSET_CORTE;  // ⬆️ Ajustado
-    const Y_ICONOS_2 = 409 + OFFSET_CORTE;  // ⬆️ Ajustado
-    const Y_MISTI = 324 + OFFSET_CORTE;  // ⬆️ Ajustado
-    const Y_BARCODE = 514 + OFFSET_CORTE;  // ⬆️ Ajustado
+    // 📐 MÁRGENES PARA ZONA DE COSTURA (1cm cada uno = 118 dots)
+    // Etiqueta se dobla a la mitad (3.5cm), dejando 2.5cm arriba y 2.5cm abajo para datos
+    const MARGEN_SUPERIOR = 118;  // 1.0cm (10mm) - zona de costura superior
+    const MARGEN_INFERIOR = 118;  // 1.0cm (10mm) - zona de costura inferior
+    const AREA_SUPERIOR = 295;    // 2.5cm (25mm) - LOGO + PRODUCTO + TELA + MODELO + EMPRESA
+    const AREA_INFERIOR = 295;    // 2.5cm (25mm) - ICONOS + LOGOS ADV + BARCODE
+    
+    // 📐 POSICIONES SECCIÓN SUPERIOR (MARGEN_SUPERIOR + 12 dots de ajuste + distribución en 2.5cm)
+    const Y_LOGO = MARGEN_SUPERIOR + 12;  // 130 (1cm + 12 dots desde inicio)
+    const Y_PRODUCTO_1 = Y_LOGO + 140;  // 270 (espacio para logo 1.2cm)
+    const Y_PRODUCTO_2 = Y_PRODUCTO_1 + 40;  // 310
+    const Y_TELA = (productoLinea2 ? Y_PRODUCTO_2 + 40 : Y_PRODUCTO_1 + 55);  // 350 o 325
+    const Y_MODELO = Y_TELA + 35;  // 385 o 360
+    const Y_HECHO_PERU = Y_MODELO + 35;  // 420 o 395
+    
+    // 📐 POSICIONES SECCIÓN INFERIOR (después del doblez a 3.5cm = 413 dots)
+    const Y_ICONOS_1 = MARGEN_SUPERIOR + AREA_SUPERIOR + 5;  // 418 (inicio área inferior)
+    const Y_ICONOS_2 = Y_ICONOS_1 + 100;  // 518
+    const Y_MISTI = Y_ICONOS_1 + 15;  // 433
+    const Y_BARCODE = ALTURA_LABEL - MARGEN_INFERIOR - 55;  // 653 (826-118-55)
+    
+    // 📊 LOG DETALLADO DE POSICIONES
+    console.log(`\n╔═══════════════════════════════════════════════════════════════╗`);
+    console.log(`║  🖨️  GODEX G530 - CONFIGURACIÓN DE IMPRESIÓN ROTULADO         ║`);
+    console.log(`╠═══════════════════════════════════════════════════════════════╣`);
+    console.log(`║  📏 DIMENSIONES ETIQUETA:                                      ║`);
+    console.log(`║     • Ancho: 354 dots (30mm / 3.0cm)                          ║`);
+    console.log(`║     • Alto: ${ALTURA_LABEL} dots (${(ALTURA_LABEL/11.811).toFixed(1)}mm / ${(ALTURA_LABEL/118.11).toFixed(1)}cm)                  ║`);
+    console.log(`║  🔪 MODO DE CORTE:                                             ║`);
+    console.log(`║     • Guillotina: ${conCorte ? '✅ ACTIVADA (^MMC)' : '❌ DESACTIVADA (^MNN)'}                      ║`);
+    console.log(`║  📐 MÁRGENES:                                                  ║`);
+    console.log(`║     • Superior: ${MARGEN_SUPERIOR} dots (${(MARGEN_SUPERIOR/11.811).toFixed(1)}mm / ${(MARGEN_SUPERIOR/118.11).toFixed(1)}cm)            ║`);
+    console.log(`║     • Inferior: ${MARGEN_INFERIOR} dots (${(MARGEN_INFERIOR/11.811).toFixed(1)}mm / ${(MARGEN_INFERIOR/118.11).toFixed(1)}cm)            ║`);
+    console.log(`║     • Área superior: ${AREA_SUPERIOR} dots (${(AREA_SUPERIOR/118.11).toFixed(1)}cm) - Datos arriba         ║`);
+    console.log(`║     • Área inferior: ${AREA_INFERIOR} dots (${(AREA_INFERIOR/118.11).toFixed(1)}cm) - Iconos/Barcode    ║`);
+    console.log(`║     • 🔄 DOBLEZ: ${(ALTURA_LABEL/2)} dots (${(ALTURA_LABEL/2/118.11).toFixed(1)}cm) - Mitad exacta              ║`);
+    console.log(`║  📍 POSICIONES Y (en dots y cm):                               ║`);
+    console.log(`║     • Logo:        Y=${Y_LOGO} (${(Y_LOGO/118.11).toFixed(2)}cm)                           ║`);
+    console.log(`║     • Producto 1:  Y=${Y_PRODUCTO_1} (${(Y_PRODUCTO_1/118.11).toFixed(2)}cm)                         ║`);
+    if (productoLinea2) {
+    console.log(`║     • Producto 2:  Y=${Y_PRODUCTO_2} (${(Y_PRODUCTO_2/118.11).toFixed(2)}cm)                         ║`);
+    }
+    console.log(`║     • Tela:        Y=${Y_TELA} (${(Y_TELA/118.11).toFixed(2)}cm)                         ║`);
+    console.log(`║     • Modelo:      Y=${Y_MODELO} (${(Y_MODELO/118.11).toFixed(2)}cm)                         ║`);
+    console.log(`║     • Empresa:     Y=${Y_HECHO_PERU} (${(Y_HECHO_PERU/118.11).toFixed(2)}cm)                         ║`);
+    console.log(`║     • Iconos 1:    Y=${Y_ICONOS_1} (${(Y_ICONOS_1/118.11).toFixed(2)}cm)                         ║`);
+    console.log(`║     • Misti:       Y=${Y_MISTI} (${(Y_MISTI/118.11).toFixed(2)}cm)                         ║`);
+    console.log(`║     • Barcode:     Y=${Y_BARCODE} (${(Y_BARCODE/118.11).toFixed(2)}cm)                         ║`);
+    console.log(`║  📦 DATOS:                                                     ║`);
+    console.log(`║     • Producto: ${productoLinea1.padEnd(40)} ║`);
+    if (productoLinea2) {
+    console.log(`║                 ${productoLinea2.padEnd(40)} ║`);
+    }
+    console.log(`║     • Tela: ${telaTipo.padEnd(46)} ║`);
+    console.log(`║     • Modelo: ${tamano.padEnd(44)} ║`);
+    console.log(`║     • Barcode: ${codigoBarras.padEnd(43)} ║`);
+    console.log(`╚═══════════════════════════════════════════════════════════════╝\n`);
     
     // 🏷️ CONSTRUCCIÓN DEL ZPL
+    // Etiqueta: 30mm × 70mm (3.0cm × 7.0cm) con márgenes 1.5cm arriba/abajo
     let zpl = `^XA
 ${MODO_MEDIA}
 ^PW354
@@ -870,9 +963,15 @@ ${MODO_MEDIA}
     
     console.log(`📊 [Rotulado] Código de barras Y=${Y_BARCODE_DINAMICO} (${!conLogoMisti ? 'SIN' : 'CON'} logo secundario)`);
     
-    console.log(`✅ [generarRotuladoZPL] ZPL generado: ${zpl.length} caracteres (Corte: ${conCorte ? 'SÍ' : 'NO'})`);
-    console.log(`📦 ${productoLinea1}${productoLinea2 ? ' ' + productoLinea2 : ''}`);
-    console.log(`📊 Tela: ${telaTipo} | Modelo: ${tamano} | Barcode: ${codigoBarras}`);
+    console.log(`✅ [generarRotuladoZPL] ZPL generado: ${zpl.length} caracteres`);
+    console.log(`\n╔═══════════════════════════════════════════════════════════════╗`);
+    console.log(`║  📄 ZPL COMPLETO QUE SE ENVIARÁ A LA IMPRESORA:               ║`);
+    console.log(`╚═══════════════════════════════════════════════════════════════╝`);
+    console.log(zpl);
+    console.log(`╔═══════════════════════════════════════════════════════════════╗`);
+    console.log(`║  ✅ FIN DEL ZPL                                                ║`);
+    console.log(`╚═══════════════════════════════════════════════════════════════╝\n`);
+    
     return zpl;
 }
 
@@ -880,7 +979,7 @@ ${MODO_MEDIA}
 // �🎯 SELECTOR INTELIGENTE DE PLANTILLA
 // =====================================================
 function selectZPLTemplate(data, productoConfig) {
-    console.log(`🎯 [selectZPLTemplate] Seleccionando plantilla...`);
+    console.log(`[selectZPLTemplate] Seleccionando plantilla...`);
     console.log(`📋 Configuración producto:`, JSON.stringify(productoConfig, null, 2));
     
     // Validar que al menos haya un campo de texto activo
@@ -1017,14 +1116,22 @@ async function processPrintQueue() {
             mostrar_nombre: true,
             mostrar_id: false,
             mostrar_unidad: true,
-            mostrar_modelo: true
+            mostrar_modelo: true,
+            mostrar_empresa: true
         };
         
-        if (printJob.id_producto) {
+        // 🎯 PRIORIDAD 1: Usar configuración personalizada si existe (CREAR QR supervisor)
+        if (printJob.configuracion_impresion) {
+            productoConfig = printJob.configuracion_impresion;
+            logger.info('PRINT-CONFIG', 'Usando configuración personalizada de solicitud', productoConfig);
+            console.log(`🎨 [processPrintQueue] ⭐ Configuración PERSONALIZADA de solicitud:`, productoConfig);
+        }
+        // 🎯 PRIORIDAD 2: Sino, cargar configuración del producto
+        else if (printJob.id_producto) {
             try {
                 logger.dbQuery('SELECT config FROM productos', { id_producto: printJob.id_producto });
                 const configResult = await pool.query(`
-                    SELECT mostrar_qr, mostrar_nombre, mostrar_id, mostrar_unidad, mostrar_modelo
+                    SELECT mostrar_qr, mostrar_nombre, mostrar_id, mostrar_unidad, mostrar_modelo, mostrar_empresa
                     FROM productos
                     WHERE id_producto = $1
                 `, [printJob.id_producto]);
@@ -1033,8 +1140,8 @@ async function processPrintQueue() {
                 
                 if (configResult.rows.length > 0) {
                     productoConfig = configResult.rows[0];
-                    logger.info('PRINT-CONFIG', 'Configuración personalizada cargada', productoConfig);
-                    console.log(`🎨 [processPrintQueue] Configuración personalizada cargada:`, productoConfig);
+                    logger.info('PRINT-CONFIG', 'Configuración del producto cargada', productoConfig);
+                    console.log(`🎨 [processPrintQueue] Configuración del producto cargada:`, productoConfig);
                 } else {
                     logger.warn('PRINT-CONFIG', 'Producto no encontrado, usando defaults');
                     console.log(`⚠️ [processPrintQueue] Producto no encontrado, usando config por defecto`);
@@ -1213,7 +1320,10 @@ async function addToPrintQueue(solicitudData) {
             empresa: solicitudData.empresa || 'HECHO EN PERU', // 🏢 Incluir empresa en printJob
             costurera_nombre: solicitudData.costurera_nombre,
             id_producto: solicitudData.id_producto,
-            cantidad: cantidadAImprimir
+            cantidad: cantidadAImprimir,
+            unidad_medida: solicitudData.unidad_medida || 'UNIDAD', // 🆕 Agregar unidad_medida
+            // 🆕 Configuración personalizada de impresión (si existe)
+            configuracion_impresion: solicitudData.configuracion_impresion || null
         };
         
         logger.printQueue('ADDED', printQueue.length + 1, printJob);
@@ -1280,15 +1390,17 @@ function validarIPPermitida(ip) {
     // Extraer IP real (remover prefijo IPv6 si existe)
     const cleanIP = ip.replace('::ffff:', '');
     
-    // Lista de IPs permitidas
+    // Lista de IPs permitidas - Nueva red 192.168.15.x
     const ipsPermitidas = [
-        '127.0.0.1',     // Localhost para desarrollo
-        '::1',           // Localhost IPv6
-        '192.168.1.20',  // Tu PC Servidor
-        '192.168.1.22',  // Tu PC actual (agregada)
-        '192.168.1.35',  // Tu PC principal
-        '192.168.1.33',   // Tablet autorizada
-        '192.168.1.34',  // Laptop autorizada
+        '127.0.0.1',      // Localhost para desarrollo
+        '::1',            // Localhost IPv6
+        '192.168.15.21',  // Servidor (IP estatica nueva)
+        '192.168.15.6',   // PC actual (DHCP)
+        '192.168.15.20',  // Dispositivo detectado en red
+        '192.168.15.26',  // Tablet/Dispositivo movil
+        '192.168.15.36',  // Brother printer / dispositivo
+        '192.168.15.34',  // Zebra ZD230
+        '192.168.15.35'   // Godex G530
     ];
     
     return ipsPermitidas.includes(cleanIP) || ip === '::1';
@@ -1316,7 +1428,7 @@ app.use((req, res, next) => {
                 error: 'Acceso denegado',
                 mensaje: 'Su dirección IP no está autorizada para acceder a este sistema',
                 ip_cliente: clientIP,
-                ips_permitidas: ['192.168.1.35 (PC Principal)', '192.168.1.33 (Tablet Autorizada)']
+                ips_permitidas: ['192.168.15.21 (Servidor)', '192.168.15.6 (PC Actual)', '192.168.15.20 (Dispositivo)']
             });
         }
         
@@ -1342,6 +1454,26 @@ app.use((req, res, next) => {
     
     next();
 });
+
+// =============================================
+// 🚀 MIDDLEWARE DE COMPRESIÓN Y OPTIMIZACIÓN
+// =============================================
+
+// Comprimir todas las respuestas HTTP (reduce ~70% el tamaño)
+app.use(compression({
+    level: 6,              // Nivel de compresión (0-9, 6 es balance entre velocidad y ratio)
+    threshold: 1024,       // Solo comprimir responses > 1KB
+    filter: (req, res) => {
+        // No comprimir si el cliente no acepta compresión
+        if (req.headers['x-no-compression']) {
+            return false;
+        }
+        // Usar filtro por defecto de compression
+        return compression.filter(req, res);
+    }
+}));
+
+console.log('✅ Compresión HTTP activada (nivel 6)');
 
 // =============================================
 // CONFIGURACIÓN ANTI-COLGADO DEL SERVIDOR
@@ -1450,8 +1582,8 @@ app.get('/api/verificar-ip', (req, res) => {
         es_permitida: esPermitida,
         ips_permitidas: [
             '127.0.0.1 (Desarrollo)',
-            '192.168.1.35 (PC Principal)', 
-            '192.168.1.33 (Tablet Autorizada)'
+            '192.168.15.21 (Servidor)', 
+            '192.168.15.6 (PC Actual)'
         ],
         timestamp: new Date().toLocaleString(),
         mensaje: esPermitida ? 'IP autorizada ✅' : 'IP no autorizada ❌'
@@ -2314,6 +2446,82 @@ let productosCache = {
 };
 
 // Obtener productos (todos pueden ver) - Con cache y paginación
+// =============================================
+// 🚀 ENDPOINT DE BÚSQUEDA RÁPIDA DE PRODUCTOS (AUTOCOMPLETE)
+// =============================================
+app.get('/api/productos/search', async (req, res) => {
+    try {
+        const { q, limit = 10 } = req.query;
+        
+        // Validar que haya término de búsqueda
+        if (!q || q.trim().length < 2) {
+            return res.json({ data: [], message: 'Mínimo 2 caracteres para buscar' });
+        }
+        
+        const searchTerm = q.trim().toUpperCase();
+        
+        // Verificar cache
+        const cacheKey = getCacheKey('productos:search', { q: searchTerm, limit });
+        const cached = getFromCache(cacheKey);
+        if (cached) {
+            return res.json({ data: cached, source: 'cache', term: searchTerm });
+        }
+        
+        // Búsqueda en base de datos con múltiples campos
+        const query = `
+            SELECT 
+                id_producto,
+                nombre_producto,
+                codigo_producto,
+                marca,
+                categoria,
+                subcategoria,
+                modelo,
+                unidad_medida
+            FROM productos 
+            WHERE activo = true
+            AND (
+                UPPER(nombre_producto) LIKE $1
+                OR UPPER(codigo_producto) LIKE $1
+                OR UPPER(marca) LIKE $1
+                OR UPPER(modelo) LIKE $1
+                OR UPPER(categoria) LIKE $1
+                OR UPPER(subcategoria) LIKE $1
+            )
+            ORDER BY 
+                CASE 
+                    WHEN UPPER(nombre_producto) LIKE $2 THEN 1
+                    WHEN UPPER(codigo_producto) LIKE $2 THEN 2
+                    ELSE 3
+                END,
+                nombre_producto
+            LIMIT $3
+        `;
+        
+        const result = await pool.query(query, [
+            `%${searchTerm}%`,  // Para LIKE parcial
+            `${searchTerm}%`,   // Para priorizar coincidencias al inicio
+            limit
+        ]);
+        
+        console.log(`🔍 Búsqueda "${searchTerm}": ${result.rows.length} resultados`);
+        
+        // Guardar en cache (60 segundos - búsquedas son dinámicas)
+        setInCache(cacheKey, result.rows, 60);
+        
+        res.json({ 
+            data: result.rows,
+            source: 'database',
+            term: searchTerm,
+            count: result.rows.length
+        });
+        
+    } catch (error) {
+        console.error('❌ Error en búsqueda de productos:', error);
+        res.status(500).json({ error: 'Error buscando productos' });
+    }
+});
+
 app.get('/api/productos', async (req, res) => {
     try {
         const { search, categoria, subcategoria, page = 1, limit = 50, all } = req.query;
@@ -2322,6 +2530,14 @@ app.get('/api/productos', async (req, res) => {
         // Si se solicita "all=true", devolver todos los productos sin paginación
         if (all === 'true') {
             console.log('🔍 [productos] Solicitando TODOS los productos (all=true)');
+            
+            // Verificar cache primero
+            const cacheKey = 'productos:all';
+            const cached = getFromCache(cacheKey);
+            if (cached) {
+                console.log('📦 [productos] Sirviendo TODOS desde cache');
+                return res.json(cached);
+            }
             
             const allQuery = `
                 SELECT 
@@ -2342,23 +2558,27 @@ app.get('/api/productos', async (req, res) => {
             
             const allResult = await pool.query(allQuery);
             
-            console.log(`📦 [productos] Devolviendo ${allResult.rows.length} productos (todos)`);
-            
-            return res.json({
+            const response = {
                 data: allResult.rows,
                 total: allResult.rows.length,
                 all: true,
                 message: `Cargados ${allResult.rows.length} productos activos`
-            });
+            };
+            
+            // Guardar en cache (1 hora)
+            setInCache(cacheKey, response, CACHE_TTL.PRODUCTOS);
+            
+            console.log(`📦 [productos] Devolviendo ${allResult.rows.length} productos (todos)`);
+            return res.json(response);
         }
         
         // Verificar cache para consultas sin filtros
         if (!search && !categoria && !subcategoria && page == 1) {
-            const now = Date.now();
-            if (productosCache.data && productosCache.lastUpdate && 
-                (now - productosCache.lastUpdate) < productosCache.ttl) {
+            const cacheKey = getCacheKey('productos:list', { page, limit });
+            const cached = getFromCache(cacheKey);
+            if (cached) {
                 console.log('📋 [productos] Sirviendo desde cache');
-                return res.json(productosCache.data);
+                return res.json(cached);
             }
         }
         
@@ -2468,10 +2688,10 @@ app.get('/api/productos', async (req, res) => {
             }
         };
         
-        // Actualizar cache solo para la primera página sin filtros
+        // Guardar en cache solo para la primera página sin filtros
         if (!search && !categoria && !subcategoria && page == 1) {
-            productosCache.data = response;
-            productosCache.lastUpdate = Date.now();
+            const cacheKey = getCacheKey('productos:list', { page, limit });
+            setInCache(cacheKey, response, CACHE_TTL.PRODUCTOS);
             console.log('📋 [productos] Cache actualizado');
         }
         
@@ -2815,9 +3035,9 @@ app.get('/api/admin/productos/next-code', async (req, res) => {
 // Imprimir rotulado directamente en Godex G530
 app.post('/api/print/rotulado', async (req, res) => {
     try {
-        const { id_producto, cantidad } = req.body;
+        const { id_producto, cantidad, conCorte = false } = req.body;
         
-        console.log(`🏷️ [print/rotulado] Solicitud de impresión - Producto: ${id_producto}, Cantidad: ${cantidad}`);
+        console.log(`🏷️ [print/rotulado] Solicitud de impresión - Producto: ${id_producto}, Cantidad: ${cantidad}, Corte: ${conCorte}`);
         
         // Obtener datos del producto
         const productoResult = await pool.query(`
@@ -2841,11 +3061,11 @@ app.post('/api/print/rotulado', async (req, res) => {
         const producto = productoResult.rows[0];
         console.log(`📦 [print/rotulado] Producto encontrado:`, producto);
         
-        // Generar ZPL para Godex
-        const zplData = generarRotuladoZPL(producto);
+        // Generar ZPL para Godex con opciones de corte
+        const zplData = generarRotuladoZPL(producto, { conCorte });
         
         // IP y Puerto de Godex G530
-        const GODEX_IP = '192.168.1.35';
+        const GODEX_IP = '192.168.15.35';
         const GODEX_PORT = 9100;
         
         console.log(`📡 [print/rotulado] Enviando a Godex ${GODEX_IP}:${GODEX_PORT}...`);
@@ -2876,9 +3096,9 @@ app.post('/api/print/rotulado', async (req, res) => {
 // Crear solicitud de rotulado (para cuando auto_servicesgd = false)
 app.post('/api/solicitudes/rotulado', async (req, res) => {
     try {
-        const { id_producto, cantidad, observaciones, id_usuario } = req.body;
+        const { id_producto, cantidad, observaciones, id_usuario, conCorte = false } = req.body;
         
-        console.log(`📝 [solicitudes/rotulado] Nueva solicitud - Producto: ${id_producto}, Cantidad: ${cantidad}`);
+        console.log(`📝 [solicitudes/rotulado] Nueva solicitud - Producto: ${id_producto}, Cantidad: ${cantidad}, Corte: ${conCorte}`);
         
         // Generar número de solicitud único
         const fechaHoy = new Date().toISOString().slice(0, 10).replace(/-/g, '');
@@ -2907,8 +3127,8 @@ app.post('/api/solicitudes/rotulado', async (req, res) => {
         
         const producto = productoResult.rows[0];
         
-        // Generar ZPL para guardar
-        const zplData = generarRotuladoZPL(producto);
+        // Generar ZPL para guardar con opciones de corte
+        const zplData = generarRotuladoZPL(producto, { conCorte });
         
         // Insertar solicitud
         const insertResult = await pool.query(`
@@ -2982,7 +3202,7 @@ app.put('/api/solicitudes/rotulado/:id/aprobar', async (req, res) => {
         const zplData = solicitud.datos_zpl;
         
         // IP y Puerto de Godex G530
-        const GODEX_IP = '192.168.1.35';
+        const GODEX_IP = '192.168.15.35';
         const GODEX_PORT = 9100;
         
         // Imprimir
@@ -3048,7 +3268,7 @@ app.put('/api/solicitudes/rotulado/:id/rechazar', async (req, res) => {
 
 // Configuración de Godex G530
 const GODEX_CONFIG = {
-    IP: '192.168.1.35',
+    IP: '192.168.15.35',
     PORT: 9100,
     MODEL: 'Godex G530'
 };
@@ -3597,6 +3817,9 @@ app.post('/api/admin/productos/create', async (req, res) => {
 
         const newProduct = result.rows[0];
         
+        // 🗑️ Invalidar cache de productos
+        invalidateCachePattern('productos:');
+        
         console.log(`✅ Producto creado: ${newProduct.codigo_producto} - ${newProduct.nombre_producto}`);
         
         res.status(201).json({
@@ -3651,6 +3874,9 @@ app.put('/api/admin/productos/deactivate', async (req, res) => {
 
         const updatedProduct = result.rows[0];
         
+        // 🗑️ Invalidar cache de productos
+        invalidateCachePattern('productos:');
+        
         console.log(`❌ Producto desactivado: ${updatedProduct.codigo_producto} - ${updatedProduct.nombre_producto}`);
         
         res.json({
@@ -3681,6 +3907,9 @@ app.put('/api/admin/productos/reactivate', async (req, res) => {
             WHERE id_producto = $1
             RETURNING codigo_producto, nombre_producto
         `, [id_producto]);
+        
+        // 🗑️ Invalidar cache de productos
+        invalidateCachePattern('productos:');
 
         if (result.rows.length === 0) {
             return res.status(404).json({ 
@@ -4905,8 +5134,15 @@ app.post('/api/registros/:id_solicitud/imprimir-rotulado', verificarToken, async
     const { conCorte = false } = req.body; // 🔪 Recibir parámetro de corte
     
     try {
-        console.log(`🏷️ [imprimir-rotulado-registro] Solicitud: ${id_solicitud}`);
-        console.log(`🔪 Corte automático: ${conCorte ? 'ACTIVADO' : 'DESACTIVADO'}`);
+        console.log(`\n${'='.repeat(80)}`);
+        console.log(`🏷️  [ROTULADO GODEX] INICIO - Solicitud ID: ${id_solicitud}`);
+        console.log(`${'='.repeat(80)}`);
+        console.log(`📡 Datos recibidos del dispositivo:`);
+        console.log(`   • ID Solicitud: ${id_solicitud}`);
+        console.log(`   • Corte automático: ${conCorte ? '✅ ACTIVADO' : '❌ DESACTIVADO'}`);
+        console.log(`   • IP Cliente: ${req.ip || req.connection.remoteAddress}`);
+        console.log(`   • User-Agent: ${req.get('user-agent')}`);
+        console.log(`   • Body completo: ${JSON.stringify(req.body)}`);
         
         // Obtener datos del producto de la solicitud + configuración de logos
         const solicitudResult = await pool.query(`
@@ -4937,29 +5173,54 @@ app.post('/api/registros/:id_solicitud/imprimir-rotulado', verificarToken, async
         const solicitud = solicitudResult.rows[0];
         const cantidad = solicitud.cantidad_solicitada;
         
-        console.log(`🏷️ Configuración guardada: Logo Principal=${solicitud.logo_principal}, Logo Misti=${solicitud.config_logo_misti}, Iconos=${solicitud.config_iconos}`);
+        console.log(`\n📦 Datos del producto obtenidos:`);
+        console.log(`   • Nombre: ${solicitud.nombre_producto}`);
+        console.log(`   • Subcategoría: ${solicitud.subcategoria}`);
+        console.log(`   • Marca (Tela): ${solicitud.marca}`);
+        console.log(`   • Modelo (Tamaño): ${solicitud.modelo}`);
+        console.log(`   • Código: ${solicitud.codigo_producto}`);
+        console.log(`   • Cantidad: ${cantidad}`);
+        console.log(`\n🎨 Configuración de logos guardada:`);
+        console.log(`   • Logo Principal: ${solicitud.logo_principal || 'camitex (default)'}`);
+        console.log(`   • Logo Misti: ${solicitud.config_logo_misti ? '✅ Sí' : '❌ No'}`);
+        console.log(`   • Iconos: ${solicitud.config_iconos ? '✅ Sí' : '❌ No'}`);
         
         // Generar ZPL para rotulado con opciones guardadas + corte dinámico
-        const zplData = generarRotuladoZPL({
+        const datosProducto = {
             subcategoria: solicitud.subcategoria,
             marca: solicitud.marca,
             modelo: solicitud.modelo,
             codigo_producto: solicitud.codigo_producto,
             unidad_medida: solicitud.unidad_medida,
             id_solicitud: solicitud.id_solicitud,
-            empresa: solicitud.empresa || 'HECHO EN PERU'  // 🏢 Empresa desde tabla entidades
-        }, {
-            logoPrincipal: solicitud.logo_principal || 'camitex',  // 🔷 Usar config guardada (default: camitex)
-            conLogoMisti: solicitud.config_logo_misti,       // 🏷️ Usar config guardada
-            conIconos: solicitud.config_iconos,              // 🏷️ Usar config guardada
-            conCorte: conCorte  // 🔪 Usar parámetro recibido del frontend
-        });
+            empresa: solicitud.empresa || 'HECHO EN PERU'
+        };
+        
+        const opcionesZPL = {
+            logoPrincipal: solicitud.logo_principal || 'camitex',
+            conLogoMisti: solicitud.config_logo_misti,
+            conIconos: solicitud.config_iconos,
+            conCorte: conCorte
+        };
+        
+        console.log(`\n🔧 Generando código ZPL con:`);
+        console.log(`   • Datos: ${JSON.stringify(datosProducto, null, 2)}`);
+        console.log(`   • Opciones: ${JSON.stringify(opcionesZPL, null, 2)}`);
+        
+        const zplData = generarRotuladoZPL(datosProducto, opcionesZPL);
+        
+        console.log(`\n📝 Código ZPL generado:`);
+        console.log(`   • Longitud: ${zplData.length} caracteres`);
+        console.log(`   • Primeros 500 caracteres:`);
+        console.log(`   ${zplData.substring(0, 500)}...`);
+        console.log(`   • Últimos 200 caracteres:`);
+        console.log(`   ...${zplData.substring(zplData.length - 200)}`);
         
         // ⚡ OPTIMIZACIÓN: Enviar todas las impresiones en paralelo
         const impresionesPromises = [];
         for (let i = 0; i < cantidad; i++) {
             impresionesPromises.push(
-                enviarZPLAGodex(zplData, '192.168.1.35', 9100)
+                enviarZPLAGodex(zplData, '192.168.15.35', 9100)
                     .then(() => console.log(`✅ Rotulado ${i + 1}/${cantidad} enviado a Godex`))
             );
         }
@@ -4991,18 +5252,101 @@ app.post('/api/registros/:id_solicitud/imprimir-rotulado', verificarToken, async
             RETURNING rotulado_impreso
         `, [id_solicitud]);
         
-        console.log(`🎉 Rotulado impreso y registrado para solicitud ${solicitud.numero_solicitud}`);
-        console.log(`   ✅ Columna rotulado_impreso actualizada a: ${updateResult.rows[0]?.rotulado_impreso}`);
+        console.log(`\n✅ ROTULADO COMPLETADO:`);
+        console.log(`   • Solicitud: ${solicitud.numero_solicitud}`);
+        console.log(`   • Cantidad enviada: ${cantidad}`);
+        console.log(`   • Base de datos actualizada: rotulado_impreso = ${updateResult.rows[0]?.rotulado_impreso}`);
+        console.log(`   • Impresora: Godex G530 (192.168.15.35:9100)`);
+        console.log(`${'='.repeat(80)}\n`);
         
         res.json({
             success: true,
             mensaje: `${cantidad} rotulado(s) impreso(s) exitosamente en Godex G530`,
-            cantidad_impresa: cantidad
+            cantidad_impresa: cantidad,
+            debug: {
+                zpl_length: zplData.length,
+                producto: solicitud.nombre_producto,
+                opciones: opcionesZPL
+            }
         });
         
     } catch (err) {
-        console.error('❌ Error imprimiendo rotulado:', err);
+        console.error(`\n❌ ERROR EN ROTULADO:`);
+        console.error(`   • Mensaje: ${err.message}`);
+        console.error(`   • Stack: ${err.stack}`);
+        console.error(`${'='.repeat(80)}\n`);
         res.status(500).json({ error: 'Error al imprimir rotulado: ' + err.message });
+    }
+});
+
+// 🧪 ENDPOINT DE DIAGNÓSTICO: Verificar código ZPL sin imprimir
+app.post('/api/diagnostico/verificar-zpl', verificarToken, async (req, res) => {
+    try {
+        const { id_solicitud } = req.body;
+        
+        console.log(`\n🧪 [DIAGNÓSTICO ZPL] ID Solicitud: ${id_solicitud}`);
+        
+        // Obtener datos del producto
+        const solicitudResult = await pool.query(`
+            SELECT 
+                se.id_solicitud,
+                COALESCE(se.logo_principal, 'camitex') as logo_principal,
+                COALESCE(se.config_logo_misti, true) as config_logo_misti,
+                COALESCE(se.config_iconos, true) as config_iconos,
+                p.nombre_producto,
+                p.subcategoria,
+                p.marca,
+                p.modelo,
+                p.codigo_producto,
+                p.unidad_medida
+            FROM solicitudes_etiquetas se
+            JOIN productos p ON se.id_producto = p.id_producto
+            WHERE se.id_solicitud = $1
+        `, [id_solicitud]);
+        
+        if (solicitudResult.rows.length === 0) {
+            return res.status(404).json({ error: 'Solicitud no encontrada' });
+        }
+        
+        const solicitud = solicitudResult.rows[0];
+        
+        const datosProducto = {
+            subcategoria: solicitud.subcategoria,
+            marca: solicitud.marca,
+            modelo: solicitud.modelo,
+            codigo_producto: solicitud.codigo_producto,
+            unidad_medida: solicitud.unidad_medida,
+            id_solicitud: solicitud.id_solicitud,
+            empresa: 'HECHO EN PERU'
+        };
+        
+        const opcionesZPL = {
+            logoPrincipal: solicitud.logo_principal || 'camitex',
+            conLogoMisti: solicitud.config_logo_misti,
+            conIconos: solicitud.config_iconos,
+            conCorte: true
+        };
+        
+        const zplData = generarRotuladoZPL(datosProducto, opcionesZPL);
+        
+        console.log(`✅ [DIAGNÓSTICO] ZPL generado correctamente`);
+        console.log(`   • Longitud: ${zplData.length} caracteres`);
+        
+        res.json({
+            success: true,
+            datos_producto: datosProducto,
+            opciones_zpl: opcionesZPL,
+            zpl_generado: zplData,
+            longitud: zplData.length,
+            primera_linea: zplData.split('\n')[0],
+            ultima_linea: zplData.split('\n').slice(-2)[0],
+            contiene_corte: zplData.includes('^MMC'),
+            contiene_logo: zplData.includes('^GFA')
+        });
+        
+    } catch (err) {
+        console.error('❌ [DIAGNÓSTICO] Error:', err);
+        res.status(500).json({ error: 'Error verificando ZPL: ' + err.message });
     }
 });
 
@@ -5060,7 +5404,9 @@ app.post('/api/crear-solicitud', async (req, res) => {
         // 🏷️ Opciones de rotulado Godex
         logoPrincipal = 'camitex', // Nuevo: selector de logo principal
         conLogoMisti = true,
-        conIconos = true
+        conIconos = true,
+        // 🆕 Configuración personalizada de impresión (para CREAR QR supervisor)
+        configuracion_impresion = null
     } = req.body;
     
     console.log('Datos recibidos:', req.body);
@@ -5207,7 +5553,9 @@ app.post('/api/crear-solicitud', async (req, res) => {
                         costurera_nombre: usuarioCosturera.nombre_completo,
                         id_producto: producto.id_producto,
                         cantidad_solicitada: cantidad_productos,
-                        cantidad_a_imprimir: cantidadEtiquetas
+                        cantidad_a_imprimir: cantidadEtiquetas,
+                        // 🆕 Configuración personalizada de impresión (si existe)
+                        configuracion_impresion: configuracion_impresion
                     };
                     
                     // Agregar a cola de impresión
@@ -5315,7 +5663,7 @@ app.post('/api/crear-solicitud', async (req, res) => {
                     const impresionesPromises = [];
                     for (let i = 0; i < cantidad_productos; i++) {
                         impresionesPromises.push(
-                            enviarZPLAGodex(zplRotulado, '192.168.1.35', 9100)
+                            enviarZPLAGodex(zplRotulado, '192.168.15.35', 9100)
                                 .then(() => console.log(`✅ Rotulado ${i + 1}/${cantidad_productos} enviado a Godex`))
                         );
                     }
@@ -7031,6 +7379,907 @@ console.log('   - POST /api/preview-etiqueta');
 console.log('   - POST /api/test-print-visual');
 console.log('   - GET  /api/datos-ejemplo');
 
+// ====================================================
+// ENDPOINTS DE BITÁCORA DE PRODUCCIÓN
+// ====================================================
+
+// CREAR REGISTRO EN BITÁCORA
+app.post('/api/bitacora/crear', async (req, res) => {
+    const { id_usuario, id_producto, cantidad, observaciones } = req.body;
+    
+    console.log('📝 [BITACORA CREATE] Request recibido');
+    console.log('   Body:', req.body);
+    console.log('   Headers:', req.headers);
+    
+    try {
+        if (!id_usuario) {
+            console.log('   ❌ Error: id_usuario no proporcionado');
+            return res.status(400).json({ error: 'id_usuario requerido' });
+        }
+        
+        if (!id_producto || !cantidad) {
+            return res.status(400).json({ error: 'Faltan datos requeridos: id_producto y cantidad' });
+        }
+        
+        const result = await pool.query(`
+            INSERT INTO bitacora_produccion 
+            (id_usuario, id_producto, cantidad, estado, motivo_cambio)
+            VALUES ($1, $2, $3, 'ACTIVO', $4)
+            RETURNING *
+        `, [id_usuario, id_producto, cantidad, observaciones || null]);
+        
+        // 🗑️ Invalidar cache de bitácora
+        invalidateCachePattern('bitacora:');
+        
+        console.log('✅ Registro creado en bitácora:', result.rows[0].id);
+        res.json({ success: true, data: result.rows[0] });
+        
+    } catch (error) {
+        console.error('❌ Error creando registro en bitácora:', error);
+        res.status(500).json({ error: error.message });
+    }
+});
+
+// LISTAR REGISTROS DE BITÁCORA
+app.get('/api/bitacora/listar', async (req, res) => {
+    const { fecha_inicio, fecha_fin, id_usuario, id_producto, estado, solo_mis_registros, userId } = req.query;
+    
+    console.log('📋 [BITACORA LISTAR] Request recibido');
+    console.log('   Query:', req.query);
+    console.log('   userId:', userId);
+    
+    try {
+        let usuario = null;
+        
+        if (userId) {
+            const userResult = await pool.query('SELECT * FROM usuarios WHERE id_usuario = $1', [userId]);
+            if (userResult.rows.length > 0) {
+                usuario = userResult.rows[0];
+                console.log('   Usuario encontrado:', usuario.nombre_completo, '- Nivel:', usuario.nivel_acceso);
+            } else {
+                console.log('   ⚠️ Usuario NO encontrado con ID:', userId);
+            }
+        } else {
+            console.log('   ⚠️ userId NO proporcionado en query');
+        }
+        
+        let query = `
+            SELECT 
+                b.*,
+                u.nombre_completo as nombre_usuario,
+                p.nombre_producto,
+                um.nombre_completo as nombre_modificador
+            FROM bitacora_produccion b
+            JOIN usuarios u ON b.id_usuario = u.id_usuario
+            JOIN productos p ON b.id_producto = p.id_producto
+            LEFT JOIN usuarios um ON b.usuario_modificador = um.id_usuario
+            WHERE 1=1
+        `;
+        
+        const params = [];
+        let paramCounter = 1;
+        
+        // REGLA: Las costureras SIEMPRE ven solo SUS registros
+        // Solo administradores pueden ver todos los registros
+        const esAdmin = usuario && (usuario.nivel_acceso === 'administrador' || usuario.rol === 'administrador');
+        
+        console.log('   Es Admin:', esAdmin);
+        
+        if (!esAdmin && userId) {
+            // Si NO es admin, solo puede ver sus propios registros
+            console.log('   Aplicando filtro: solo registros del usuario', userId);
+            query += ` AND b.id_usuario = $${paramCounter}`;
+            params.push(userId);
+            paramCounter++;
+        } else if (esAdmin) {
+            console.log('   Admin detectado: mostrando TODOS los registros');
+        }
+        
+        if (fecha_inicio) {
+            query += ` AND b.fecha >= $${paramCounter}`;
+            params.push(fecha_inicio);
+            paramCounter++;
+        }
+        
+        if (fecha_fin) {
+            query += ` AND b.fecha <= $${paramCounter}`;
+            params.push(fecha_fin);
+            paramCounter++;
+        }
+        
+        if (id_usuario) {
+            query += ` AND b.id_usuario = $${paramCounter}`;
+            params.push(id_usuario);
+            paramCounter++;
+        }
+        
+        if (id_producto) {
+            query += ` AND b.id_producto = $${paramCounter}`;
+            params.push(id_producto);
+            paramCounter++;
+        }
+        
+        if (estado) {
+            query += ` AND b.estado = $${paramCounter}`;
+            params.push(estado);
+            paramCounter++;
+        }
+        
+        query += ' ORDER BY b.fecha DESC';
+        
+        // Verificar cache (solo para consultas sin filtros específicos)
+        const hasFilters = fecha_inicio || fecha_fin || id_usuario || id_producto || estado;
+        let result;
+        
+        if (!hasFilters) {
+            const cacheKey = getCacheKey('bitacora:list', { userId: userId || 'all', esAdmin });
+            const cached = getFromCache(cacheKey);
+            
+            if (cached) {
+                console.log(`✅ ${cached.length} registros desde CACHE`);
+                return res.json({ success: true, data: cached, source: 'cache' });
+            }
+            
+            result = await pool.query(query, params);
+            
+            // Guardar en cache (1 minuto)
+            setInCache(cacheKey, result.rows, CACHE_TTL.BITACORA);
+        } else {
+            result = await pool.query(query, params);
+        }
+        
+        console.log(`✅ ${result.rows.length} registros encontrados`);
+        res.json({ success: true, data: result.rows });
+        
+    } catch (error) {
+        console.error('❌ Error listando bitácora:', error);
+        res.status(500).json({ error: error.message });
+    }
+});
+
+// ANULAR REGISTRO DE BITÁCORA
+app.put('/api/bitacora/anular', async (req, res) => {
+    const { id, motivo_cambio, userId } = req.body;
+    
+    console.log('🚫 Anulando registro:', id);
+    
+    try {
+        if (!userId) {
+            return res.status(400).json({ error: 'userId requerido' });
+        }
+        
+        const userResult = await pool.query('SELECT * FROM usuarios WHERE id_usuario = $1', [userId]);
+        
+        if (userResult.rows.length === 0) {
+            return res.status(404).json({ error: 'Usuario no encontrado' });
+        }
+        
+        const usuario = userResult.rows[0];
+        
+        if (!id || !motivo_cambio) {
+            return res.status(400).json({ error: 'Faltan datos requeridos: id y motivo_cambio' });
+        }
+        
+        // Verificar que el registro existe
+        const checkResult = await pool.query('SELECT * FROM bitacora_produccion WHERE id = $1', [id]);
+        
+        if (checkResult.rows.length === 0) {
+            return res.status(404).json({ error: 'Registro no encontrado' });
+        }
+        
+        const registro = checkResult.rows[0];
+        
+        // Costureras solo pueden anular sus propios registros
+        if (usuario.rol === 'costurera' && registro.id_usuario !== usuario.id_usuario) {
+            return res.status(403).json({ error: 'No tienes permiso para anular este registro' });
+        }
+        
+        const result = await pool.query(`
+            UPDATE bitacora_produccion 
+            SET estado = 'ANULADO',
+                motivo_cambio = $1,
+                fecha_modificacion = CURRENT_TIMESTAMP,
+                usuario_modificador = $2
+            WHERE id = $3
+            RETURNING *
+        `, [motivo_cambio, usuario.id_usuario, id]);
+        
+        // 🗑️ Invalidar cache de bitácora
+        invalidateCachePattern('bitacora:');
+        
+        console.log('✅ Registro anulado');
+        res.json({ success: true, data: result.rows[0] });
+        
+    } catch (error) {
+        console.error('❌ Error anulando registro:', error);
+        res.status(500).json({ error: error.message });
+    }
+});
+
+// EDITAR REGISTRO DE BITÁCORA
+app.put('/api/bitacora/editar', async (req, res) => {
+    const { id, cantidad, id_producto, motivo_cambio, userId } = req.body;
+    
+    console.log('✏️ Editando registro:', id);
+    
+    try {
+        if (!userId) {
+            return res.status(400).json({ error: 'userId requerido' });
+        }
+        
+        const userResult = await pool.query('SELECT * FROM usuarios WHERE id_usuario = $1', [userId]);
+        
+        if (userResult.rows.length === 0) {
+            return res.status(404).json({ error: 'Usuario no encontrado' });
+        }
+        
+        const usuario = userResult.rows[0];
+        
+        if (!id || (!cantidad && !id_producto) || !motivo_cambio) {
+            return res.status(400).json({ error: 'Faltan datos requeridos: id, (cantidad o id_producto) y motivo_cambio' });
+        }
+        
+        // Verificar que el registro existe
+        const checkResult = await pool.query('SELECT * FROM bitacora_produccion WHERE id = $1', [id]);
+        
+        if (checkResult.rows.length === 0) {
+            return res.status(404).json({ error: 'Registro no encontrado' });
+        }
+        
+        const registro = checkResult.rows[0];
+        
+        // Costureras solo pueden editar sus propios registros
+        if (usuario.rol === 'costurera' && registro.id_usuario !== usuario.id_usuario) {
+            return res.status(403).json({ error: 'No tienes permiso para editar este registro' });
+        }
+        
+        const updates = [];
+        const params = [];
+        let paramCounter = 1;
+        
+        if (cantidad) {
+            updates.push(`cantidad = $${paramCounter}`);
+            params.push(cantidad);
+            paramCounter++;
+        }
+        
+        if (id_producto) {
+            updates.push(`id_producto = $${paramCounter}`);
+            params.push(id_producto);
+            paramCounter++;
+        }
+        
+        updates.push(`estado = 'EDITADO'`);
+        updates.push(`motivo_cambio = $${paramCounter}`);
+        params.push(motivo_cambio);
+        paramCounter++;
+        
+        updates.push(`fecha_modificacion = CURRENT_TIMESTAMP`);
+        updates.push(`usuario_modificador = $${paramCounter}`);
+        params.push(usuario.id_usuario);
+        paramCounter++;
+        
+        params.push(id); // WHERE id = $X
+        
+        const result = await pool.query(`
+            UPDATE bitacora_produccion 
+            SET ${updates.join(', ')}
+            WHERE id = $${paramCounter}
+            RETURNING *
+        `, params);
+        
+        // 🗑️ Invalidar cache de bitácora
+        invalidateCachePattern('bitacora:');
+        
+        console.log('✅ Registro editado');
+        res.json({ success: true, data: result.rows[0] });
+        
+    } catch (error) {
+        console.error('❌ Error editando registro:', error);
+        res.status(500).json({ error: error.message });
+    }
+});
+
+// REPORTE MENSUAL DE BITÁCORA (CON EXPORTACIÓN)
+app.get('/api/bitacora/reporte', async (req, res) => {
+    const { fecha_inicio, fecha_fin, id_usuario, id_producto, estado, formato, userId } = req.query;
+    
+    console.log('📊 Generando reporte con filtros:', req.query);
+    
+    try {
+        let usuario = null;
+        
+        if (userId) {
+            const userResult = await pool.query('SELECT * FROM usuarios WHERE id_usuario = $1', [userId]);
+            if (userResult.rows.length > 0) {
+                usuario = userResult.rows[0];
+            }
+        }
+        
+        // Solo admin y dueño pueden ver reportes completos
+        if (!['admin', 'dueño', 'dueno'].includes(usuario.rol)) {
+            return res.status(403).json({ error: 'No tienes permiso para ver reportes' });
+        }
+        
+        let query = `
+            SELECT 
+                b.id,
+                b.fecha,
+                u.nombre || ' ' || u.apellido as usuario,
+                p.nombre_producto,
+                b.cantidad,
+                b.estado,
+                b.motivo_cambio,
+                b.fecha_modificacion,
+                um.nombre || ' ' || um.apellido as modificado_por
+            FROM bitacora_produccion b
+            JOIN usuarios u ON b.id_usuario = u.id_usuario
+            JOIN productos p ON b.id_producto = p.id_producto
+            LEFT JOIN usuarios um ON b.usuario_modificador = um.id_usuario
+            WHERE 1=1
+        `;
+        
+        const params = [];
+        let paramCounter = 1;
+        
+        if (fecha_inicio) {
+            query += ` AND b.fecha >= $${paramCounter}`;
+            params.push(fecha_inicio);
+            paramCounter++;
+        }
+        
+        if (fecha_fin) {
+            query += ` AND b.fecha <= $${paramCounter}`;
+            params.push(fecha_fin);
+            paramCounter++;
+        }
+        
+        if (id_usuario) {
+            query += ` AND b.id_usuario = $${paramCounter}`;
+            params.push(id_usuario);
+            paramCounter++;
+        }
+        
+        if (id_producto) {
+            query += ` AND b.id_producto = $${paramCounter}`;
+            params.push(id_producto);
+            paramCounter++;
+        }
+        
+        if (estado) {
+            query += ` AND b.estado = $${paramCounter}`;
+            params.push(estado);
+            paramCounter++;
+        }
+        
+        query += ' ORDER BY b.fecha DESC';
+        
+        const result = await pool.query(query, params);
+        
+        // Si solicitan formato JSON (por defecto)
+        if (!formato || formato === 'json') {
+            console.log(`✅ Reporte generado: ${result.rows.length} registros`);
+            res.json({ success: true, data: result.rows });
+        } else {
+            // Aquí se implementaría la exportación a Excel/PDF
+            console.log('📄 Exportación solicitada (por implementar)');
+            res.json({ 
+                success: true, 
+                data: result.rows,
+                mensaje: 'Exportación de Excel pendiente de implementar con librería ExcelJS'
+            });
+        }
+        
+    } catch (error) {
+        console.error('❌ Error generando reporte:', error);
+        res.status(500).json({ error: error.message });
+    }
+});
+
+// EXPORTAR BITÁCORA A DOCX
+app.get('/api/bitacora/exportar-docx', async (req, res) => {
+    try {
+        const { Document, Packer, Paragraph, Table, TableCell, TableRow, TextRun, WidthType, AlignmentType, BorderStyle } = require('docx');
+        
+        const { userId, fecha_inicio, fecha_fin, id_usuario, id_producto, estado } = req.query;
+        
+        console.log('📄 [BITACORA DOCX] Generando documento...');
+        
+        if (!userId) {
+            return res.status(400).json({ error: 'userId requerido' });
+        }
+        
+        // Construir query (similar a /listar)
+        let query = `
+            SELECT 
+                b.*,
+                u.nombre_completo as nombre_usuario,
+                p.nombre_producto,
+                um.nombre_completo as nombre_modificador
+            FROM bitacora_produccion b
+            JOIN usuarios u ON b.id_usuario = u.id_usuario
+            JOIN productos p ON b.id_producto = p.id_producto
+            LEFT JOIN usuarios um ON b.usuario_modificador = um.id_usuario
+            WHERE 1=1
+        `;
+        
+        const params = [];
+        let paramCounter = 1;
+        
+        if (fecha_inicio) {
+            query += ` AND b.fecha >= $${paramCounter}`;
+            params.push(fecha_inicio);
+            paramCounter++;
+        }
+        
+        if (fecha_fin) {
+            query += ` AND b.fecha <= $${paramCounter}`;
+            params.push(fecha_fin);
+            paramCounter++;
+        }
+        
+        if (id_usuario) {
+            query += ` AND b.id_usuario = $${paramCounter}`;
+            params.push(id_usuario);
+            paramCounter++;
+        }
+        
+        if (id_producto) {
+            query += ` AND b.id_producto = $${paramCounter}`;
+            params.push(id_producto);
+            paramCounter++;
+        }
+        
+        if (estado) {
+            query += ` AND b.estado = $${paramCounter}`;
+            params.push(estado);
+            paramCounter++;
+        }
+        
+        query += ' ORDER BY b.fecha DESC';
+        
+        const result = await pool.query(query, params);
+        const registros = result.rows;
+        
+        console.log(`📄 ${registros.length} registros para exportar`);
+        
+        // Crear documento
+        const doc = new Document({
+            sections: [{
+                properties: {},
+                children: [
+                    // Título
+                    new Paragraph({
+                        text: 'BITÁCORA DE PRODUCCIÓN',
+                        heading: 'Heading1',
+                        alignment: AlignmentType.CENTER,
+                        spacing: { after: 400 }
+                    }),
+                    
+                    // Fecha de generación
+                    new Paragraph({
+                        children: [
+                            new TextRun({
+                                text: `Fecha de generación: ${new Date().toLocaleString('es-PE')}`,
+                                size: 20
+                            })
+                        ],
+                        spacing: { after: 200 }
+                    }),
+                    
+                    // Filtros aplicados
+                    new Paragraph({
+                        children: [
+                            new TextRun({
+                                text: 'Filtros aplicados:',
+                                bold: true,
+                                size: 22
+                            })
+                        ],
+                        spacing: { after: 100 }
+                    }),
+                    new Paragraph({
+                        children: [
+                            new TextRun({
+                                text: `- Fecha inicio: ${fecha_inicio || 'No especificada'}`,
+                                size: 20
+                            })
+                        ]
+                    }),
+                    new Paragraph({
+                        children: [
+                            new TextRun({
+                                text: `- Fecha fin: ${fecha_fin || 'No especificada'}`,
+                                size: 20
+                            })
+                        ]
+                    }),
+                    new Paragraph({
+                        children: [
+                            new TextRun({
+                                text: `- Estado: ${estado || 'Todos'}`,
+                                size: 20
+                            })
+                        ],
+                        spacing: { after: 300 }
+                    }),
+                    
+                    // Tabla
+                    new Table({
+                        width: {
+                            size: 100,
+                            type: WidthType.PERCENTAGE
+                        },
+                        rows: [
+                            // Encabezado
+                            new TableRow({
+                                children: [
+                                    new TableCell({
+                                        children: [new Paragraph({ text: 'ID', bold: true })],
+                                        shading: { fill: '3B82F6' }
+                                    }),
+                                    new TableCell({
+                                        children: [new Paragraph({ text: 'FECHA', bold: true })],
+                                        shading: { fill: '3B82F6' }
+                                    }),
+                                    new TableCell({
+                                        children: [new Paragraph({ text: 'USUARIO', bold: true })],
+                                        shading: { fill: '3B82F6' }
+                                    }),
+                                    new TableCell({
+                                        children: [new Paragraph({ text: 'PRODUCTO', bold: true })],
+                                        shading: { fill: '3B82F6' }
+                                    }),
+                                    new TableCell({
+                                        children: [new Paragraph({ text: 'CANTIDAD', bold: true })],
+                                        shading: { fill: '3B82F6' }
+                                    }),
+                                    new TableCell({
+                                        children: [new Paragraph({ text: 'ESTADO', bold: true })],
+                                        shading: { fill: '3B82F6' }
+                                    })
+                                ]
+                            }),
+                            
+                            // Filas de datos
+                            ...registros.map(reg => new TableRow({
+                                children: [
+                                    new TableCell({
+                                        children: [new Paragraph({ text: `#${reg.id}` })]
+                                    }),
+                                    new TableCell({
+                                        children: [new Paragraph({ 
+                                            text: new Date(reg.fecha).toLocaleString('es-PE', {
+                                                year: 'numeric',
+                                                month: '2-digit',
+                                                day: '2-digit',
+                                                hour: '2-digit',
+                                                minute: '2-digit'
+                                            })
+                                        })]
+                                    }),
+                                    new TableCell({
+                                        children: [new Paragraph({ text: reg.nombre_usuario || 'Usuario' })]
+                                    }),
+                                    new TableCell({
+                                        children: [new Paragraph({ text: reg.nombre_producto })]
+                                    }),
+                                    new TableCell({
+                                        children: [new Paragraph({ text: String(reg.cantidad) })]
+                                    }),
+                                    new TableCell({
+                                        children: [new Paragraph({ text: reg.estado })],
+                                        shading: {
+                                            fill: reg.estado === 'ACTIVO' ? 'D1FAE5' :
+                                                  reg.estado === 'EDITADO' ? 'FEF3C7' : 'FEE2E2'
+                                        }
+                                    })
+                                ]
+                            }))
+                        ]
+                    }),
+                    
+                    // Estadísticas
+                    new Paragraph({
+                        text: '',
+                        spacing: { before: 400 }
+                    }),
+                    new Paragraph({
+                        children: [
+                            new TextRun({
+                                text: 'ESTADÍSTICAS',
+                                bold: true,
+                                size: 24
+                            })
+                        ],
+                        spacing: { after: 200 }
+                    }),
+                    new Paragraph({
+                        children: [
+                            new TextRun({
+                                text: `Total de registros: ${registros.length}`,
+                                size: 22
+                            })
+                        ]
+                    }),
+                    new Paragraph({
+                        children: [
+                            new TextRun({
+                                text: `Registros ACTIVOS: ${registros.filter(r => r.estado === 'ACTIVO').length}`,
+                                size: 22
+                            })
+                        ]
+                    }),
+                    new Paragraph({
+                        children: [
+                            new TextRun({
+                                text: `Registros EDITADOS: ${registros.filter(r => r.estado === 'EDITADO').length}`,
+                                size: 22
+                            })
+                        ]
+                    }),
+                    new Paragraph({
+                        children: [
+                            new TextRun({
+                                text: `Registros ANULADOS: ${registros.filter(r => r.estado === 'ANULADO').length}`,
+                                size: 22
+                            })
+                        ]
+                    })
+                ]
+            }]
+        });
+        
+        // Generar buffer
+        const buffer = await Packer.toBuffer(doc);
+        
+        // Enviar archivo
+        res.setHeader('Content-Type', 'application/vnd.openxmlformats-officedocument.wordprocessingml.document');
+        res.setHeader('Content-Disposition', `attachment; filename=bitacora_produccion_${new Date().toISOString().split('T')[0]}.docx`);
+        res.send(buffer);
+        
+        console.log('✅ Documento DOCX generado exitosamente');
+        
+    } catch (error) {
+        console.error('❌ Error generando DOCX:', error);
+        res.status(500).json({ error: error.message });
+    }
+});
+
+console.log('✅ Bitácora de Producción: 6 endpoints registrados');
+console.log('   - POST /api/bitacora/crear');
+console.log('   - GET  /api/bitacora/listar');
+console.log('   - PUT  /api/bitacora/anular');
+console.log('   - PUT  /api/bitacora/editar');
+console.log('   - GET  /api/bitacora/reporte');
+console.log('   - GET  /api/bitacora/exportar-docx');
+
+// ====================================================
+// ENDPOINTS DE SISTEMA DE CHAT
+// ====================================================
+
+// ENVIAR MENSAJE
+app.post('/api/chat/enviar', async (req, res) => {
+    const { id_remitente, id_destinatario, tipo_destinatario, mensaje } = req.body;
+    
+    console.log('💬 Enviando mensaje:', req.body);
+    
+    try {
+        if (!id_remitente) {
+            return res.status(400).json({ error: 'id_remitente requerido' });
+        }
+        
+        if (!mensaje || mensaje.trim() === '') {
+            return res.status(400).json({ error: 'El mensaje no puede estar vacío' });
+        }
+        
+        // Validar tipo de destinatario
+        const tiposValidos = ['USUARIO', 'GRUPO_SUPERVISORES', 'GRUPO_ADMIN', 'TODOS'];
+        const tipoFinal = tipo_destinatario || 'USUARIO';
+        
+        if (!tiposValidos.includes(tipoFinal)) {
+            return res.status(400).json({ error: 'Tipo de destinatario inválido' });
+        }
+        
+        // Si es mensaje directo (USUARIO), debe tener id_destinatario
+        if (tipoFinal === 'USUARIO' && !id_destinatario) {
+            return res.status(400).json({ error: 'Para mensajes directos se requiere id_destinatario' });
+        }
+        
+        const result = await pool.query(`
+            INSERT INTO chat_mensajes 
+            (id_remitente, id_destinatario, tipo_destinatario, mensaje)
+            VALUES ($1, $2, $3, $4)
+            RETURNING *
+        `, [id_remitente, id_destinatario || null, tipoFinal, mensaje]);
+        
+        console.log('✅ Mensaje enviado:', result.rows[0].id);
+        res.json({ success: true, data: result.rows[0] });
+        
+    } catch (error) {
+        console.error('❌ Error enviando mensaje:', error);
+        res.status(500).json({ error: error.message });
+    }
+});
+
+// OBTENER MENSAJES
+app.get('/api/chat/mensajes', async (req, res) => {
+    const { id_conversacion, tipo, limite, userId } = req.query;
+    
+    console.log('📥 Obteniendo mensajes:', req.query);
+    
+    try {
+        const uid = userId || req.headers['user-id'];
+        
+        if (!uid) {
+            return res.status(400).json({ error: 'userId requerido' });
+        }
+        
+        const userResult = await pool.query('SELECT * FROM usuarios WHERE id_usuario = $1', [uid]);
+        
+        if (userResult.rows.length === 0) {
+            return res.status(401).json({ error: 'Usuario no autenticado' });
+        }
+        
+        const usuario = userResult.rows[0];
+        
+        let query = `
+            SELECT 
+                m.*,
+                ur.nombre || ' ' || ur.apellido as remitente_nombre,
+                ur.rol as remitente_rol,
+                ud.nombre || ' ' || ud.apellido as destinatario_nombre
+            FROM chat_mensajes m
+            JOIN usuarios ur ON m.id_remitente = ur.id_usuario
+            LEFT JOIN usuarios ud ON m.id_destinatario = ud.id_usuario
+            WHERE (
+                m.id_remitente = $1 
+                OR m.id_destinatario = $1
+                OR (m.tipo_destinatario = 'TODOS')
+        `;
+        
+        const params = [usuario.id_usuario];
+        
+        // Agregar filtro por grupo según rol
+        if (usuario.rol === 'supervisor') {
+            query += ` OR (m.tipo_destinatario = 'GRUPO_SUPERVISORES')`;
+        }
+        
+        if (['admin', 'dueño', 'dueno'].includes(usuario.rol)) {
+            query += ` OR (m.tipo_destinatario = 'GRUPO_ADMIN')`;
+        }
+        
+        query += ')';
+        
+        // Filtrar por conversación específica
+        if (id_conversacion) {
+            query += ` AND (
+                (m.id_remitente = $1 AND m.id_destinatario = $2)
+                OR (m.id_remitente = $2 AND m.id_destinatario = $1)
+            )`;
+            params.push(id_conversacion);
+        }
+        
+        query += ' ORDER BY m.fecha DESC';
+        
+        if (limite) {
+            query += ` LIMIT ${parseInt(limite)}`;
+        }
+        
+        const result = await pool.query(query, params);
+        
+        console.log(`✅ ${result.rows.length} mensajes encontrados`);
+        res.json({ success: true, data: result.rows });
+        
+    } catch (error) {
+        console.error('❌ Error obteniendo mensajes:', error);
+        res.status(500).json({ error: error.message });
+    }
+});
+
+// MARCAR MENSAJE COMO LEÍDO
+app.put('/api/chat/marcar-leido', async (req, res) => {
+    const { id_mensaje, userId } = req.body;
+    
+    console.log('✓ Marcando mensaje como leído:', id_mensaje);
+    
+    try {
+        const uid = userId || req.headers['user-id'];
+        
+        if (!uid) {
+            return res.status(400).json({ error: 'userId requerido' });
+        }
+        
+        const userResult = await pool.query('SELECT id_usuario FROM usuarios WHERE id_usuario = $1', [uid]);
+        
+        if (userResult.rows.length === 0) {
+            return res.status(401).json({ error: 'Usuario no autenticado' });
+        }
+        
+        const id_usuario = userResult.rows[0].id_usuario;
+        
+        if (!id_mensaje) {
+            return res.status(400).json({ error: 'Se requiere id_mensaje' });
+        }
+        
+        // Solo puede marcar como leído si es el destinatario
+        const result = await pool.query(`
+            UPDATE chat_mensajes 
+            SET leido = TRUE
+            WHERE id = $1 AND (id_destinatario = $2 OR tipo_destinatario != 'USUARIO')
+            RETURNING *
+        `, [id_mensaje, id_usuario]);
+        
+        console.log('✅ Mensaje marcado como leído');
+        res.json({ success: true, data: result.rows[0] });
+        
+    } catch (error) {
+        console.error('❌ Error marcando mensaje:', error);
+        res.status(500).json({ error: error.message });
+    }
+});
+
+// CONTAR MENSAJES NO LEÍDOS
+app.get('/api/chat/no-leidos', async (req, res) => {
+    console.log('🔔 Contando mensajes no leídos');
+    console.log('   Query params:', req.query);
+    console.log('   Headers user-id:', req.headers['user-id']);
+    
+    try {
+        // Obtener userId de query params o headers
+        const userId = req.query.userId || req.headers['user-id'];
+        console.log('   userId final:', userId);
+        
+        if (!userId) {
+            console.log('   ❌ userId no proporcionado');
+            return res.status(400).json({ error: 'userId requerido' });
+        }
+        
+        const userResult = await pool.query('SELECT * FROM usuarios WHERE id_usuario = $1', [userId]);
+        
+        if (userResult.rows.length === 0) {
+            return res.status(404).json({ error: 'Usuario no encontrado' });
+        }
+        
+        const usuario = userResult.rows[0];
+        
+        let query = `
+            SELECT COUNT(*) as total
+            FROM chat_mensajes
+            WHERE leido = FALSE
+            AND id_remitente != $1
+            AND (
+                id_destinatario = $1
+                OR tipo_destinatario = 'TODOS'
+        `;
+        
+        if (usuario.rol === 'supervisor') {
+            query += ` OR tipo_destinatario = 'GRUPO_SUPERVISORES'`;
+        }
+        
+        if (['admin', 'dueño', 'dueno'].includes(usuario.rol)) {
+            query += ` OR tipo_destinatario = 'GRUPO_ADMIN'`;
+        }
+        
+        query += ')';
+        
+        const result = await pool.query(query, [usuario.id_usuario]);
+        
+        console.log(`✅ ${result.rows[0].total} mensajes no leídos`);
+        res.json({ success: true, total: parseInt(result.rows[0].total) });
+        
+    } catch (error) {
+        console.error('❌ Error contando mensajes no leídos:', error);
+        res.status(500).json({ error: error.message });
+    }
+});
+
+console.log('✅ Sistema de Chat: 4 endpoints registrados');
+console.log('   - POST /api/chat/enviar');
+console.log('   - GET  /api/chat/mensajes');
+console.log('   - PUT  /api/chat/marcar-leido');
+console.log('   - GET  /api/chat/no-leidos');
+
 // Iniciar servidor HTTP con configuración optimizada
 const server = app.listen(port, '0.0.0.0', async () => {
     console.log(`🌐 Servidor HTTP ejecutándose en http://localhost:${port}`);
@@ -7422,7 +8671,7 @@ function generarRecomendacionesDiagnostico(estado, patrones) {
     const recomendaciones = [];
     
     if (estado === 'error' || estado === 'timeout') {
-        recomendaciones.push('🔴 Verificar conexión de red a 192.168.1.34');
+        recomendaciones.push('🔴 Verificar conexión de red a 192.168.15.34 (Zebra) y 192.168.15.35 (Godex)');
         recomendaciones.push('🔌 Revisar cables de red y alimentación');
         recomendaciones.push('🔄 Reiniciar impresora si es necesario');
     }
@@ -7578,8 +8827,8 @@ app.get('/api/admin/users', async (req, res) => {
             ORDER BY u.fecha_creacion DESC
         `);
 
-        // Guardar en caché
-        setCache('usuarios', users.rows);
+        // Guardar en caché (30 minutos)
+        setInCache('usuarios', users.rows, CACHE_TTL.USUARIOS);
 
         res.json(users.rows);
     } catch (error) {
@@ -7619,7 +8868,7 @@ app.post('/api/admin/users', async (req, res) => {
         `, [codigo_empleado, nombre_completo, email, telefono, puesto, nivel_acceso, id_departamento || null, hashedPassword, genero || 'femenino', auto_services || false]);
 
         // 🗑️ Invalidar caché de usuarios al crear uno nuevo
-        invalidateCache('usuarios');
+        invalidateCachePattern('usuarios');
 
         res.json({ success: true, user: result.rows[0] });
     } catch (error) {
@@ -7716,7 +8965,7 @@ app.put('/api/admin/users/:id', async (req, res) => {
         `, values);
 
         // 🗑️ Invalidar caché de usuarios al actualizar
-        invalidateCache('usuarios');
+        invalidateCachePattern('usuarios');
 
         res.json({ success: true, user: result.rows[0] });
     } catch (error) {
@@ -9366,7 +10615,7 @@ app.post('/api/chat/canales/:canalId/mensajes', verificarToken, async (req, res)
 });
 
 // Obtener usuarios en línea
-app.get('/api/chat/usuarios-en-linea', verificarToken, async (req, res) => {
+app.get('/api/chat/usuarios-en-linea', async (req, res) => {
     try {
         // Verificar si las tablas de chat existen
         const tablesExist = await pool.query(`
@@ -9448,8 +10697,10 @@ app.post('/api/chat/estado', verificarToken, async (req, res) => {
     }
 });
 
-// Obtener conteo de mensajes no leídos
-app.get('/api/chat/no-leidos', verificarToken, async (req, res) => {
+// Obtener conteo de mensajes no leídos (SISTEMA ANTIGUO - DEPRECADO)
+// Este endpoint usa las tablas antiguas de canales, el nuevo está en línea 7649
+/*
+app.get('/api/chat/no-leidos-OLD', verificarToken, async (req, res) => {
     try {
         const userId = req.usuario.id_usuario;
         
@@ -9486,8 +10737,10 @@ app.get('/api/chat/no-leidos', verificarToken, async (req, res) => {
         res.status(500).json({ error: 'Error al obtener mensajes no leídos' });
     }
 });
+*/
 
-// Marcar mensajes como leídos
+// Marcar mensajes como leídos (SISTEMA ANTIGUO - DEPRECADO)
+/*
 app.post('/api/chat/canales/:canalId/marcar-leido', verificarToken, async (req, res) => {
     try {
         const { canalId } = req.params;
@@ -9507,6 +10760,7 @@ app.post('/api/chat/canales/:canalId/marcar-leido', verificarToken, async (req, 
         res.status(500).json({ error: 'Error al marcar como leído' });
     }
 });
+*/
 
 // Endpoint para obtener solicitudes pendientes (para auto-aprobación)
 app.get('/api/solicitudes-pendientes', async (req, res) => {
@@ -10417,8 +11671,8 @@ app.post('/api/admin/deshabilitar-auto-restauracion', async (req, res) => {
             resultados.push(`📅 Última solicitud: ${estado.rows[0].ultima_solicitud}`);
         } catch (error) {
             resultados.push(`❌ Error obteniendo estado: ${error.message}`);
-        }
-
+     }
+    
         console.log('🛑 Proceso de deshabilitación completado');
 
         res.json({
@@ -11241,34 +12495,3 @@ app.get('/api/admin/exportar/usuarios-excel', verificarToken, async (req, res) =
         res.status(500).json({ error: 'Error generando archivo Excel' });
     }
 });
-
-// =====================================================
-// 📝 FIN DEL MÓDULO DE REPORTES Y EXPORTACIONES
-// =====================================================
-// 
-// NOTAS IMPORTANTES:
-// ─────────────────────────────────────────────────────
-// 
-// ✅ CORRECCIONES APLICADAS (Nov 2025):
-// • Nombres de columnas corregidos para coincidir con la BD:
-//   - productos: id_producto, nombre_producto, descripcion_corta
-//   - usuarios: id_usuario, nombre_completo, nivel_acceso
-//   - solicitudes: cantidad_solicitada (no cantidad_etiquetas)
-// 
-// • Tabla solicitudes_rotulado: Comentada temporalmente
-//   (pendiente de implementación en la base de datos)
-// 
-// • ExcelJS: Importado globalmente en línea 16
-//   (no importar dentro de las funciones)
-// 
-// ⚠️ PENDIENTE:
-// • Implementar tabla solicitudes_rotulado en PostgreSQL
-// • Agregar campo auto_services a solicitudes_etiquetas
-// • Agregar campo fecha_aprobacion si es necesario
-// 
-// 🔧 MANTENIMIENTO:
-// • Para agregar nueva exportación: Seguir patrón de ExcelJS
-// • Usar alias SQL para mantener nombres consistentes en el frontend
-// • Siempre validar nombres de columnas con crear_base_datos.sql
-// 
-// =====================================================

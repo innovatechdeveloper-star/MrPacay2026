@@ -1,0 +1,606 @@
+<!-- ========================================== -->
+<!-- COMPONENTE: BOTÓN DE CHAT FLOTANTE -->
+<!-- ========================================== -->
+
+<style>
+/* Botón flotante de chat */
+#btn-chat-flotante {
+    position: fixed;
+    bottom: 30px;
+    right: 30px;
+    width: 60px;
+    height: 60px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+    border: none;
+    cursor: pointer;
+    box-shadow: 0 4px 20px rgba(102, 126, 234, 0.4);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 24px;
+    transition: all 0.3s ease;
+    z-index: 10000;
+}
+
+#btn-chat-flotante:hover {
+    transform: scale(1.1);
+    box-shadow: 0 6px 30px rgba(102, 126, 234, 0.6);
+}
+
+#badge-mensajes-no-leidos {
+    position: absolute;
+    top: -5px;
+    right: -5px;
+    background: #ef4444;
+    color: white;
+    border-radius: 50%;
+    min-width: 24px;
+    height: 24px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 12px;
+    font-weight: bold;
+    box-shadow: 0 2px 8px rgba(239, 68, 68, 0.4);
+}
+
+/* Modal de chat */
+#modal-chat {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.5);
+    z-index: 10001;
+    backdrop-filter: blur(5px);
+}
+
+#modal-chat.active {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.chat-container {
+    background: white;
+    border-radius: 16px;
+    width: 90%;
+    max-width: 600px;
+    height: 80vh;
+    max-height: 700px;
+    display: flex;
+    flex-direction: column;
+    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+}
+
+.chat-header {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+    padding: 20px;
+    border-radius: 16px 16px 0 0;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.chat-header h3 {
+    margin: 0;
+    font-size: 20px;
+}
+
+.btn-cerrar-chat {
+    background: rgba(255, 255, 255, 0.2);
+    border: none;
+    color: white;
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: background 0.2s;
+}
+
+.btn-cerrar-chat:hover {
+    background: rgba(255, 255, 255, 0.3);
+}
+
+.chat-body {
+    flex: 1;
+    padding: 20px;
+    overflow-y: auto;
+    background: #f8fafc;
+}
+
+.mensaje-item {
+    margin-bottom: 16px;
+    display: flex;
+    flex-direction: column;
+}
+
+.mensaje-item.propio {
+    align-items: flex-end;
+}
+
+.mensaje-item.ajeno {
+    align-items: flex-start;
+}
+
+.mensaje-autor {
+    font-size: 12px;
+    color: #64748b;
+    margin-bottom: 4px;
+    font-weight: 600;
+}
+
+.mensaje-contenido {
+    background: white;
+    padding: 12px 16px;
+    border-radius: 12px;
+    max-width: 70%;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+    word-wrap: break-word;
+}
+
+.mensaje-item.propio .mensaje-contenido {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+}
+
+.mensaje-fecha {
+    font-size: 11px;
+    color: #94a3b8;
+    margin-top: 4px;
+}
+
+.chat-footer {
+    padding: 20px;
+    background: white;
+    border-radius: 0 0 16px 16px;
+    border-top: 1px solid #e2e8f0;
+}
+
+.chat-form {
+    display: flex;
+    gap: 12px;
+    align-items: center;
+}
+
+#select-destinatario-chat {
+    flex: 0 0 200px;
+    padding: 12px;
+    border: 2px solid #e2e8f0;
+    border-radius: 8px;
+    font-size: 14px;
+    transition: border-color 0.2s;
+}
+
+#select-destinatario-chat:focus {
+    outline: none;
+    border-color: #667eea;
+}
+
+#input-mensaje-chat {
+    flex: 1;
+    padding: 12px;
+    border: 2px solid #e2e8f0;
+    border-radius: 8px;
+    font-size: 14px;
+    transition: border-color 0.2s;
+}
+
+#input-mensaje-chat:focus {
+    outline: none;
+    border-color: #667eea;
+}
+
+#btn-enviar-chat {
+    padding: 12px 24px;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    font-weight: 600;
+    transition: transform 0.2s, box-shadow 0.2s;
+}
+
+#btn-enviar-chat:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(102, 126, 234, 0.4);
+}
+
+#btn-enviar-chat:active {
+    transform: translateY(0);
+}
+
+/* Animación de escritura */
+.escribiendo {
+    display: none;
+    align-items: center;
+    gap: 8px;
+    color: #94a3b8;
+    font-size: 14px;
+    padding: 8px 12px;
+}
+
+.escribiendo.active {
+    display: flex;
+}
+
+.dot {
+    width: 6px;
+    height: 6px;
+    background: #94a3b8;
+    border-radius: 50%;
+    animation: bounce 1.4s infinite ease-in-out;
+}
+
+.dot:nth-child(2) {
+    animation-delay: -0.32s;
+}
+
+.dot:nth-child(3) {
+    animation-delay: -0.16s;
+}
+
+@keyframes bounce {
+    0%, 80%, 100% {
+        transform: scale(0);
+    }
+    40% {
+        transform: scale(1);
+    }
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+    .chat-container {
+        width: 100%;
+        height: 100%;
+        max-height: 100vh;
+        border-radius: 0;
+    }
+    
+    .chat-header {
+        border-radius: 0;
+    }
+    
+    .chat-footer {
+        border-radius: 0;
+    }
+    
+    .chat-form {
+        flex-direction: column;
+    }
+    
+    #select-destinatario-chat {
+        flex: 1;
+        width: 100%;
+    }
+    
+    #btn-chat-flotante {
+        bottom: 20px;
+        right: 20px;
+        width: 56px;
+        height: 56px;
+        font-size: 22px;
+    }
+}
+</style>
+
+<!-- Botón flotante -->
+<button id="btn-chat-flotante" onclick="abrirChat()" title="Abrir chat">
+    💬
+    <span id="badge-mensajes-no-leidos" style="display: none;">0</span>
+</button>
+
+<!-- Modal de chat -->
+<div id="modal-chat">
+    <div class="chat-container">
+        <div class="chat-header">
+            <h3>💬 Chat del Sistema</h3>
+            <button class="btn-cerrar-chat" onclick="cerrarChat()">✖</button>
+        </div>
+        
+        <div class="chat-body" id="chat-mensajes-lista">
+            <div style="text-align: center; color: #94a3b8; padding: 40px 20px;">
+                Cargando mensajes...
+            </div>
+        </div>
+        
+        <div class="escribiendo">
+            <span>Alguien está escribiendo</span>
+            <div class="dot"></div>
+            <div class="dot"></div>
+            <div class="dot"></div>
+        </div>
+        
+        <div class="chat-footer">
+            <form class="chat-form" onsubmit="enviarMensaje(event)">
+                <select id="select-destinatario-chat">
+                    <option value="TODOS">📢 Todos</option>
+                    <option value="GRUPO_SUPERVISORES">👥 Supervisores</option>
+                    <option value="GRUPO_ADMIN">🔧 Administración</option>
+                    <!-- Los usuarios individuales se cargarán dinámicamente -->
+                </select>
+                
+                <input 
+                    type="text" 
+                    id="input-mensaje-chat" 
+                    placeholder="Escribe tu mensaje..." 
+                    required
+                    maxlength="500"
+                />
+                
+                <button type="submit" id="btn-enviar-chat">Enviar</button>
+            </form>
+        </div>
+    </div>
+</div>
+
+<script>
+let intervalActualizarChat = null;
+let usuarioActual = null;
+
+// ========================================
+// INICIALIZACIÓN DE CHAT
+// ========================================
+async function inicializarChat() {
+    console.log('🚀 Inicializando sistema de chat...');
+    
+    // Obtener usuario actual
+    const userEmail = localStorage.getItem('user_email') || 'admin@sistema.com';
+    
+    try {
+        const response = await fetch('/api/usuarios');
+        const result = await response.json();
+        const usuarios = result.data || result.usuarios || result;
+        
+        usuarioActual = usuarios.find(u => u.email === userEmail);
+        
+        // Cargar usuarios en selector
+        cargarUsuariosEnSelector(usuarios);
+        
+        // Actualizar contador de mensajes no leídos
+        await actualizarContadorNoLeidos();
+        
+        // Iniciar actualización periódica cada 10 segundos
+        intervalActualizarChat = setInterval(async () => {
+            await actualizarContadorNoLeidos();
+            
+            // Si el chat está abierto, actualizar mensajes
+            if (document.getElementById('modal-chat').classList.contains('active')) {
+                await cargarMensajes();
+            }
+        }, 10000);
+        
+        console.log('✅ Chat inicializado');
+    } catch (error) {
+        console.error('❌ Error inicializando chat:', error);
+    }
+}
+
+function cargarUsuariosEnSelector(usuarios) {
+    const select = document.getElementById('select-destinatario-chat');
+    
+    // Filtrar usuarios que no sean el actual
+    const otrosUsuarios = usuarios.filter(u => u.email !== usuarioActual?.email);
+    
+    otrosUsuarios.forEach(usuario => {
+        const option = document.createElement('option');
+        option.value = usuario.id_usuario;
+        option.textContent = `${usuario.nombre} ${usuario.apellido} (${usuario.rol})`;
+        select.appendChild(option);
+    });
+}
+
+async function actualizarContadorNoLeidos() {
+    try {
+        const userEmail = localStorage.getItem('user_email') || 'admin@sistema.com';
+        
+        const response = await fetch('/api/chat/no-leidos', {
+            headers: {
+                'user-email': userEmail
+            }
+        });
+        
+        const result = await response.json();
+        const total = result.total || 0;
+        
+        const badge = document.getElementById('badge-mensajes-no-leidos');
+        
+        if (total > 0) {
+            badge.textContent = total > 99 ? '99+' : total;
+            badge.style.display = 'flex';
+        } else {
+            badge.style.display = 'none';
+        }
+    } catch (error) {
+        console.error('Error actualizando contador:', error);
+    }
+}
+
+// ========================================
+// FUNCIONES DE INTERFAZ
+// ========================================
+async function abrirChat() {
+    document.getElementById('modal-chat').classList.add('active');
+    await cargarMensajes();
+}
+
+function cerrarChat() {
+    document.getElementById('modal-chat').classList.remove('active');
+}
+
+async function cargarMensajes() {
+    const container = document.getElementById('chat-mensajes-lista');
+    
+    try {
+        const userEmail = localStorage.getItem('user_email') || 'admin@sistema.com';
+        
+        const response = await fetch(`/api/chat/mensajes?limite=50`, {
+            headers: {
+                'user-email': userEmail
+            }
+        });
+        
+        const result = await response.json();
+        const mensajes = result.data || [];
+        
+        if (mensajes.length === 0) {
+            container.innerHTML = `
+                <div style="text-align: center; color: #94a3b8; padding: 40px 20px;">
+                    No hay mensajes aún. ¡Sé el primero en escribir! 📝
+                </div>
+            `;
+            return;
+        }
+        
+        // Ordenar por fecha (más antiguos primero)
+        mensajes.sort((a, b) => new Date(a.fecha) - new Date(b.fecha));
+        
+        container.innerHTML = mensajes.map(msg => {
+            const esPropio = msg.id_remitente === usuarioActual?.id_usuario;
+            const fecha = new Date(msg.fecha).toLocaleString('es-PE', {
+                day: '2-digit',
+                month: '2-digit',
+                hour: '2-digit',
+                minute: '2-digit'
+            });
+            
+            let destinatarioTexto = '';
+            if (msg.tipo_destinatario === 'TODOS') {
+                destinatarioTexto = ' → 📢 Todos';
+            } else if (msg.tipo_destinatario === 'GRUPO_SUPERVISORES') {
+                destinatarioTexto = ' → 👥 Supervisores';
+            } else if (msg.tipo_destinatario === 'GRUPO_ADMIN') {
+                destinatarioTexto = ' → 🔧 Admin';
+            } else if (msg.destinatario_nombre) {
+                destinatarioTexto = ` → ${msg.destinatario_nombre}`;
+            }
+            
+            return `
+                <div class="mensaje-item ${esPropio ? 'propio' : 'ajeno'}">
+                    <div class="mensaje-autor">
+                        ${msg.remitente_nombre}${destinatarioTexto}
+                    </div>
+                    <div class="mensaje-contenido">
+                        ${escapeHtml(msg.mensaje)}
+                    </div>
+                    <div class="mensaje-fecha">${fecha}</div>
+                </div>
+            `;
+        }).join('');
+        
+        // Scroll al final
+        container.scrollTop = container.scrollHeight;
+        
+        // Marcar mensajes como leídos
+        const mensajesNoLeidos = mensajes.filter(m => !m.leido && m.id_remitente !== usuarioActual?.id_usuario);
+        for (const msg of mensajesNoLeidos) {
+            await marcarComoLeido(msg.id);
+        }
+        
+        await actualizarContadorNoLeidos();
+        
+    } catch (error) {
+        console.error('Error cargando mensajes:', error);
+        container.innerHTML = `
+            <div style="text-align: center; color: #ef4444; padding: 40px 20px;">
+                ❌ Error cargando mensajes
+            </div>
+        `;
+    }
+}
+
+async function enviarMensaje(event) {
+    event.preventDefault();
+    
+    const input = document.getElementById('input-mensaje-chat');
+    const select = document.getElementById('select-destinatario-chat');
+    
+    const mensaje = input.value.trim();
+    const destinatario = select.value;
+    
+    if (!mensaje) return;
+    
+    try {
+        const userEmail = localStorage.getItem('user_email') || 'admin@sistema.com';
+        
+        const payload = {
+            mensaje: mensaje
+        };
+        
+        // Determinar tipo de destinatario
+        if (['TODOS', 'GRUPO_SUPERVISORES', 'GRUPO_ADMIN'].includes(destinatario)) {
+            payload.tipo_destinatario = destinatario;
+        } else {
+            payload.tipo_destinatario = 'USUARIO';
+            payload.id_destinatario = parseInt(destinatario);
+        }
+        
+        const response = await fetch('/api/chat/enviar', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'user-email': userEmail
+            },
+            body: JSON.stringify(payload)
+        });
+        
+        const result = await response.json();
+        
+        if (result.success) {
+            input.value = '';
+            await cargarMensajes();
+        } else {
+            alert('Error enviando mensaje: ' + result.error);
+        }
+        
+    } catch (error) {
+        console.error('Error enviando mensaje:', error);
+        alert('Error enviando mensaje');
+    }
+}
+
+async function marcarComoLeido(id_mensaje) {
+    try {
+        const userEmail = localStorage.getItem('user_email') || 'admin@sistema.com';
+        
+        await fetch('/api/chat/marcar-leido', {
+            method: 'PUT',
+            headers: {
+                'Content-Type': 'application/json',
+                'user-email': userEmail
+            },
+            body: JSON.stringify({ id_mensaje })
+        });
+    } catch (error) {
+        console.error('Error marcando como leído:', error);
+    }
+}
+
+function escapeHtml(text) {
+    const map = {
+        '&': '&amp;',
+        '<': '&lt;',
+        '>': '&gt;',
+        '"': '&quot;',
+        "'": '&#039;'
+    };
+    return text.replace(/[&<>"']/g, m => map[m]);
+}
+
+// Inicializar cuando cargue la página
+if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', inicializarChat);
+} else {
+    inicializarChat();
+}
+</script>

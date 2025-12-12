@@ -129,6 +129,22 @@ Migración para agregar columnas de control de impresión:
 - **Contraseña:** `alsimtex`
 - **Puerto:** `5432`
 
+## 🌐 Configuración de Red
+
+**Red actual:** `192.168.15.0/24`
+
+**Dispositivos configurados:**
+- **Servidor:** `192.168.15.21` (actualmente 192.168.15.9 en DHCP)
+- **Impresora Zebra ZD230:** `192.168.15.34` (Puerto TCP/IP: 9100)
+- **Impresora Godex G530:** `192.168.15.35` (Puerto TCP/IP: 9100)
+- **Gateway:** `192.168.15.1`
+
+> **⚠️ Importante:** Si replicas este sistema en otra red, actualiza las IPs en:
+> - `config.json` (impresoras)
+> - `system.config` (PRINTER_IP)
+> - `server.js` (PRINTER_IP, GODEX_IP, ipsPermitidas)
+> - Tabla `gestion_impresora` (ip_impresora DEFAULT)
+
 ---
-*Última actualización: 3 de noviembre de 2025*
+*Última actualización: 5 de noviembre de 2025*
 *Esquema exportado automáticamente desde base de datos en producción*
