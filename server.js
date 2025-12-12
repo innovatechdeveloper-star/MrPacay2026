@@ -8046,13 +8046,100 @@ app.get('/api/bitacora/exportar-docx', async (req, res) => {
     }
 });
 
-console.log('✅ Bitácora de Producción: 6 endpoints registrados');
+// ASIGNAR COLABORADOR A REGISTRO
+app.post('/api/bitacora/asignar-colaborador', async (req, res) => {
+    const { id_registro, id_colaborador, cantidad_asignada, nota, userId } = req.body;
+    
+    console.log('👥 Asignando colaborador al registro:', id_registro);
+    
+    try {
+        if (!userId) {
+            return res.status(400).json({ error: 'userId requerido' });
+        }
+        
+        if (!id_registro || !id_colaborador || !cantidad_asignada) {
+            return res.status(400).json({ error: 'Faltan datos requeridos' });
+        }
+        
+        // Verificar que el registro existe y está activo
+        const registroResult = await pool.query(`
+            SELECT * FROM bitacora_produccion WHERE id = $1 AND estado = 'ACTIVO'
+        `, [id_registro]);
+        
+        if (registroResult.rows.length === 0) {
+            return res.status(404).json({ error: 'Registro no encontrado o no está activo' });
+        }
+        
+        const registro = registroResult.rows[0];
+        const cantidadTotal = registro.cantidad_total || registro.cantidad;
+        const cantidadCompletada = registro.cantidad_completada || 0;
+        const cantidadDisponible = cantidadTotal - cantidadCompletada;
+        
+        if (cantidad_asignada > cantidadDisponible) {
+            return res.status(400).json({ 
+                error: `Cantidad excede el disponible (${cantidadDisponible})` 
+            });
+        }
+        
+        // Crear asignación
+        const result = await pool.query(`
+            INSERT INTO bitacora_asignaciones 
+            (id_registro, id_colaborador, cantidad_asignada, nota, asignado_por)
+            VALUES ($1, $2, $3, $4, $5)
+            RETURNING *
+        `, [id_registro, id_colaborador, cantidad_asignada, nota || null, userId]);
+        
+        // Actualizar cantidad completada (si el colaborador ya completó su parte)
+        // Por ahora solo registramos la asignación
+        
+        invalidateCachePattern('bitacora:');
+        
+        console.log('✅ Colaborador asignado');
+        res.json({ success: true, data: result.rows[0] });
+        
+    } catch (error) {
+        console.error('❌ Error asignando colaborador:', error);
+        res.status(500).json({ error: error.message });
+    }
+});
+
+// OBTENER ASIGNACIONES DE UN REGISTRO
+app.get('/api/bitacora/:id/asignaciones', async (req, res) => {
+    const { id } = req.params;
+    
+    console.log('📋 Obteniendo asignaciones del registro:', id);
+    
+    try {
+        const result = await pool.query(`
+            SELECT 
+                a.*,
+                u.nombre_completo as nombre_colaborador,
+                ua.nombre_completo as nombre_asignador
+            FROM bitacora_asignaciones a
+            JOIN usuarios u ON a.id_colaborador = u.id_usuario
+            LEFT JOIN usuarios ua ON a.asignado_por = ua.id_usuario
+            WHERE a.id_registro = $1
+            ORDER BY a.fecha_asignacion DESC
+        `, [id]);
+        
+        console.log(`✅ ${result.rows.length} asignaciones encontradas`);
+        res.json({ success: true, data: result.rows });
+        
+    } catch (error) {
+        console.error('❌ Error obteniendo asignaciones:', error);
+        res.status(500).json({ error: error.message });
+    }
+});
+
+console.log('✅ Bitácora de Producción: 8 endpoints registrados');
 console.log('   - POST /api/bitacora/crear');
 console.log('   - GET  /api/bitacora/listar');
 console.log('   - PUT  /api/bitacora/anular');
 console.log('   - PUT  /api/bitacora/editar');
 console.log('   - GET  /api/bitacora/reporte');
 console.log('   - GET  /api/bitacora/exportar-docx');
+console.log('   - POST /api/bitacora/asignar-colaborador');
+console.log('   - GET  /api/bitacora/:id/asignaciones');
 
 // ====================================================
 // ENDPOINTS DE SISTEMA DE CHAT

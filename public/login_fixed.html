@@ -109,49 +109,30 @@
             background: linear-gradient(145deg, #f0f9ff, #dbeafe);
         }
 
-        .user-card .user-icon {
-            width: 50px;
-            height: 50px;
-            background: #667eea;
-            border-radius: 50%;
+        .user-card .user-photo {
+            width: 120px;
+            height: 120px;
             margin: 0 auto 12px;
             display: flex;
             align-items: center;
             justify-content: center;
-            font-size: 24px;
-            color: white;
+            overflow: hidden;
+            border-radius: 12px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+            background: #f8fafc;
         }
 
-        .user-card.supervisor .user-icon {
-            background: #f59e0b;
-        }
-
-        .user-card.encargada_embalaje .user-icon {
-            background: #3b82f6;
+        .user-card .user-photo img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
         }
 
         .user-card h3 {
             color: #333;
-            font-size: 16px;
-            margin-bottom: 6px;
-        }
-
-        .user-card .role-badge {
-            background: #667eea;
-            color: white;
-            padding: 4px 12px;
-            border-radius: 20px;
-            font-size: 12px;
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
-        }
-
-        .user-card.supervisor .role-badge {
-            background: #f59e0b;
-        }
-
-        .user-card.encargada_embalaje .role-badge {
-            background: #3b82f6;
+            font-size: 18px;
+            font-weight: 600;
+            margin-bottom: 0;
         }
 
         .password-modal {
@@ -308,7 +289,6 @@
         <div class="modal-content">
             <div class="selected-user-info">
                 <h3 id="selected-user-name">Usuario</h3>
-                <span class="role-badge" id="selected-user-role">rol</span>
             </div>
 
             <div class="error-message" id="error-message"></div>
@@ -378,35 +358,29 @@
             const icon = getRoleIcon(user.nivel_acceso);
             const roleName = getRoleName(user.nivel_acceso);
             
+            // Mapeo de fotos por nombre de usuario
+            const photoMap = {
+                'LUIS': '1.-Luis.bmp',
+                'PANCHITA': '2.-Panchita.bmp',
+                'YESENIA': '3.-Yesenia.bmp',
+                'LUISA LUISA': '5.-luisa-luisa.bmp',
+                'MARIA LUISA': '6.-Maria-luisa.bmp',
+                'RUTH MARISOL': '7.-ruth-marisol.bmp',
+                'SRA. ANTONIA': '8.-sra.antonia.bmp',
+                'ANTONIA': '8.-sra.antonia.bmp'
+            };
+            
+            const userName = user.nombre_completo.toUpperCase();
+            const photoFile = photoMap[userName] || '1.-Luis.bmp'; // Foto por defecto
+            
             card.innerHTML = `
-                <div class="user-icon">${icon}</div>
+                <div class="user-photo">
+                    <img src="/founds/icons-works/${photoFile}" alt="${user.nombre_completo}" onerror="this.src='/logo-icon.ico'">
+                </div>
                 <h3>${user.nombre_completo}</h3>
-                <span class="role-badge">${roleName}</span>
             `;
             
             return card;
-        }
-
-        // Obtener icono por rol
-        function getRoleIcon(role) {
-            const icons = {
-                'costurera': '✂️',
-                'supervisor': '👑',
-                'encargada_embalaje': '📦',
-                'administracion': '⚙️'
-            };
-            return icons[role] || '👤';
-        }
-
-        // Obtener nombre del rol
-        function getRoleName(role) {
-            const names = {
-                'costurera': 'Costurera',
-                'supervisor': 'Supervisor',
-                'encargada_embalaje': 'Embalaje',
-                'administracion': 'Admin'
-            };
-            return names[role] || 'Usuario';
         }
 
         // Seleccionar usuario
@@ -414,8 +388,6 @@
             selectedUser = user;
             
             document.getElementById('selected-user-name').textContent = user.nombre_completo;
-            document.getElementById('selected-user-role').textContent = getRoleName(user.nivel_acceso);
-            document.getElementById('selected-user-role').className = `role-badge ${user.nivel_acceso}`;
             document.getElementById('password-input').value = '';
             document.getElementById('error-message').style.display = 'none';
             

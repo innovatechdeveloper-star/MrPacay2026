@@ -1,0 +1,1365 @@
+<!-- ========================================== -->
+<!-- BITÁCORA DE PRODUCCIÓN MEJORADA V2.5 -->
+<!-- Sistema de Trazabilidad con Asignación Colaborativa -->
+<!-- ========================================== -->
+
+<style>
+/* Variables de diseño */
+:root {
+    --color-primary: #667eea;
+    --color-success: #10b981;
+    --color-warning: #f59e0b;
+    --color-danger: #ef4444;
+    --color-info: #3b82f6;
+}
+
+/* Sección de bitácora */
+.seccion-bitacora {
+    background: white;
+    border-radius: 12px;
+    padding: 30px;
+    margin: 20px 0;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+.bitacora-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 24px;
+    flex-wrap: wrap;
+    gap: 16px;
+}
+
+.bitacora-header h2 {
+    color: #1e293b;
+    font-size: 26px;
+    font-weight: 700;
+}
+
+.btn-nueva-entrada {
+    padding: 12px 24px;
+    background: linear-gradient(135deg, var(--color-success) 0%, #059669 100%);
+    color: white;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    font-weight: 600;
+    transition: all 0.3s ease;
+}
+
+.btn-nueva-entrada:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(16, 185, 129, 0.4);
+}
+
+/* Filtros de bitácora */
+.bitacora-filtros {
+    background: #f8fafc;
+    padding: 20px;
+    border-radius: 8px;
+    margin-bottom: 24px;
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 16px;
+}
+
+.filtro-grupo {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.filtro-grupo label {
+    font-size: 14px;
+    font-weight: 600;
+    color: #64748b;
+}
+
+.filtro-grupo input,
+.filtro-grupo select {
+    padding: 10px;
+    border: 2px solid #e2e8f0;
+    border-radius: 6px;
+    font-size: 14px;
+    transition: border-color 0.2s;
+}
+
+.filtro-grupo input:focus,
+.filtro-grupo select:focus {
+    outline: none;
+    border-color: var(--color-primary);
+}
+
+.btn-aplicar-filtros {
+    padding: 10px 20px;
+    background: var(--color-primary);
+    color: white;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+    font-weight: 600;
+    align-self: flex-end;
+}
+
+.btn-aplicar-filtros:hover {
+    background: #5568d3;
+}
+
+/* Tabla de bitácora */
+.tabla-bitacora {
+    width: 100%;
+    border-collapse: collapse;
+    overflow-x: auto;
+    display: block;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+    border-radius: 12px;
+}
+
+.tabla-bitacora thead {
+    background: linear-gradient(135deg, var(--color-primary) 0%, #764ba2 100%);
+    color: white;
+    box-shadow: 0 2px 4px rgba(102, 126, 234, 0.3);
+}
+
+.tabla-bitacora th {
+    padding: 16px 14px;
+    text-align: left;
+    border-bottom: none;
+    font-weight: 700;
+    text-transform: uppercase;
+    font-size: 0.75rem;
+    letter-spacing: 1px;
+    white-space: nowrap;
+}
+
+.tabla-bitacora td {
+    padding: 14px;
+    text-align: left;
+    border-bottom: 1px solid #e2e8f0;
+}
+
+.tabla-bitacora tbody tr:nth-child(even) {
+    background: #f8fafc;
+}
+
+.tabla-bitacora tbody tr:hover {
+    background: #eef2ff;
+    transform: scale(1.002);
+    box-shadow: 0 2px 8px rgba(102, 126, 234, 0.15);
+    transition: all 0.2s ease;
+}
+
+/* Badges de tipo de registro */
+.tipo-badge {
+    padding: 6px 12px;
+    border-radius: 20px;
+    font-size: 12px;
+    font-weight: 700;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.tipo-rotulado {
+    background: #e0f2fe;
+    color: #0369a1;
+    border: 2px solid #0ea5e9;
+}
+
+.tipo-no-rotulado {
+    background: #fef3c7;
+    color: #92400e;
+    border: 2px solid #fbbf24;
+}
+
+/* Estados */
+.estado-badge {
+    padding: 8px 16px;
+    border-radius: 24px;
+    font-size: 13px;
+    font-weight: 700;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.estado-activo {
+    background: linear-gradient(135deg, #d1fae5 0%, #a7f3d0 100%);
+    color: #065f46;
+    border: 2px solid #34d399;
+}
+
+.estado-editado {
+    background: linear-gradient(135deg, #fef3c7 0%, #fde68a 100%);
+    color: #92400e;
+    border: 2px solid #fbbf24;
+}
+
+.estado-anulado {
+    background: linear-gradient(135deg, #fee2e2 0%, #fecaca 100%);
+    color: #991b1b;
+    border: 2px solid #f87171;
+}
+
+/* Información de colaboradores */
+.colaboradores-info {
+    font-size: 12px;
+    color: #64748b;
+    margin-top: 4px;
+}
+
+/* Acciones */
+.acciones-bitacora {
+    display: flex;
+    gap: 8px;
+    justify-content: center;
+    flex-wrap: wrap;
+}
+
+.btn-accion {
+    padding: 8px 14px;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    font-size: 13px;
+    font-weight: 600;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    color: white;
+}
+
+.btn-editar {
+    background: linear-gradient(135deg, #fbbf24 0%, #f59e0b 100%);
+}
+
+.btn-editar:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(251, 191, 36, 0.4);
+}
+
+.btn-asignar {
+    background: linear-gradient(135deg, var(--color-info) 0%, #2563eb 100%);
+}
+
+.btn-asignar:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(59, 130, 246, 0.4);
+}
+
+.btn-ver-detalles {
+    background: linear-gradient(135deg, #8b5cf6 0%, #7c3aed 100%);
+}
+
+.btn-ver-detalles:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(139, 92, 246, 0.4);
+}
+
+.btn-anular {
+    background: linear-gradient(135deg, var(--color-danger) 0%, #dc2626 100%);
+}
+
+.btn-anular:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(239, 68, 68, 0.4);
+}
+
+/* Modal Base */
+.modal-bitacora {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.5);
+    z-index: 9999;
+    backdrop-filter: blur(5px);
+}
+
+.modal-bitacora.active {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.modal-contenido {
+    background: white;
+    border-radius: 16px;
+    padding: 32px;
+    max-width: 700px;
+    width: 90%;
+    max-height: 90vh;
+    overflow-y: auto;
+    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+}
+
+.modal-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 24px;
+}
+
+.modal-header h3 {
+    margin: 0;
+    color: #1e293b;
+    font-size: 24px;
+    font-weight: 700;
+}
+
+.btn-cerrar-modal {
+    background: none;
+    border: none;
+    font-size: 28px;
+    color: #94a3b8;
+    cursor: pointer;
+    padding: 0;
+    width: 32px;
+    height: 32px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 6px;
+    transition: all 0.2s;
+}
+
+.btn-cerrar-modal:hover {
+    background: #f1f5f9;
+    color: #64748b;
+}
+
+/* Formulario */
+.form-bitacora {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+
+.form-group {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.form-group label {
+    font-weight: 600;
+    color: #1e293b;
+    font-size: 14px;
+}
+
+.form-group input,
+.form-group select,
+.form-group textarea {
+    padding: 12px;
+    border: 2px solid #e2e8f0;
+    border-radius: 8px;
+    font-size: 14px;
+    transition: border-color 0.2s;
+}
+
+.form-group input:focus,
+.form-group select:focus,
+.form-group textarea:focus {
+    outline: none;
+    border-color: var(--color-primary);
+}
+
+.form-group textarea {
+    min-height: 100px;
+    resize: vertical;
+}
+
+/* Grid de formulario */
+.form-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 20px;
+}
+
+.form-grid .form-group {
+    margin: 0;
+}
+
+/* Modal Acciones */
+.modal-acciones {
+    display: flex;
+    gap: 12px;
+    justify-content: flex-end;
+    margin-top: 20px;
+}
+
+.btn-cancelar-modal {
+    padding: 12px 24px;
+    background: #e2e8f0;
+    color: #64748b;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    font-weight: 600;
+}
+
+.btn-cancelar-modal:hover {
+    background: #cbd5e1;
+}
+
+.btn-confirmar-modal {
+    padding: 12px 24px;
+    color: white;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    font-weight: 600;
+}
+
+.btn-confirmar-modal.primary {
+    background: linear-gradient(135deg, var(--color-success) 0%, #059669 100%);
+}
+
+.btn-confirmar-modal.primary:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(16, 185, 129, 0.4);
+}
+
+.btn-confirmar-modal.danger {
+    background: linear-gradient(135deg, var(--color-danger) 0%, #dc2626 100%);
+}
+
+.btn-confirmar-modal.danger:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(239, 68, 68, 0.4);
+}
+
+/* Detalles de registro */
+.detalles-registro {
+    background: #f8fafc;
+    border-radius: 8px;
+    padding: 20px;
+    margin-bottom: 20px;
+}
+
+.detalle-item {
+    display: grid;
+    grid-template-columns: 150px 1fr;
+    gap: 12px;
+    padding: 12px 0;
+    border-bottom: 1px solid #e2e8f0;
+}
+
+.detalle-item:last-child {
+    border-bottom: none;
+}
+
+.detalle-label {
+    font-weight: 600;
+    color: #64748b;
+}
+
+.detalle-valor {
+    color: #1e293b;
+}
+
+/* Lista de asignaciones */
+.lista-asignaciones {
+    margin-top: 16px;
+}
+
+.asignacion-item {
+    background: white;
+    border: 2px solid #e2e8f0;
+    border-radius: 8px;
+    padding: 16px;
+    margin-bottom: 12px;
+    display: grid;
+    grid-template-columns: auto 1fr auto;
+    gap: 16px;
+    align-items: center;
+}
+
+.asignacion-usuario {
+    font-weight: 600;
+    color: #1e293b;
+}
+
+.asignacion-cantidad {
+    text-align: right;
+    font-size: 18px;
+    font-weight: 700;
+    color: var(--color-success);
+}
+
+/* Selector de usuario colaborador */
+.selector-colaborador {
+    display: grid;
+    grid-template-columns: 1fr auto;
+    gap: 12px;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+    .tabla-bitacora {
+        font-size: 12px;
+    }
+    
+    .tabla-bitacora th,
+    .tabla-bitacora td {
+        padding: 8px 4px;
+    }
+    
+    .acciones-bitacora {
+        flex-direction: column;
+    }
+    
+    .bitacora-filtros {
+        grid-template-columns: 1fr;
+    }
+    
+    .form-grid {
+        grid-template-columns: 1fr;
+    }
+    
+    .detalle-item {
+        grid-template-columns: 1fr;
+        gap: 4px;
+    }
+    
+    .modal-contenido {
+        padding: 20px;
+    }
+}
+</style>
+
+<!-- Sección de Bitácora -->
+<div class="seccion-bitacora">
+    <div class="bitacora-header">
+        <h2>Bitácora de Producción</h2>
+        <button class="btn-nueva-entrada" onclick="abrirModalNuevaEntrada()">
+            + Nueva Entrada (NO ROTULADO)
+        </button>
+    </div>
+    
+    <!-- Filtros -->
+    <div class="bitacora-filtros">
+        <div class="filtro-grupo">
+            <label>Fecha Inicio</label>
+            <input type="date" id="filtro-fecha-inicio" />
+        </div>
+        
+        <div class="filtro-grupo">
+            <label>Fecha Fin</label>
+            <input type="date" id="filtro-fecha-fin" />
+        </div>
+        
+        <div class="filtro-grupo">
+            <label>Usuario</label>
+            <select id="filtro-usuario">
+                <option value="">Todos</option>
+            </select>
+        </div>
+        
+        <div class="filtro-grupo">
+            <label>Producto</label>
+            <select id="filtro-producto">
+                <option value="">Todos</option>
+            </select>
+        </div>
+        
+        <div class="filtro-grupo">
+            <label>Tipo</label>
+            <select id="filtro-tipo">
+                <option value="">Todos</option>
+                <option value="ROTULADO">Rotulado</option>
+                <option value="NO_ROTULADO">No Rotulado</option>
+            </select>
+        </div>
+        
+        <div class="filtro-grupo">
+            <label>Estado</label>
+            <select id="filtro-estado">
+                <option value="">Todos</option>
+                <option value="ACTIVO">Activo</option>
+                <option value="EDITADO">Editado</option>
+                <option value="ANULADO">Anulado</option>
+            </select>
+        </div>
+        
+        <div class="filtro-grupo">
+            <button class="btn-aplicar-filtros" onclick="cargarBitacora()">
+                Aplicar Filtros
+            </button>
+        </div>
+    </div>
+    
+    <!-- Tabla de registros -->
+    <div style="overflow-x: auto;">
+        <table class="tabla-bitacora">
+            <thead>
+                <tr>
+                    <th>Fecha</th>
+                    <th>Tipo</th>
+                    <th>Usuario</th>
+                    <th>Producto</th>
+                    <th>Total</th>
+                    <th>Completada</th>
+                    <th>Pendiente</th>
+                    <th>Estado</th>
+                    <th>Acciones</th>
+                </tr>
+            </thead>
+            <tbody id="tabla-bitacora-body">
+                <tr>
+                    <td colspan="9" style="text-align: center; padding: 40px;">
+                        Cargando registros...
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+</div>
+
+<!-- Modal: Nueva Entrada / Editar -->
+<div class="modal-bitacora" id="modal-form-bitacora">
+    <div class="modal-contenido">
+        <div class="modal-header">
+            <h3 id="titulo-modal-form">Nueva Entrada</h3>
+            <button class="btn-cerrar-modal" onclick="cerrarModalFormBitacora()">×</button>
+        </div>
+        
+        <form class="form-bitacora" onsubmit="guardarEntradaBitacora(event)">
+            <input type="hidden" id="form-bitacora-id" />
+            <input type="hidden" id="form-bitacora-modo" value="crear" />
+            
+            <div class="form-grid">
+                <div class="form-group">
+                    <label>Producto *</label>
+                    <select id="form-bitacora-producto" required>
+                        <option value="">Seleccionar producto...</option>
+                    </select>
+                </div>
+                
+                <div class="form-group">
+                    <label>Cantidad Total *</label>
+                    <input 
+                        type="number" 
+                        id="form-bitacora-cantidad" 
+                        min="1" 
+                        required 
+                        placeholder="Cantidad a producir"
+                    />
+                </div>
+            </div>
+            
+            <div class="form-group" id="grupo-cantidad-completada" style="display: none;">
+                <label>Cantidad Completada por mí</label>
+                <input 
+                    type="number" 
+                    id="form-bitacora-cantidad-completada" 
+                    min="0" 
+                    placeholder="Cantidad que completaste"
+                />
+            </div>
+            
+            <div class="form-group" id="grupo-observaciones" style="display: none;">
+                <label>Motivo del cambio *</label>
+                <textarea 
+                    id="form-bitacora-observaciones" 
+                    placeholder="Describe el motivo del cambio..."
+                ></textarea>
+            </div>
+            
+            <div class="modal-acciones">
+                <button type="button" class="btn-cancelar-modal" onclick="cerrarModalFormBitacora()">
+                    Cancelar
+                </button>
+                <button type="submit" class="btn-confirmar-modal primary">
+                    Guardar
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<!-- Modal: Asignar Colaborador -->
+<div class="modal-bitacora" id="modal-asignar-colaborador">
+    <div class="modal-contenido">
+        <div class="modal-header">
+            <h3>Asignar a Colaborador</h3>
+            <button class="btn-cerrar-modal" onclick="cerrarModalAsignarColaborador()">×</button>
+        </div>
+        
+        <div class="detalles-registro" id="detalle-registro-asignar">
+            <!-- Detalles se cargan dinámicamente -->
+        </div>
+        
+        <form class="form-bitacora" onsubmit="guardarAsignacionColaborador(event)">
+            <input type="hidden" id="asignar-registro-id" />
+            
+            <div class="form-group">
+                <label>Colaborador *</label>
+                <select id="asignar-colaborador-usuario" required>
+                    <option value="">Seleccionar usuario...</option>
+                </select>
+            </div>
+            
+            <div class="form-group">
+                <label>Cantidad a asignar *</label>
+                <input 
+                    type="number" 
+                    id="asignar-colaborador-cantidad" 
+                    min="1" 
+                    required 
+                    placeholder="Cantidad que asignarás"
+                />
+                <small style="color: #64748b;">Disponible: <span id="cantidad-disponible">0</span></small>
+            </div>
+            
+            <div class="form-group">
+                <label>Nota (opcional)</label>
+                <textarea 
+                    id="asignar-colaborador-nota" 
+                    placeholder="Alguna nota adicional..."
+                ></textarea>
+            </div>
+            
+            <div class="modal-acciones">
+                <button type="button" class="btn-cancelar-modal" onclick="cerrarModalAsignarColaborador()">
+                    Cancelar
+                </button>
+                <button type="submit" class="btn-confirmar-modal primary">
+                    Asignar
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<!-- Modal: Ver Detalles -->
+<div class="modal-bitacora" id="modal-ver-detalles">
+    <div class="modal-contenido">
+        <div class="modal-header">
+            <h3>Detalles del Registro</h3>
+            <button class="btn-cerrar-modal" onclick="cerrarModalVerDetalles()">×</button>
+        </div>
+        
+        <div class="detalles-registro" id="detalles-completo">
+            <!-- Detalles se cargan dinámicamente -->
+        </div>
+        
+        <div id="detalles-asignaciones" style="display: none;">
+            <h4 style="color: #1e293b; margin-bottom: 16px;">Asignaciones Colaborativas</h4>
+            <div class="lista-asignaciones" id="lista-asignaciones">
+                <!-- Lista se carga dinámicamente -->
+            </div>
+        </div>
+        
+        <div class="modal-acciones">
+            <button type="button" class="btn-cancelar-modal" onclick="cerrarModalVerDetalles()">
+                Cerrar
+            </button>
+        </div>
+    </div>
+</div>
+
+<!-- Modal: Anular -->
+<div class="modal-bitacora" id="modal-anular-bitacora">
+    <div class="modal-contenido">
+        <div class="modal-header">
+            <h3>Anular Registro</h3>
+            <button class="btn-cerrar-modal" onclick="cerrarModalAnular()">×</button>
+        </div>
+        
+        <p style="color: #64748b; margin-bottom: 20px;">
+            ¿Estás seguro de que deseas anular este registro? Esta acción no se puede deshacer.
+        </p>
+        
+        <form class="form-bitacora" onsubmit="confirmarAnulacion(event)">
+            <input type="hidden" id="anular-registro-id" />
+            
+            <div class="form-group">
+                <label>Motivo de la anulación *</label>
+                <textarea 
+                    id="anular-motivo" 
+                    required
+                    placeholder="Describe el motivo de la anulación..."
+                ></textarea>
+            </div>
+            
+            <div class="modal-acciones">
+                <button type="button" class="btn-cancelar-modal" onclick="cerrarModalAnular()">
+                    Cancelar
+                </button>
+                <button type="submit" class="btn-confirmar-modal danger">
+                    Confirmar Anulación
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<script>
+// ========================================
+// VARIABLES GLOBALES
+// ========================================
+let registroActual = null;
+
+// ========================================
+// UTILIDADES
+// ========================================
+function getUserId() {
+    const urlParams = new URLSearchParams(window.location.search);
+    let userId = urlParams.get('user');
+    
+    if (!userId) {
+        const userData = JSON.parse(localStorage.getItem('userData') || '{}');
+        userId = userData.id_usuario || userData.id;
+    }
+    
+    if (!userId) {
+        const currentUser = JSON.parse(localStorage.getItem('currentUser') || '{}');
+        userId = currentUser.id_usuario || currentUser.id;
+    }
+    
+    return userId;
+}
+
+function formatearFecha(fechaStr) {
+    return new Date(fechaStr).toLocaleString('es-PE', {
+        day: '2-digit',
+        month: '2-digit',
+        year: 'numeric',
+        hour: '2-digit',
+        minute: '2-digit'
+    });
+}
+
+// ========================================
+// CARGAR BITÁCORA
+// ========================================
+async function cargarBitacora() {
+    const tbody = document.getElementById('tabla-bitacora-body');
+    tbody.innerHTML = '<tr><td colspan="9" style="text-align: center; padding: 40px;">Cargando...</td></tr>';
+    
+    try {
+        const params = new URLSearchParams();
+        
+        const fechaInicio = document.getElementById('filtro-fecha-inicio')?.value;
+        const fechaFin = document.getElementById('filtro-fecha-fin')?.value;
+        const usuario = document.getElementById('filtro-usuario')?.value;
+        const producto = document.getElementById('filtro-producto')?.value;
+        const tipo = document.getElementById('filtro-tipo')?.value;
+        const estado = document.getElementById('filtro-estado')?.value;
+        
+        if (fechaInicio) params.append('fecha_inicio', fechaInicio);
+        if (fechaFin) params.append('fecha_fin', fechaFin);
+        if (usuario) params.append('id_usuario', usuario);
+        if (producto) params.append('id_producto', producto);
+        if (tipo) params.append('tipo', tipo);
+        if (estado) params.append('estado', estado);
+        
+        // NO FILTRAR POR USUARIO - Todos ven todos los registros
+        
+        const response = await fetch(`/api/bitacora/listar?${params.toString()}`);
+        const result = await response.json();
+        const registros = result.data || [];
+        
+        if (registros.length === 0) {
+            tbody.innerHTML = '<tr><td colspan="9" style="text-align: center; padding: 40px; color: #94a3b8;">No hay registros en la bitácora</td></tr>';
+            return;
+        }
+        
+        tbody.innerHTML = registros.map(reg => {
+            const fecha = formatearFecha(reg.fecha);
+            
+            // Tipo de registro
+            const tipoClass = reg.tipo === 'ROTULADO' ? 'tipo-rotulado' : 'tipo-no-rotulado';
+            const tipoTexto = reg.tipo === 'ROTULADO' ? 'ROTULADO' : 'NO ROTULADO';
+            
+            // Estado
+            const estadoClass = `estado-${reg.estado.toLowerCase()}`;
+            
+            // Cantidades
+            const cantidadTotal = reg.cantidad_total || reg.cantidad || 0;
+            const cantidadCompletada = reg.cantidad_completada || cantidadTotal;
+            const cantidadPendiente = cantidadTotal - cantidadCompletada;
+            
+            // Permisos de acción
+            const puedeEditar = reg.estado === 'ACTIVO';
+            const userId = getUserId();
+            
+            return `
+                <tr>
+                    <td style="white-space: nowrap; font-size: 12px;">${fecha}</td>
+                    <td>
+                        <span class="tipo-badge ${tipoClass}">${tipoTexto}</span>
+                    </td>
+                    <td><strong>${reg.nombre_usuario || 'Usuario'}</strong></td>
+                    <td>${reg.nombre_producto}</td>
+                    <td style="text-align: center; font-weight: 700; color: #64748b;">${cantidadTotal}</td>
+                    <td style="text-align: center; font-weight: 700; color: var(--color-success);">${cantidadCompletada}</td>
+                    <td style="text-align: center; font-weight: 700; color: ${cantidadPendiente > 0 ? 'var(--color-warning)' : '#cbd5e1'};">${cantidadPendiente}</td>
+                    <td style="text-align: center;">
+                        <span class="estado-badge ${estadoClass}">${reg.estado}</span>
+                    </td>
+                    <td>
+                        <div class="acciones-bitacora">
+                            ${puedeEditar ? `
+                                <button class="btn-accion btn-editar" onclick='editarRegistroBitacora(${JSON.stringify(reg)})' title="Editar">
+                                    Editar
+                                </button>
+                                ${cantidadPendiente > 0 ? `
+                                    <button class="btn-accion btn-asignar" onclick='abrirModalAsignarColaborador(${JSON.stringify(reg)})' title="Asignar a colaborador">
+                                        Asignar
+                                    </button>
+                                ` : ''}
+                                <button class="btn-accion btn-anular" onclick='abrirModalAnular(${JSON.stringify(reg)})' title="Anular">
+                                    Anular
+                                </button>
+                            ` : ''}
+                            <button class="btn-accion btn-ver-detalles" onclick='verDetallesRegistro(${JSON.stringify(reg)})' title="Ver detalles">
+                                Ver
+                            </button>
+                        </div>
+                    </td>
+                </tr>
+            `;
+        }).join('');
+        
+    } catch (error) {
+        console.error('Error cargando bitácora:', error);
+        tbody.innerHTML = '<tr><td colspan="9" style="text-align: center; padding: 40px; color: var(--color-danger);">Error cargando registros</td></tr>';
+    }
+}
+
+// ========================================
+// MODAL: NUEVA ENTRADA / EDITAR
+// ========================================
+async function abrirModalNuevaEntrada() {
+    document.getElementById('titulo-modal-form').textContent = 'Nueva Entrada (NO ROTULADO)';
+    document.getElementById('form-bitacora-modo').value = 'crear';
+    document.getElementById('form-bitacora-id').value = '';
+    document.getElementById('form-bitacora-producto').value = '';
+    document.getElementById('form-bitacora-cantidad').value = '';
+    document.getElementById('grupo-cantidad-completada').style.display = 'none';
+    document.getElementById('grupo-observaciones').style.display = 'none';
+    
+    await cargarProductosEnSelector();
+    document.getElementById('modal-form-bitacora').classList.add('active');
+}
+
+function cerrarModalFormBitacora() {
+    document.getElementById('modal-form-bitacora').classList.remove('active');
+}
+
+async function editarRegistroBitacora(registro) {
+    registroActual = registro;
+    
+    document.getElementById('titulo-modal-form').textContent = 'Editar Registro';
+    document.getElementById('form-bitacora-modo').value = 'editar';
+    document.getElementById('form-bitacora-id').value = registro.id;
+    document.getElementById('form-bitacora-producto').value = registro.id_producto;
+    document.getElementById('form-bitacora-cantidad').value = registro.cantidad_total || registro.cantidad;
+    
+    document.getElementById('grupo-cantidad-completada').style.display = 'block';
+    document.getElementById('form-bitacora-cantidad-completada').value = registro.cantidad_completada || 0;
+    
+    document.getElementById('grupo-observaciones').style.display = 'block';
+    document.getElementById('form-bitacora-observaciones').value = '';
+    document.getElementById('form-bitacora-observaciones').required = true;
+    
+    await cargarProductosEnSelector();
+    document.getElementById('modal-form-bitacora').classList.add('active');
+}
+
+async function guardarEntradaBitacora(event) {
+    event.preventDefault();
+    
+    const modo = document.getElementById('form-bitacora-modo').value;
+    const id = document.getElementById('form-bitacora-id').value;
+    const id_producto = document.getElementById('form-bitacora-producto').value;
+    const cantidad = document.getElementById('form-bitacora-cantidad').value;
+    const cantidad_completada = document.getElementById('form-bitacora-cantidad-completada').value;
+    const observaciones = document.getElementById('form-bitacora-observaciones').value.trim();
+    
+    try {
+        const userId = getUserId();
+        
+        if (modo === 'crear') {
+            const response = await fetch('/api/bitacora/crear', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    id_usuario: parseInt(userId),
+                    id_producto: parseInt(id_producto),
+                    cantidad: parseInt(cantidad),
+                    tipo: 'NO_ROTULADO',
+                    observaciones: observaciones || null
+                })
+            });
+            
+            const result = await response.json();
+            
+            if (result.success) {
+                alert('Entrada creada exitosamente');
+                cerrarModalFormBitacora();
+                await cargarBitacora();
+            } else {
+                alert('Error: ' + result.error);
+            }
+            
+        } else if (modo === 'editar') {
+            if (!observaciones) {
+                alert('Debes ingresar el motivo del cambio');
+                return;
+            }
+            
+            const response = await fetch('/api/bitacora/editar', {
+                method: 'PUT',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    id: parseInt(id),
+                    id_producto: parseInt(id_producto),
+                    cantidad: parseInt(cantidad),
+                    cantidad_completada: parseInt(cantidad_completada) || 0,
+                    motivo_cambio: observaciones,
+                    userId: parseInt(userId)
+                })
+            });
+            
+            const result = await response.json();
+            
+            if (result.success) {
+                alert('Registro actualizado exitosamente');
+                cerrarModalFormBitacora();
+                await cargarBitacora();
+            } else {
+                alert('Error: ' + result.error);
+            }
+        }
+        
+    } catch (error) {
+        console.error('Error guardando entrada:', error);
+        alert('Error guardando entrada en bitácora');
+    }
+}
+
+// ========================================
+// MODAL: ASIGNAR COLABORADOR
+// ========================================
+async function abrirModalAsignarColaborador(registro) {
+    registroActual = registro;
+    
+    const cantidadTotal = registro.cantidad_total || registro.cantidad || 0;
+    const cantidadCompletada = registro.cantidad_completada || 0;
+    const cantidadDisponible = cantidadTotal - cantidadCompletada;
+    
+    document.getElementById('asignar-registro-id').value = registro.id;
+    document.getElementById('cantidad-disponible').textContent = cantidadDisponible;
+    document.getElementById('asignar-colaborador-cantidad').max = cantidadDisponible;
+    
+    const detalleDiv = document.getElementById('detalle-registro-asignar');
+    detalleDiv.innerHTML = `
+        <div class="detalle-item">
+            <div class="detalle-label">Producto:</div>
+            <div class="detalle-valor"><strong>${registro.nombre_producto}</strong></div>
+        </div>
+        <div class="detalle-item">
+            <div class="detalle-label">Cantidad Total:</div>
+            <div class="detalle-valor">${cantidadTotal}</div>
+        </div>
+        <div class="detalle-item">
+            <div class="detalle-label">Ya Completada:</div>
+            <div class="detalle-valor">${cantidadCompletada}</div>
+        </div>
+        <div class="detalle-item">
+            <div class="detalle-label">Pendiente:</div>
+            <div class="detalle-valor"><strong style="color: var(--color-warning);">${cantidadDisponible}</strong></div>
+        </div>
+    `;
+    
+    await cargarUsuariosEnSelector('asignar-colaborador-usuario');
+    document.getElementById('modal-asignar-colaborador').classList.add('active');
+}
+
+function cerrarModalAsignarColaborador() {
+    document.getElementById('modal-asignar-colaborador').classList.remove('active');
+    registroActual = null;
+}
+
+async function guardarAsignacionColaborador(event) {
+    event.preventDefault();
+    
+    const registroId = document.getElementById('asignar-registro-id').value;
+    const colaboradorId = document.getElementById('asignar-colaborador-usuario').value;
+    const cantidad = document.getElementById('asignar-colaborador-cantidad').value;
+    const nota = document.getElementById('asignar-colaborador-nota').value.trim();
+    
+    try {
+        const response = await fetch('/api/bitacora/asignar-colaborador', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+                id_registro: parseInt(registroId),
+                id_colaborador: parseInt(colaboradorId),
+                cantidad_asignada: parseInt(cantidad),
+                nota: nota || null,
+                userId: getUserId()
+            })
+        });
+        
+        const result = await response.json();
+        
+        if (result.success) {
+            alert('Colaborador asignado exitosamente');
+            cerrarModalAsignarColaborador();
+            await cargarBitacora();
+        } else {
+            alert('Error: ' + result.error);
+        }
+        
+    } catch (error) {
+        console.error('Error asignando colaborador:', error);
+        alert('Error asignando colaborador');
+    }
+}
+
+// ========================================
+// MODAL: VER DETALLES
+// ========================================
+async function verDetallesRegistro(registro) {
+    registroActual = registro;
+    
+    const cantidadTotal = registro.cantidad_total || registro.cantidad || 0;
+    const cantidadCompletada = registro.cantidad_completada || cantidadTotal;
+    const cantidadPendiente = cantidadTotal - cantidadCompletada;
+    
+    const detalleDiv = document.getElementById('detalles-completo');
+    detalleDiv.innerHTML = `
+        <div class="detalle-item">
+            <div class="detalle-label">Fecha:</div>
+            <div class="detalle-valor">${formatearFecha(registro.fecha)}</div>
+        </div>
+        <div class="detalle-item">
+            <div class="detalle-label">Tipo:</div>
+            <div class="detalle-valor">${registro.tipo === 'ROTULADO' ? 'ROTULADO' : 'NO ROTULADO'}</div>
+        </div>
+        <div class="detalle-item">
+            <div class="detalle-label">Usuario Creador:</div>
+            <div class="detalle-valor"><strong>${registro.nombre_usuario}</strong></div>
+        </div>
+        <div class="detalle-item">
+            <div class="detalle-label">Producto:</div>
+            <div class="detalle-valor">${registro.nombre_producto}</div>
+        </div>
+        <div class="detalle-item">
+            <div class="detalle-label">Cantidad Total:</div>
+            <div class="detalle-valor"><strong>${cantidadTotal}</strong></div>
+        </div>
+        <div class="detalle-item">
+            <div class="detalle-label">Completada:</div>
+            <div class="detalle-valor" style="color: var(--color-success);"><strong>${cantidadCompletada}</strong></div>
+        </div>
+        <div class="detalle-item">
+            <div class="detalle-label">Pendiente:</div>
+            <div class="detalle-valor" style="color: ${cantidadPendiente > 0 ? 'var(--color-warning)' : '#cbd5e1'};"><strong>${cantidadPendiente}</strong></div>
+        </div>
+        <div class="detalle-item">
+            <div class="detalle-label">Estado:</div>
+            <div class="detalle-valor"><span class="estado-badge estado-${registro.estado.toLowerCase()}">${registro.estado}</span></div>
+        </div>
+        ${registro.motivo_cambio ? `
+            <div class="detalle-item">
+                <div class="detalle-label">Último Motivo:</div>
+                <div class="detalle-valor">${registro.motivo_cambio}</div>
+            </div>
+        ` : ''}
+    `;
+    
+    // Cargar asignaciones si existen
+    try {
+        const response = await fetch(`/api/bitacora/${registro.id}/asignaciones`);
+        const result = await response.json();
+        
+        if (result.success && result.data && result.data.length > 0) {
+            document.getElementById('detalles-asignaciones').style.display = 'block';
+            const listaDiv = document.getElementById('lista-asignaciones');
+            
+            listaDiv.innerHTML = result.data.map(asig => `
+                <div class="asignacion-item">
+                    <div class="asignacion-usuario">${asig.nombre_colaborador}</div>
+                    <div class="asignacion-cantidad">${asig.cantidad_asignada}</div>
+                </div>
+            `).join('');
+        } else {
+            document.getElementById('detalles-asignaciones').style.display = 'none';
+        }
+    } catch (error) {
+        console.error('Error cargando asignaciones:', error);
+        document.getElementById('detalles-asignaciones').style.display = 'none';
+    }
+    
+    document.getElementById('modal-ver-detalles').classList.add('active');
+}
+
+function cerrarModalVerDetalles() {
+    document.getElementById('modal-ver-detalles').classList.remove('active');
+    registroActual = null;
+}
+
+// ========================================
+// MODAL: ANULAR
+// ========================================
+function abrirModalAnular(registro) {
+    registroActual = registro;
+    document.getElementById('anular-registro-id').value = registro.id;
+    document.getElementById('anular-motivo').value = '';
+    document.getElementById('modal-anular-bitacora').classList.add('active');
+}
+
+function cerrarModalAnular() {
+    document.getElementById('modal-anular-bitacora').classList.remove('active');
+    registroActual = null;
+}
+
+async function confirmarAnulacion(event) {
+    event.preventDefault();
+    
+    const registroId = document.getElementById('anular-registro-id').value;
+    const motivo = document.getElementById('anular-motivo').value.trim();
+    
+    try {
+        const response = await fetch('/api/bitacora/anular', {
+            method: 'PUT',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+                id: parseInt(registroId),
+                motivo_cambio: motivo,
+                userId: getUserId()
+            })
+        });
+        
+        const result = await response.json();
+        
+        if (result.success) {
+            alert('Registro anulado exitosamente');
+            cerrarModalAnular();
+            await cargarBitacora();
+        } else {
+            alert('Error: ' + result.error);
+        }
+        
+    } catch (error) {
+        console.error('Error anulando registro:', error);
+        alert('Error anulando registro');
+    }
+}
+
+// ========================================
+// CARGA DE SELECTORES
+// ========================================
+async function cargarProductosEnSelector() {
+    try {
+        const response = await fetch('/api/productos?all=true');
+        const result = await response.json();
+        const productos = result.data || result.productos || result;
+        
+        const selector = document.getElementById('form-bitacora-producto');
+        selector.innerHTML = '<option value="">Seleccionar producto...</option>';
+        
+        if (Array.isArray(productos)) {
+            productos.forEach(prod => {
+                const option = document.createElement('option');
+                option.value = prod.id_producto;
+                option.textContent = prod.nombre_producto;
+                selector.appendChild(option);
+            });
+        }
+    } catch (error) {
+        console.error('Error cargando productos:', error);
+    }
+}
+
+async function cargarUsuariosEnSelector(selectorId = 'filtro-usuario') {
+    try {
+        const response = await fetch('/api/usuarios');
+        const result = await response.json();
+        const usuarios = result.data || result.usuarios || result;
+        
+        const selector = document.getElementById(selectorId);
+        if (selectorId === 'filtro-usuario') {
+            selector.innerHTML = '<option value="">Todos</option>';
+        } else {
+            selector.innerHTML = '<option value="">Seleccionar usuario...</option>';
+        }
+        
+        if (Array.isArray(usuarios)) {
+            usuarios.forEach(u => {
+                const option = document.createElement('option');
+                option.value = u.id_usuario;
+                option.textContent = `${u.nombre} ${u.apellido}`;
+                selector.appendChild(option);
+            });
+        }
+    } catch (error) {
+        console.error('Error cargando usuarios:', error);
+    }
+}
+
+async function cargarFiltrosBitacora() {
+    try {
+        await cargarUsuariosEnSelector('filtro-usuario');
+        
+        const response = await fetch('/api/productos?all=true');
+        const result = await response.json();
+        const productos = result.data || result.productos || result;
+        
+        const selector = document.getElementById('filtro-producto');
+        selector.innerHTML = '<option value="">Todos</option>';
+        
+        if (Array.isArray(productos)) {
+            productos.forEach(p => {
+                const option = document.createElement('option');
+                option.value = p.id_producto;
+                option.textContent = p.nombre_producto;
+                selector.appendChild(option);
+            });
+        }
+        
+        console.log('Filtros cargados');
+    } catch (error) {
+        console.error('Error cargando filtros:', error);
+    }
+}
+
+// ========================================
+// INICIALIZACIÓN
+// ========================================
+window.cargarBitacora = cargarBitacora;
+window.abrirModalNuevaEntrada = abrirModalNuevaEntrada;
+window.cerrarModalFormBitacora = cerrarModalFormBitacora;
+window.editarRegistroBitacora = editarRegistroBitacora;
+window.guardarEntradaBitacora = guardarEntradaBitacora;
+window.abrirModalAsignarColaborador = abrirModalAsignarColaborador;
+window.cerrarModalAsignarColaborador = cerrarModalAsignarColaborador;
+window.guardarAsignacionColaborador = guardarAsignacionColaborador;
+window.verDetallesRegistro = verDetallesRegistro;
+window.cerrarModalVerDetalles = cerrarModalVerDetalles;
+window.abrirModalAnular = abrirModalAnular;
+window.cerrarModalAnular = cerrarModalAnular;
+window.confirmarAnulacion = confirmarAnulacion;
+window.cargarFiltrosBitacora = cargarFiltrosBitacora;
+
+if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', async () => {
+        await cargarFiltrosBitacora();
+        await cargarBitacora();
+    });
+} else {
+    cargarFiltrosBitacora().then(() => cargarBitacora());
+}
+</script>

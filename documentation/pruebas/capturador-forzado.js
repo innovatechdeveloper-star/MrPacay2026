@@ -7,14 +7,14 @@ const net = require('net');
 const fs = require('fs');
 const { exec } = require('child_process');
 
-console.log('🎯 CAPTURADOR FORZADO - PUERTO 9100');
+console.log('CAPTURADOR FORZADO - PUERTO 9100');
 console.log('===================================');
 console.log('');
 
 // Función para matar procesos en puerto 9100
 function liberarPuerto9100() {
     return new Promise((resolve) => {
-        console.log('🔧 Liberando puerto 9100...');
+        console.log('Liberando puerto 9100...');
         
         exec('netstat -ano | findstr :9100', (error, stdout, stderr) => {
             if (stdout) {
