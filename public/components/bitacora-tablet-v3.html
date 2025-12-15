@@ -1,0 +1,979 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <title>Bitácora Tablet - Interfaz Avanzada</title>
+    
+    <!-- CSS Components -->
+    <link rel="stylesheet" href="/css/components-advanced.css">
+    <link rel="stylesheet" href="/css/backgrounds-animated.css">
+    
+    <style>
+        /* Variables */
+        :root {
+            --primary-color: #667eea;
+            --success-color: #10b981;
+            --warning-color: #f59e0b;
+            --danger-color: #ef4444;
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        body {
+            min-height: 100vh;
+            overflow-x: hidden;
+        }
+        
+        /* Contenedor principal */
+        .main-container {
+            max-width: 900px;
+            margin: 0 auto;
+            padding: 40px 30px;
+        }
+        
+        /* Header */
+        .header {
+            text-align: center;
+            margin-bottom: 50px;
+            background: rgba(255, 255, 255, 0.95);
+            padding: 30px;
+            border-radius: 20px;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.1);
+        }
+        
+        .header h1 {
+            font-size: 36px;
+            color: #1e293b;
+            margin-bottom: 10px;
+            font-weight: 800;
+        }
+        
+        .header p {
+            font-size: 20px;
+            color: #64748b;
+            font-weight: 600;
+        }
+        
+        /* Botón principal flotante */
+        .main-action-btn {
+            position: fixed;
+            bottom: 80px;
+            right: 30px;
+            width: 80px;
+            height: 80px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border: none;
+            box-shadow: 0 10px 30px rgba(102, 126, 234, 0.5);
+            cursor: pointer;
+            font-size: 36px;
+            color: white;
+            transition: all 0.3s ease;
+            z-index: 1000;
+        }
+        
+        .main-action-btn:hover {
+            transform: scale(1.1) rotate(90deg);
+            box-shadow: 0 15px 40px rgba(102, 126, 234, 0.7);
+        }
+        
+        .main-action-btn:active {
+            transform: scale(0.95);
+        }
+        
+        /* Cards de registros */
+        .registros-container {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+        
+        .registro-card {
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 20px;
+            padding: 25px;
+            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.1);
+            transition: all 0.3s ease;
+        }
+        
+        .registro-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15);
+        }
+        
+        .registro-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+        }
+        
+        .registro-producto {
+            font-size: 20px;
+            font-weight: 800;
+            color: #1e293b;
+        }
+        
+        .registro-badge {
+            padding: 8px 16px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 700;
+            text-transform: uppercase;
+        }
+        
+        .badge-rotulado {
+            background: #e0f2fe;
+            color: #0369a1;
+        }
+        
+        .badge-no-rotulado {
+            background: #fef3c7;
+            color: #92400e;
+        }
+        
+        .registro-info {
+            margin: 15px 0;
+            font-size: 16px;
+            color: #64748b;
+        }
+        
+        .registro-info strong {
+            color: var(--success-color);
+        }
+        
+        .registro-actions {
+            display: flex;
+            gap: 10px;
+            margin-top: 20px;
+        }
+        
+        .btn-action {
+            flex: 1;
+            padding: 12px;
+            border: none;
+            border-radius: 12px;
+            font-size: 14px;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.2s;
+            text-transform: uppercase;
+        }
+        
+        .btn-completar {
+            background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+            color: white;
+        }
+        
+        .btn-editar {
+            background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);
+            color: white;
+        }
+        
+        .btn-anular {
+            background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
+            color: white;
+        }
+        
+        .btn-action:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+        }
+        
+        /* Modal personalizado */
+        .custom-modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.6);
+            backdrop-filter: blur(8px);
+            z-index: 9998;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .custom-modal.active {
+            display: flex;
+        }
+        
+        .modal-content {
+            background: white;
+            border-radius: 25px;
+            padding: 35px;
+            max-width: 600px;
+            width: 90%;
+            max-height: 85vh;
+            overflow-y: auto;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+        }
+        
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 25px;
+            padding-bottom: 15px;
+            border-bottom: 3px solid #e2e8f0;
+        }
+        
+        .modal-title {
+            font-size: 26px;
+            font-weight: 800;
+            color: #1e293b;
+        }
+        
+        .modal-close {
+            background: #f1f5f9;
+            border: none;
+            width: 45px;
+            height: 45px;
+            border-radius: 50%;
+            cursor: pointer;
+            font-size: 28px;
+            color: #64748b;
+            transition: all 0.2s;
+        }
+        
+        .modal-close:hover {
+            background: #e2e8f0;
+            transform: rotate(90deg);
+        }
+        
+        /* Formulario */
+        .form-group {
+            margin-bottom: 25px;
+        }
+        
+        .form-label {
+            display: block;
+            font-size: 16px;
+            font-weight: 700;
+            color: #1e293b;
+            margin-bottom: 10px;
+        }
+        
+        .form-input,
+        .form-select,
+        .form-textarea {
+            width: 100%;
+            padding: 15px 20px;
+            border: 2px solid #e2e8f0;
+            border-radius: 12px;
+            font-size: 16px;
+            transition: all 0.3s;
+        }
+        
+        .form-input:focus,
+        .form-select:focus,
+        .form-textarea:focus {
+            outline: none;
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 4px rgba(102, 126, 234, 0.1);
+        }
+        
+        .form-textarea {
+            min-height: 100px;
+            resize: vertical;
+        }
+        
+        /* Botones de formulario */
+        .form-actions {
+            display: flex;
+            gap: 15px;
+            margin-top: 30px;
+        }
+        
+        .btn-form {
+            flex: 1;
+            padding: 18px;
+            border: none;
+            border-radius: 15px;
+            font-size: 18px;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.3s;
+            text-transform: uppercase;
+        }
+        
+        .btn-primary {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+        }
+        
+        .btn-success {
+            background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+            color: white;
+        }
+        
+        .btn-secondary {
+            background: #e2e8f0;
+            color: #64748b;
+        }
+        
+        .btn-form:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
+        }
+        
+        /* Botones de motivos */
+        .motivos-container {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 12px;
+            margin-top: 15px;
+        }
+        
+        .btn-motivo {
+            padding: 15px;
+            border: 2px solid #e2e8f0;
+            border-radius: 12px;
+            background: white;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: 700;
+            color: #64748b;
+            transition: all 0.2s;
+            text-align: center;
+        }
+        
+        .btn-motivo:hover {
+            border-color: var(--primary-color);
+            background: #f8fafc;
+        }
+        
+        .btn-motivo.selected {
+            border-color: var(--primary-color);
+            background: var(--primary-color);
+            color: white;
+        }
+        
+        /* Responsive */
+        @media (max-width: 768px) {
+            .main-container {
+                padding: 20px 15px;
+            }
+            
+            .header {
+                padding: 20px;
+            }
+            
+            .header h1 {
+                font-size: 28px;
+            }
+            
+            .header p {
+                font-size: 16px;
+            }
+            
+            .modal-content {
+                width: 95%;
+                padding: 25px;
+            }
+            
+            .motivos-container {
+                grid-template-columns: 1fr;
+            }
+            
+            .main-action-btn {
+                width: 70px;
+                height: 70px;
+                font-size: 30px;
+                bottom: 70px;
+                right: 20px;
+            }
+        }
+        
+        /* Estado vacío */
+        .empty-state {
+            text-align: center;
+            padding: 80px 20px;
+            color: #94a3b8;
+        }
+        
+        .empty-icon {
+            font-size: 72px;
+            margin-bottom: 20px;
+        }
+        
+        .empty-text {
+            font-size: 20px;
+            font-weight: 600;
+        }
+    </style>
+</head>
+<body class="bg-diagonal-blue">
+    
+    <!-- Header -->
+    <div class="main-container">
+        <div class="header">
+            <h1>📊 Mi Producción</h1>
+            <p id="usuario-nombre">Cargando...</p>
+        </div>
+        
+        <!-- Lista de registros -->
+        <div class="registros-container" id="registros-container">
+            <div class="empty-state">
+                <div class="empty-icon">📦</div>
+                <div class="empty-text">Cargando tus registros...</div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Botón flotante principal -->
+    <button class="main-action-btn" onclick="showWheelMenu(menuOptions)" title="Abrir menú">
+        ➕
+    </button>
+    
+    <!-- Modal: Crear Producción -->
+    <div class="custom-modal" id="modal-crear">
+        <div class="modal-content">
+            <div class="modal-header">
+                <div class="modal-title">📝 Crear Producción</div>
+                <button class="modal-close" onclick="closeModal('modal-crear')">×</button>
+            </div>
+            
+            <form onsubmit="crearProduccion(event)">
+                <div class="form-group">
+                    <label class="form-label">Producto *</label>
+                    <select class="form-select" id="crear-producto" required>
+                        <option value="">Seleccionar...</option>
+                    </select>
+                </div>
+                
+                <div class="form-group">
+                    <label class="form-label">Cantidad *</label>
+                    <input type="number" class="form-input" id="crear-cantidad" min="1" required placeholder="Ejemplo: 50">
+                </div>
+                
+                <div class="form-group">
+                    <label class="form-label">Nota (opcional)</label>
+                    <textarea class="form-textarea" id="crear-nota" placeholder="Alguna observación..."></textarea>
+                </div>
+                
+                <div class="form-actions">
+                    <button type="button" class="btn-form btn-secondary" onclick="closeModal('modal-crear')">
+                        Cancelar
+                    </button>
+                    <button type="submit" class="btn-form btn-success">
+                        Crear
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+    
+    <!-- Modal: Editar -->
+    <div class="custom-modal" id="modal-editar">
+        <div class="modal-content">
+            <div class="modal-header">
+                <div class="modal-title">✏️ Editar Registro</div>
+                <button class="modal-close" onclick="closeModal('modal-editar')">×</button>
+            </div>
+            
+            <form onsubmit="guardarEdicion(event)">
+                <input type="hidden" id="editar-id">
+                
+                <div class="form-group">
+                    <label class="form-label">Producto *</label>
+                    <select class="form-select" id="editar-producto" required>
+                        <option value="">Seleccionar...</option>
+                    </select>
+                </div>
+                
+                <div class="form-group">
+                    <label class="form-label">Cantidad *</label>
+                    <input type="number" class="form-input" id="editar-cantidad" min="1" required>
+                </div>
+                
+                <div class="form-group">
+                    <label class="form-label">Motivo del cambio *</label>
+                    <div class="motivos-container">
+                        <button type="button" class="btn-motivo" onclick="selectMotivo(this, 'editar', 'ME CONFUNDÍ DE CANTIDAD')">
+                            ME CONFUNDÍ DE CANTIDAD
+                        </button>
+                        <button type="button" class="btn-motivo" onclick="selectMotivo(this, 'editar', 'ME CONFUNDÍ DE PRODUCTO')">
+                            ME CONFUNDÍ DE PRODUCTO
+                        </button>
+                        <button type="button" class="btn-motivo" onclick="selectMotivo(this, 'editar', 'ME EQUIVOQUÉ DE USUARIO')">
+                            ME EQUIVOQUÉ DE USUARIO
+                        </button>
+                        <button type="button" class="btn-motivo" onclick="selectMotivo(this, 'editar', 'OTROS')">
+                            OTROS
+                        </button>
+                    </div>
+                    <textarea class="form-textarea" id="editar-motivo-texto" style="display: none; margin-top: 15px;" placeholder="Escribe el motivo..."></textarea>
+                </div>
+                
+                <div class="form-actions">
+                    <button type="button" class="btn-form btn-secondary" onclick="closeModal('modal-editar')">
+                        Cancelar
+                    </button>
+                    <button type="submit" class="btn-form btn-success">
+                        Guardar
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+    
+    <!-- Modal: Completar Ajeno -->
+    <div class="custom-modal" id="modal-completar">
+        <div class="modal-content">
+            <div class="modal-header">
+                <div class="modal-title">✅ Completar Producción</div>
+                <button class="modal-close" onclick="closeModal('modal-completar')">×</button>
+            </div>
+            
+            <div id="info-registro-completar" style="background: #f8fafc; padding: 20px; border-radius: 15px; margin-bottom: 25px;"></div>
+            
+            <form onsubmit="guardarCompletado(event)">
+                <input type="hidden" id="completar-id">
+                
+                <div class="form-group">
+                    <label class="form-label">Cantidad que terminé *</label>
+                    <input type="number" class="form-input" id="completar-cantidad" min="1" required placeholder="Ejemplo: 10">
+                </div>
+                
+                <div class="form-group">
+                    <label class="form-label">Motivo (opcional)</label>
+                    <div class="motivos-container">
+                        <button type="button" class="btn-motivo" onclick="selectMotivo(this, 'completar', 'MOTIVOS PERSONALES')">
+                            MOTIVOS PERSONALES
+                        </button>
+                        <button type="button" class="btn-motivo" onclick="selectMotivo(this, 'completar', 'TIEMPO')">
+                            TIEMPO
+                        </button>
+                        <button type="button" class="btn-motivo" onclick="selectMotivo(this, 'completar', 'FAVOR')">
+                            FAVOR
+                        </button>
+                        <button type="button" class="btn-motivo" onclick="selectMotivo(this, 'completar', 'OTROS')">
+                            OTROS
+                        </button>
+                    </div>
+                    <textarea class="form-textarea" id="completar-motivo-texto" style="display: none; margin-top: 15px;" placeholder="Escribe el motivo..."></textarea>
+                </div>
+                
+                <div class="form-actions">
+                    <button type="button" class="btn-form btn-secondary" onclick="closeModal('modal-completar')">
+                        Cancelar
+                    </button>
+                    <button type="submit" class="btn-form btn-success">
+                        Completar
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+    
+    <!-- Scripts -->
+    <script src="/js/components-utils.js"></script>
+    <script>
+        // ==========================================
+        // VARIABLES GLOBALES
+        // ==========================================
+        
+        let usuarioActual = null;
+        let productos = [];
+        let registrosActuales = [];
+        let motivoSeleccionado = { editar: '', completar: '' };
+        
+        // Opciones del menú wheel
+        const menuOptions = [
+            {
+                icon: '📝',
+                label: 'CREAR',
+                action: 'abrirCrear'
+            },
+            {
+                icon: '✏️',
+                label: 'EDITAR',
+                action: 'abrirEditar'
+            },
+            {
+                icon: '✅',
+                label: 'COMPLETAR',
+                action: 'abrirCompletar'
+            },
+            {
+                icon: '❌',
+                label: 'ANULAR',
+                action: 'abrirAnular'
+            }
+        ];
+        
+        // ==========================================
+        // INICIALIZACIÓN
+        // ==========================================
+        
+        document.addEventListener('DOMContentLoaded', async () => {
+            await cargarUsuarioActual();
+            await cargarProductos();
+            await cargarRegistros();
+        });
+        
+        async function cargarUsuarioActual() {
+            try {
+                const response = await fetch('/api/usuario-actual');
+                usuarioActual = await response.json();
+                document.getElementById('usuario-nombre').textContent = `👤 ${usuarioActual.nombre}`;
+            } catch (error) {
+                showToast('Error', 'No se pudo cargar el usuario', 'error');
+            }
+        }
+        
+        async function cargarProductos() {
+            try {
+                const response = await fetch('/api/productos');
+                productos = await response.json();
+                
+                const selectCrear = document.getElementById('crear-producto');
+                const selectEditar = document.getElementById('editar-producto');
+                
+                productos.forEach(prod => {
+                    const option1 = new Option(prod.nombre, prod.id);
+                    const option2 = new Option(prod.nombre, prod.id);
+                    selectCrear.add(option1);
+                    selectEditar.add(option2);
+                });
+            } catch (error) {
+                showToast('Error', 'No se pudieron cargar los productos', 'error');
+            }
+        }
+        
+        async function cargarRegistros() {
+            try {
+                const response = await fetch('/api/bitacora/mi-produccion');
+                registrosActuales = await response.json();
+                renderizarRegistros();
+            } catch (error) {
+                showToast('Error', 'No se pudieron cargar los registros', 'error');
+            }
+        }
+        
+        function renderizarRegistros() {
+            const container = document.getElementById('registros-container');
+            
+            if (registrosActuales.length === 0) {
+                container.innerHTML = `
+                    <div class="empty-state">
+                        <div class="empty-icon">📦</div>
+                        <div class="empty-text">No tienes registros de producción</div>
+                    </div>
+                `;
+                return;
+            }
+            
+            container.innerHTML = registrosActuales.map(reg => `
+                <div class="registro-card">
+                    <div class="registro-header">
+                        <div class="registro-producto">${reg.producto_nombre}</div>
+                        <span class="registro-badge ${reg.tipo === 'ROTULADO' ? 'badge-rotulado' : 'badge-no-rotulado'}">
+                            ${reg.tipo}
+                        </span>
+                    </div>
+                    <div class="registro-info">
+                        <div>📦 Cantidad total: <strong>${reg.cantidad_total}</strong></div>
+                        <div>✅ Completado: <strong>${reg.cantidad_completada}</strong></div>
+                        <div>⏳ Pendiente: <strong>${reg.cantidad_total - reg.cantidad_completada}</strong></div>
+                        ${reg.colaboradores_cantidad > 0 ? `<div style="color: #3b82f6;">👥 ${reg.colaboradores_cantidad} colaborador(es)</div>` : ''}
+                    </div>
+                    <div class="registro-actions">
+                        ${reg.cantidad_completada < reg.cantidad_total ? `
+                            <button class="btn-action btn-completar" onclick="prepararCompletado(${reg.id})">
+                                Completar
+                            </button>
+                        ` : ''}
+                        <button class="btn-action btn-editar" onclick="prepararEdicion(${reg.id})">
+                            Editar
+                        </button>
+                        <button class="btn-action btn-anular" onclick="anularRegistro(${reg.id})">
+                            Anular
+                        </button>
+                    </div>
+                </div>
+            `).join('');
+        }
+        
+        // ==========================================
+        // FUNCIONES DEL MENÚ WHEEL
+        // ==========================================
+        
+        window.abrirCrear = function() {
+            openModal('modal-crear');
+        };
+        
+        window.abrirEditar = function() {
+            if (registrosActuales.length === 0) {
+                showToast('Sin registros', 'No tienes registros para editar', 'warning');
+                return;
+            }
+            showToast('Selecciona un registro', 'Haz clic en "Editar" en el registro que quieras modificar', 'info');
+        };
+        
+        window.abrirCompletar = function() {
+            if (registrosActuales.length === 0) {
+                showToast('Sin registros', 'No tienes registros para completar', 'warning');
+                return;
+            }
+            showToast('Selecciona un registro', 'Haz clic en "Completar" en el registro que quieras avanzar', 'info');
+        };
+        
+        window.abrirAnular = function() {
+            if (registrosActuales.length === 0) {
+                showToast('Sin registros', 'No tienes registros para anular', 'warning');
+                return;
+            }
+            showToast('Selecciona un registro', 'Haz clic en "Anular" en el registro que quieras cancelar', 'info');
+        };
+        
+        // ==========================================
+        // FUNCIONES MODALES
+        // ==========================================
+        
+        function openModal(modalId) {
+            document.getElementById(modalId).classList.add('active');
+        }
+        
+        function closeModal(modalId) {
+            document.getElementById(modalId).classList.remove('active');
+        }
+        
+        window.closeModal = closeModal;
+        
+        // ==========================================
+        // CREAR PRODUCCIÓN
+        // ==========================================
+        
+        async function crearProduccion(e) {
+            e.preventDefault();
+            
+            const data = {
+                producto_id: parseInt(document.getElementById('crear-producto').value),
+                cantidad_total: parseInt(document.getElementById('crear-cantidad').value),
+                nota: document.getElementById('crear-nota').value
+            };
+            
+            try {
+                showLoading('Creando registro...');
+                
+                const response = await fetch('/api/bitacora/produccion', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(data)
+                });
+                
+                if (!response.ok) throw new Error('Error al crear');
+                
+                hideLoading();
+                showSuccess('REGISTRADO CORRECTAMENTE');
+                closeModal('modal-crear');
+                
+                // Limpiar formulario
+                e.target.reset();
+                
+                // Recargar registros
+                setTimeout(() => cargarRegistros(), 2000);
+                
+            } catch (error) {
+                hideLoading();
+                showToast('Error', error.message, 'error');
+            }
+        }
+        
+        // ==========================================
+        // EDITAR REGISTRO
+        // ==========================================
+        
+        function prepararEdicion(id) {
+            const registro = registrosActuales.find(r => r.id === id);
+            if (!registro) return;
+            
+            document.getElementById('editar-id').value = registro.id;
+            document.getElementById('editar-producto').value = registro.producto_id;
+            document.getElementById('editar-cantidad').value = registro.cantidad_total;
+            
+            // Limpiar motivos
+            document.querySelectorAll('#modal-editar .btn-motivo').forEach(btn => {
+                btn.classList.remove('selected');
+            });
+            document.getElementById('editar-motivo-texto').style.display = 'none';
+            motivoSeleccionado.editar = '';
+            
+            openModal('modal-editar');
+        }
+        
+        async function guardarEdicion(e) {
+            e.preventDefault();
+            
+            if (!motivoSeleccionado.editar) {
+                showToast('Falta motivo', 'Debes seleccionar un motivo del cambio', 'warning');
+                return;
+            }
+            
+            const id = document.getElementById('editar-id').value;
+            const data = {
+                producto_id: parseInt(document.getElementById('editar-producto').value),
+                cantidad_total: parseInt(document.getElementById('editar-cantidad').value),
+                motivo: motivoSeleccionado.editar
+            };
+            
+            try {
+                showLoading('Guardando cambios...');
+                
+                const response = await fetch(`/api/bitacora/produccion/${id}`, {
+                    method: 'PUT',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(data)
+                });
+                
+                if (!response.ok) throw new Error('Error al editar');
+                
+                hideLoading();
+                showSuccess('EDITADO CORRECTAMENTE');
+                closeModal('modal-editar');
+                
+                setTimeout(() => cargarRegistros(), 2000);
+                
+            } catch (error) {
+                hideLoading();
+                showToast('Error', error.message, 'error');
+            }
+        }
+        
+        // ==========================================
+        // COMPLETAR REGISTRO
+        // ==========================================
+        
+        function prepararCompletado(id) {
+            const registro = registrosActuales.find(r => r.id === id);
+            if (!registro) return;
+            
+            document.getElementById('completar-id').value = registro.id;
+            
+            const pendiente = registro.cantidad_total - registro.cantidad_completada;
+            document.getElementById('completar-cantidad').max = pendiente;
+            document.getElementById('completar-cantidad').value = '';
+            
+            // Mostrar info
+            document.getElementById('info-registro-completar').innerHTML = `
+                <strong>${registro.producto_nombre}</strong><br>
+                <span style="color: #64748b;">Pendiente: ${pendiente} unidades</span>
+            `;
+            
+            // Limpiar motivos
+            document.querySelectorAll('#modal-completar .btn-motivo').forEach(btn => {
+                btn.classList.remove('selected');
+            });
+            document.getElementById('completar-motivo-texto').style.display = 'none';
+            motivoSeleccionado.completar = '';
+            
+            openModal('modal-completar');
+        }
+        
+        async function guardarCompletado(e) {
+            e.preventDefault();
+            
+            const id = document.getElementById('completar-id').value;
+            const cantidad = parseInt(document.getElementById('completar-cantidad').value);
+            
+            const data = {
+                cantidad_completada: cantidad,
+                motivo: motivoSeleccionado.completar || 'AUTOCOMPLETADO'
+            };
+            
+            try {
+                showLoading('Completando registro...');
+                
+                const response = await fetch(`/api/bitacora/completar/${id}`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(data)
+                });
+                
+                if (!response.ok) throw new Error('Error al completar');
+                
+                hideLoading();
+                showSuccess('COMPLETADO CORRECTAMENTE');
+                closeModal('modal-completar');
+                
+                setTimeout(() => cargarRegistros(), 2000);
+                
+            } catch (error) {
+                hideLoading();
+                showToast('Error', error.message, 'error');
+            }
+        }
+        
+        // ==========================================
+        // ANULAR REGISTRO
+        // ==========================================
+        
+        async function anularRegistro(id) {
+            const confirmar = confirm('¿Estás segura de anular este registro? Esta acción no se puede deshacer.');
+            if (!confirmar) return;
+            
+            try {
+                showLoading('Anulando registro...');
+                
+                const response = await fetch(`/api/bitacora/anular/${id}`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ motivo: 'ANULADO POR USUARIO' })
+                });
+                
+                if (!response.ok) throw new Error('Error al anular');
+                
+                hideLoading();
+                showSuccess('ANULADO CORRECTAMENTE');
+                
+                setTimeout(() => cargarRegistros(), 2000);
+                
+            } catch (error) {
+                hideLoading();
+                showToast('Error', error.message, 'error');
+            }
+        }
+        
+        // ==========================================
+        // SELECCIÓN DE MOTIVOS
+        // ==========================================
+        
+        function selectMotivo(btn, tipo, motivo) {
+            // Limpiar selección anterior
+            const container = btn.closest('.motivos-container');
+            container.querySelectorAll('.btn-motivo').forEach(b => b.classList.remove('selected'));
+            
+            // Seleccionar actual
+            btn.classList.add('selected');
+            
+            // Si es "OTROS", mostrar textarea
+            const textarea = document.getElementById(`${tipo}-motivo-texto`);
+            if (motivo === 'OTROS') {
+                textarea.style.display = 'block';
+                textarea.required = true;
+                motivoSeleccionado[tipo] = '';
+                textarea.oninput = (e) => {
+                    motivoSeleccionado[tipo] = e.target.value;
+                };
+            } else {
+                textarea.style.display = 'none';
+                textarea.required = false;
+                motivoSeleccionado[tipo] = motivo;
+            }
+        }
+        
+        window.selectMotivo = selectMotivo;
+        
+    </script>
+    
+</body>
+</html>

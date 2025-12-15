@@ -33,244 +33,22 @@
 
         body {
             font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
-            background: linear-gradient(-45deg, #ee7752, #e73c7e, #23a6d5, #23d5ab);
-            background-size: 400% 400%;
-            animation: gradientShift 15s ease infinite;
+            background: #f0f2f5;
             color: var(--text-primary);
             line-height: 1.6;
-            position: relative;
             min-height: 100vh;
+            overflow-y: auto !important;
+            overflow-x: hidden;
+            padding-bottom: 50px;
         }
-
-        /* Animated Gradient Background */
-        @keyframes gradientShift {
-            0% {
-                background-position: 0% 50%;
-            }
-            50% {
-                background-position: 100% 50%;
-            }
-            100% {
-                background-position: 0% 50%;
-            }
-        }
-
-        /* Overlay para mejorar legibilidad */
-        body::before {
-            content: '';
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: rgba(255, 255, 255, 0.85);
-            backdrop-filter: blur(10px);
-            z-index: -1;
-            pointer-events: none;
-        }
-
-        /* Partículas flotantes */
-        body::after {
-            content: '';
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background-image: 
-                radial-gradient(circle at 20% 50%, rgba(255, 255, 255, 0.3) 1px, transparent 1px),
-                radial-gradient(circle at 60% 70%, rgba(255, 255, 255, 0.3) 1px, transparent 1px),
-                radial-gradient(circle at 80% 30%, rgba(255, 255, 255, 0.3) 1px, transparent 1px);
-            background-size: 200px 200px, 300px 300px, 250px 250px;
-            animation: floatParticles 20s linear infinite;
-            z-index: -1;
-            pointer-events: none;
-        }
-
-        @keyframes floatParticles {
-            0% {
-                transform: translateY(0) translateX(0);
-            }
-            100% {
-                transform: translateY(-100vh) translateX(50px);
-            }
-        }
-
-        /* Capa de ondas animadas */
-        .waves-background {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            z-index: -2;
-            opacity: 0.3;
-            background: 
-                radial-gradient(ellipse at 50% 0%, rgba(255, 255, 255, 0.5), transparent 50%),
-                radial-gradient(ellipse at 0% 50%, rgba(37, 99, 235, 0.3), transparent 50%),
-                radial-gradient(ellipse at 100% 50%, rgba(236, 72, 153, 0.3), transparent 50%),
-                repeating-linear-gradient(
-                    0deg,
-                    transparent,
-                    transparent 50px,
-                    rgba(255, 255, 255, 0.05) 50px,
-                    rgba(255, 255, 255, 0.05) 51px
-                ),
-                repeating-linear-gradient(
-                    90deg,
-                    transparent,
-                    transparent 50px,
-                    rgba(255, 255, 255, 0.05) 50px,
-                    rgba(255, 255, 255, 0.05) 51px
-                );
-            animation: wavesPulse 8s ease-in-out infinite;
-        }
-
-        @keyframes wavesPulse {
-            0%, 100% {
-                transform: scale(1);
-                opacity: 0.3;
-            }
-            50% {
-                transform: scale(1.1);
-                opacity: 0.5;
-            }
-        }
-
-        /* Estrellas brillantes */
-        .stars {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            z-index: -1;
-            pointer-events: none;
-        }
-
-        .star {
-            position: absolute;
-            width: 3px;
-            height: 3px;
-            background: white;
-            border-radius: 50%;
-            box-shadow: 0 0 10px rgba(255, 255, 255, 0.8);
-            animation: twinkle 3s ease-in-out infinite;
-        }
-
-        @keyframes twinkle {
-            0%, 100% {
-                opacity: 0.3;
-                transform: scale(1);
-            }
-            50% {
-                opacity: 1;
-                transform: scale(1.5);
-            }
-        }
-
-        .star:nth-child(1) { top: 10%; left: 20%; animation-delay: 0s; }
-        .star:nth-child(2) { top: 20%; left: 80%; animation-delay: 0.5s; }
-        .star:nth-child(3) { top: 60%; left: 10%; animation-delay: 1s; }
-        .star:nth-child(4) { top: 80%; left: 70%; animation-delay: 1.5s; }
-        .star:nth-child(5) { top: 30%; left: 50%; animation-delay: 2s; }
-        .star:nth-child(6) { top: 70%; left: 40%; animation-delay: 2.5s; }
-        .star:nth-child(7) { top: 15%; left: 60%; animation-delay: 0.3s; }
-        .star:nth-child(8) { top: 50%; left: 90%; animation-delay: 1.2s; }
-        .star:nth-child(9) { top: 85%; left: 25%; animation-delay: 1.8s; }
-        .star:nth-child(10) { top: 40%; left: 75%; animation-delay: 0.8s; }
-
-        /* Burbujas flotantes */
-        .bubbles {
-            position: fixed;
-            bottom: -100px;
-            width: 100%;
-            height: 100%;
-            z-index: -1;
-            pointer-events: none;
-        }
-
-        .bubble {
-            position: absolute;
-            bottom: -100px;
-            background: radial-gradient(circle, rgba(255, 255, 255, 0.4), rgba(255, 255, 255, 0.1));
-            border-radius: 50%;
-            animation: riseBubble 10s ease-in infinite;
-        }
-
-        @keyframes riseBubble {
-            0% {
-                bottom: -100px;
-                opacity: 0;
-            }
-            10% {
-                opacity: 1;
-            }
-            90% {
-                opacity: 1;
-            }
-            100% {
-                bottom: 110vh;
-                opacity: 0;
-            }
-        }
-
-        .bubble:nth-child(1) { width: 60px; height: 60px; left: 10%; animation-delay: 0s; animation-duration: 12s; }
-        .bubble:nth-child(2) { width: 40px; height: 40px; left: 25%; animation-delay: 2s; animation-duration: 14s; }
-        .bubble:nth-child(3) { width: 80px; height: 80px; left: 50%; animation-delay: 4s; animation-duration: 10s; }
-        .bubble:nth-child(4) { width: 50px; height: 50px; left: 70%; animation-delay: 1s; animation-duration: 13s; }
-        .bubble:nth-child(5) { width: 70px; height: 70px; left: 85%; animation-delay: 3s; animation-duration: 11s; }
 
         /* Header */
         .admin-header {
-            background: linear-gradient(
-                135deg,
-                rgba(200, 210, 220, 0.95),
-                rgba(230, 235, 240, 0.95),
-                rgba(210, 220, 230, 0.95)
-            );
-            background-size: 200% 200%;
+            background: white;
             color: #1a202c;
             padding: 1.5rem;
-            box-shadow: 
-                var(--shadow-lg),
-                0 0 10px rgba(255, 255, 255, 0.3),
-                inset 0 1px 0 rgba(255, 255, 255, 0.8),
-                inset 0 -1px 0 rgba(0, 0, 0, 0.1);
-            position: relative;
-            overflow: hidden;
-            border: 1px solid rgba(255, 255, 255, 0.6);
-            animation: chromeShift 8s ease infinite;
-        }
-
-        @keyframes chromeShift {
-            0%, 100% { background-position: 0% 50%; }
-            50% { background-position: 100% 50%; }
-        }
-
-        .admin-header::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: -100%;
-            width: 100%;
-            height: 100%;
-            background: linear-gradient(
-                90deg,
-                transparent,
-                rgba(255, 255, 255, 0.4),
-                transparent
-            );
-            animation: headerShine 4s infinite;
-        }
-
-        @keyframes headerShine {
-            0% {
-                left: -100%;
-            }
-            100% {
-                left: 100%;
-            }
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            border-bottom: 1px solid #e2e8f0;
         }
 
         .header-content {
@@ -327,157 +105,7 @@
             opacity: 0.4;
             animation: floatLight 12s ease-in-out infinite;
         }
-        
-        .light:nth-child(1) {
-            background: radial-gradient(circle, rgba(255, 0, 255, 0.6), transparent);
-            top: 10%;
-            left: 20%;
-            animation-delay: 0s;
-            animation-duration: 15s;
-        }
-        
-        .light:nth-child(2) {
-            background: radial-gradient(circle, rgba(0, 255, 255, 0.6), transparent);
-            top: 60%;
-            left: 70%;
-            animation-delay: 3s;
-            animation-duration: 18s;
-        }
-        
-        .light:nth-child(3) {
-            background: radial-gradient(circle, rgba(255, 255, 0, 0.5), transparent);
-            top: 80%;
-            left: 30%;
-            animation-delay: 6s;
-            animation-duration: 20s;
-        }
-        
-        @keyframes floatLight {
-            0%, 100% {
-                transform: translate(0, 0) scale(1);
-            }
-            33% {
-                transform: translate(50px, -50px) scale(1.2);
-            }
-            66% {
-                transform: translate(-30px, 30px) scale(0.8);
-            }
-        }
-
-        /* Partículas de confeti */
-        .confetti-container {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            pointer-events: none;
-            z-index: -1;
-            overflow: hidden;
-        }
-        
-        .confetti {
-            position: absolute;
-            width: 8px;
-            height: 8px;
-            top: -10px;
-            opacity: 0.7;
-            animation: fallConfetti 8s linear infinite;
-        }
-        
-        .confetti:nth-child(1) {
-            left: 10%;
-            background: #ff6b6b;
-            animation-delay: 0s;
-            animation-duration: 7s;
-        }
-        
-        .confetti:nth-child(2) {
-            left: 25%;
-            background: #4ecdc4;
-            animation-delay: 1.5s;
-            animation-duration: 9s;
-        }
-        
-        .confetti:nth-child(3) {
-            left: 40%;
-            background: #ffe66d;
-            animation-delay: 3s;
-            animation-duration: 8s;
-        }
-        
-        .confetti:nth-child(4) {
-            left: 55%;
-            background: #a8e6cf;
-            animation-delay: 0.5s;
-            animation-duration: 10s;
-        }
-        
-        .confetti:nth-child(5) {
-            left: 70%;
-            background: #ff8b94;
-            animation-delay: 2s;
-            animation-duration: 7.5s;
-        }
-        
-        .confetti:nth-child(6) {
-            left: 85%;
-            background: #c7ceea;
-            animation-delay: 4s;
-            animation-duration: 9.5s;
-        }
-        
-        @keyframes fallConfetti {
-            0% {
-                top: -10px;
-                transform: rotate(0deg);
-                opacity: 0.7;
-            }
-            100% {
-                top: 110vh;
-                transform: rotate(720deg);
-                opacity: 0;
-            }
-        }
-
-        .admin-header-logo {
-            height: 50px;
-            width: auto;
-            background: rgba(255, 255, 255, 0.9);
-            padding: 5px 10px;
-            border-radius: 6px;
-            filter: drop-shadow(0 2px 4px rgba(0,0,0,0.3));
-            transition: all 0.3s ease;
-        }
-
-        .admin-header-logo:hover {
-            transform: scale(1.05);
-            background: rgba(255, 255, 255, 0.95);
-            filter: drop-shadow(0 2px 6px rgba(0,0,0,0.4));
-        }
-
-        .admin-info {
-            display: flex;
-            gap: 1rem;
-            align-items: center;
-        }
-
-        /* Dark Mode Toggle */
-        .dark-mode-toggle {
-            position: relative;
-            display: inline-block;
-            width: 60px;
-            height: 30px;
-        }
-
-        .dark-mode-toggle input {
-            opacity: 0;
-            width: 0;
-            height: 0;
-        }
-
-        .dark-mode-slider {
-            position: absolute;
+        color: #2d3748;osition: absolute;
             cursor: pointer;
             top: 0;
             left: 0;
@@ -1225,6 +853,107 @@
             border-bottom-color: #374151;
         }
 
+        /* Toast Notification Styles */
+        .toast-container {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            z-index: 10000;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            max-width: 400px;
+        }
+
+        .toast {
+            background: white;
+            padding: 16px 20px;
+            border-radius: 8px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+            display: flex;
+            align-items: flex-start;
+            gap: 12px;
+            min-width: 300px;
+            animation: slideInRight 0.3s ease-out;
+            border-left: 4px solid #3b82f6;
+        }
+
+        .toast.toast-success {
+            border-left-color: #10b981;
+        }
+
+        .toast.toast-error {
+            border-left-color: #ef4444;
+        }
+
+        .toast.toast-warning {
+            border-left-color: #f59e0b;
+        }
+
+        .toast.toast-info {
+            border-left-color: #3b82f6;
+        }
+
+        .toast-icon {
+            font-size: 20px;
+            flex-shrink: 0;
+        }
+
+        .toast-content {
+            flex: 1;
+        }
+
+        .toast-title {
+            font-weight: 600;
+            margin-bottom: 4px;
+            color: #1e293b;
+        }
+
+        .toast-message {
+            font-size: 14px;
+            color: #64748b;
+        }
+
+        .toast-close {
+            background: none;
+            border: none;
+            font-size: 20px;
+            cursor: pointer;
+            color: #94a3b8;
+            padding: 0;
+            line-height: 1;
+        }
+
+        .toast-close:hover {
+            color: #64748b;
+        }
+
+        @keyframes slideInRight {
+            from {
+                transform: translateX(400px);
+                opacity: 0;
+            }
+            to {
+                transform: translateX(0);
+                opacity: 1;
+            }
+        }
+
+        @keyframes slideOutRight {
+            from {
+                transform: translateX(0);
+                opacity: 1;
+            }
+            to {
+                transform: translateX(400px);
+                opacity: 0;
+            }
+        }
+
+        .toast.toast-closing {
+            animation: slideOutRight 0.3s ease-out forwards;
+        }
+
         /* Chat System Styles */
         .chat-container {
             display: flex;
@@ -1520,53 +1249,9 @@
                 width: 100%;
                 max-height: 200px;
             }
-        }
     </style>
 </head>
 <body>
-    <!-- Efectos visuales de fondo -->
-    <div class="waves-background"></div>
-    
-    <!-- Estrellas brillantes -->
-    <div class="stars">
-        <div class="star"></div>
-        <div class="star"></div>
-        <div class="star"></div>
-        <div class="star"></div>
-        <div class="star"></div>
-        <div class="star"></div>
-        <div class="star"></div>
-        <div class="star"></div>
-        <div class="star"></div>
-        <div class="star"></div>
-    </div>
-
-    <!-- Burbujas flotantes -->
-    <div class="bubbles">
-        <div class="bubble"></div>
-        <div class="bubble"></div>
-        <div class="bubble"></div>
-        <div class="bubble"></div>
-        <div class="bubble"></div>
-    </div>
-
-    <!-- Luces flotantes grandes -->
-    <div class="floating-lights">
-        <div class="light"></div>
-        <div class="light"></div>
-        <div class="light"></div>
-    </div>
-
-    <!-- Confeti cayendo -->
-    <div class="confetti-container">
-        <div class="confetti"></div>
-        <div class="confetti"></div>
-        <div class="confetti"></div>
-        <div class="confetti"></div>
-        <div class="confetti"></div>
-        <div class="confetti"></div>
-    </div>
-
     <!-- Header -->
     <div class="admin-header">
         <div class="header-content">
@@ -1589,9 +1274,10 @@
                     Sync
                 </button>
                 <div style="display: flex; align-items: center; gap: 0.5rem; margin-left: 1rem;">
-                    <label class="dark-mode-toggle">
+                    <label class="switch" title="Modo Oscuro">
                         <input type="checkbox" id="darkModeToggle" onchange="toggleDarkMode()">
-                        <span class="dark-mode-slider"></span>
+                        <svg class="icon icon-light" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><circle cx="12" cy="12" r="5"/><path d="M12 1v2m0 18v2M4.22 4.22l1.42 1.42m12.72 12.72l1.42 1.42M1 12h2m18 0h2M4.22 19.78l1.42-1.42M18.36 5.64l1.42-1.42"/></svg>
+                        <svg class="icon icon-dark" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>
                     </label>
                 </div>
                 <div class="decorations-toggle" onclick="toggleDecorations()" title="Activar/Desactivar decoraciones">
@@ -1713,8 +1399,13 @@
                 </div>
                 
                 <div class="search-filters">
-                    <input type="text" class="search-input" placeholder="Buscar usuarios..." 
-                           onkeyup="searchUsers(this.value)">
+                    <div class="container-input">
+                        <input type="text" placeholder="Buscar usuarios..." name="text" class="input-search" 
+                               onkeyup="searchUsers(this.value)">
+                        <svg fill="#000000" width="20px" height="20px" viewBox="0 0 1920 1920" xmlns="http://www.w3.org/2000/svg">
+                            <path d="M790.588 1468.235c-373.722 0-677.647-303.924-677.647-677.647 0-373.722 303.925-677.647 677.647-677.647 373.723 0 677.647 303.925 677.647 677.647 0 373.723-303.924 677.647-677.647 677.647Zm596.781-160.715c120.396-138.692 193.807-319.285 193.807-516.932C1581.176 354.748 1226.428 0 790.588 0S0 354.748 0 790.588s354.748 790.588 790.588 790.588c197.647 0 378.24-73.411 516.932-193.807l516.028 516.142 79.963-79.963-516.142-516.028Z" fill-rule="evenodd"></path>
+                        </svg>
+                    </div>
                     <select class="filter-select" onchange="filterUsers(this.value)">
                         <option value="">Todos los roles</option>
                         <option value="administracion">Administración</option>
@@ -1771,8 +1462,13 @@
                 </div>
                 
                 <div class="search-filters">
-                    <input type="text" class="search-input" placeholder="Buscar productos..." 
-                           onkeyup="searchProducts(this.value)">
+                    <div class="container-input">
+                        <input type="text" placeholder="Buscar productos..." name="text" class="input-search" 
+                               onkeyup="searchProducts(this.value)">
+                        <svg fill="#000000" width="20px" height="20px" viewBox="0 0 1920 1920" xmlns="http://www.w3.org/2000/svg">
+                            <path d="M790.588 1468.235c-373.722 0-677.647-303.924-677.647-677.647 0-373.722 303.925-677.647 677.647-677.647 373.723 0 677.647 303.925 677.647 677.647 0 373.723-303.924 677.647-677.647 677.647Zm596.781-160.715c120.396-138.692 193.807-319.285 193.807-516.932C1581.176 354.748 1226.428 0 790.588 0S0 354.748 0 790.588s354.748 790.588 790.588 790.588c197.647 0 378.24-73.411 516.932-193.807l516.028 516.142 79.963-79.963-516.142-516.028Z" fill-rule="evenodd"></path>
+                        </svg>
+                    </div>
                     <select class="filter-select" onchange="filterProductStatus(this.value)">
                         <option value="">Todos los estados</option>
                         <option value="true">Activos</option>
@@ -1815,8 +1511,13 @@
                 </div>
                 
                 <div class="search-filters">
-                    <input type="text" class="search-input" placeholder="Buscar solicitudes..." 
-                           onkeyup="searchSolicitudes(this.value)">
+                    <div class="container-input">
+                        <input type="text" placeholder="Buscar solicitudes..." name="text" class="input-search" 
+                               onkeyup="searchSolicitudes(this.value)">
+                        <svg fill="#000000" width="20px" height="20px" viewBox="0 0 1920 1920" xmlns="http://www.w3.org/2000/svg">
+                            <path d="M790.588 1468.235c-373.722 0-677.647-303.924-677.647-677.647 0-373.722 303.925-677.647 677.647-677.647 373.723 0 677.647 303.925 677.647 677.647 0 373.723-303.924 677.647-677.647 677.647Zm596.781-160.715c120.396-138.692 193.807-319.285 193.807-516.932C1581.176 354.748 1226.428 0 790.588 0S0 354.748 0 790.588s354.748 790.588 790.588 790.588c197.647 0 378.24-73.411 516.932-193.807l516.028 516.142 79.963-79.963-516.142-516.028Z" fill-rule="evenodd"></path>
+                        </svg>
+                    </div>
                     <select class="filter-select" onchange="filterSolicitudStatus(this.value)">
                         <option value="">Todos los estados</option>
                         <option value="pendiente">Pendiente</option>
@@ -2353,11 +2054,13 @@
                                 <input type="date" class="form-input" id="cleanup-fecha-fin">
                             </div>
                             
-                            <div class="form-group" style="margin-bottom: 1.5rem;">
-                                <label class="checkbox-label">
+                            <div class="form-group" style="margin-bottom: 1.5rem; display: flex; align-items: center; gap: 10px;">
+                                <label class="switch">
                                     <input type="checkbox" id="cleanup-incluir-cola">
-                                    <span>Incluir registros de cola de impresión</span>
+                                    <svg class="icon icon-light" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M5 13l4 4L19 7"/></svg>
+                                    <svg class="icon icon-dark" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M6 18L18 6M6 6l12 12"/></svg>
                                 </label>
+                                <span style="font-size: 14px; color: var(--text-primary);">Incluir registros de cola de impresión</span>
                             </div>
                             
                             <button class="btn btn-warning" onclick="executeMaintenance('cleanup')" style="width: 100%;">
@@ -2439,17 +2142,29 @@
                             </p>
                             
                             <div class="backup-options" style="margin-bottom: 1.5rem;">
-                                <label class="checkbox-label" style="display: block; margin-bottom: 0.5rem;">
-                                    <input type="checkbox" id="backup-usuarios" checked>
-                                    <span>Usuarios y configuraciones</span>
-                                </label>
-                                <label class="checkbox-label" style="display: block; margin-bottom: 0.5rem;">
-                                    <input type="checkbox" id="backup-productos" checked>
-                                    <span>Catálogo de productos</span>
-                                </label>
-                                <label class="checkbox-label" style="display: block; margin-bottom: 0.5rem;">
-                                    <input type="checkbox" id="backup-solicitudes">
-                                    <span>Historial de solicitudes</span>
+                                <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 0.5rem;">
+                                    <label class="switch">
+                                        <input type="checkbox" id="backup-usuarios" checked>
+                                        <svg class="icon icon-light" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M5 13l4 4L19 7"/></svg>
+                                        <svg class="icon icon-dark" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M6 18L18 6M6 6l12 12"/></svg>
+                                    </label>
+                                    <span style="font-size: 14px;">Usuarios y configuraciones</span>
+                                </div>
+                                <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 0.5rem;">
+                                    <label class="switch">
+                                        <input type="checkbox" id="backup-productos" checked>
+                                        <svg class="icon icon-light" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M5 13l4 4L19 7"/></svg>
+                                        <svg class="icon icon-dark" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M6 18L18 6M6 6l12 12"/></svg>
+                                    </label>
+                                    <span style="font-size: 14px;">Catálogo de productos</span>
+                                </div>
+                                <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 0.5rem;">
+                                    <label class="switch">
+                                        <input type="checkbox" id="backup-solicitudes">
+                                        <svg class="icon icon-light" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M5 13l4 4L19 7"/></svg>
+                                        <svg class="icon icon-dark" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M6 18L18 6M6 6l12 12"/></svg>
+                                    </label>
+                                    <span style="font-size: 14px;">Historial de solicitudes</span>
                                 </label>
                             </div>
                             
@@ -2855,7 +2570,7 @@
             }
             
             try {
-                const response = await fetch('/components/bitacora-produccion-mejorada.html');
+                const response = await fetch('/components/bitacora-supervisor.html');
                 const html = await response.text();
                 
                 // Separar HTML y scripts
@@ -3280,13 +2995,13 @@
                     document.body.removeChild(a);
                     window.URL.revokeObjectURL(url);
                     
-                    alert('✅ Reporte exportado correctamente');
+                    showToast('Exportado', 'Reporte de solicitudes exportado correctamente', 'success');
                 } else {
                     throw new Error('Error en la exportación');
                 }
             } catch (error) {
                 console.error('Error exportando solicitudes:', error);
-                alert('❌ Error al exportar: ' + error.message);
+                showToast('Error', 'Error al exportar solicitudes: ' + error.message, 'error');
             } finally {
                 event.target.disabled = false;
                 event.target.innerHTML = '📊 Exportar Excel';
@@ -3315,13 +3030,13 @@
                     document.body.removeChild(a);
                     window.URL.revokeObjectURL(url);
                     
-                    alert('✅ Reporte exportado correctamente');
+                    showToast('Exportado', 'Reporte de productos exportado correctamente', 'success');
                 } else {
                     throw new Error('Error en la exportación');
                 }
             } catch (error) {
                 console.error('Error exportando productos:', error);
-                alert('❌ Error al exportar: ' + error.message);
+                showToast('Error', 'Error al exportar productos: ' + error.message, 'error');
             } finally {
                 event.target.disabled = false;
                 event.target.innerHTML = '📊 Exportar Excel';
@@ -3350,13 +3065,13 @@
                     document.body.removeChild(a);
                     window.URL.revokeObjectURL(url);
                     
-                    alert('✅ Reporte exportado correctamente');
+                    showToast('Exportado', 'Reporte de usuarios exportado correctamente', 'success');
                 } else {
                     throw new Error('Error en la exportación');
                 }
             } catch (error) {
                 console.error('Error exportando usuarios:', error);
-                alert('❌ Error al exportar: ' + error.message);
+                showToast('Error', 'Error al exportar usuarios: ' + error.message, 'error');
             } finally {
                 event.target.disabled = false;
                 event.target.innerHTML = '📊 Exportar Excel';
@@ -3390,17 +3105,30 @@
 
 Última actualización: ${new Date(data.timestamp).toLocaleString('es-PE')}
                     `;
-                    alert(stockInfo);
+                    
+                    // Crear modal personalizado para mostrar info
+                    const modalHtml = `
+                        <div class="custom-modal active" style="z-index: 10000;" onclick="if(event.target === this) this.remove()">
+                            <div class="modal-content" style="max-width: 500px;">
+                                <div class="modal-header">
+                                    <div class="modal-title">📊 Resumen de Stock</div>
+                                    <button class="modal-close" onclick="this.closest('.custom-modal').remove()">×</button>
+                                </div>
+                                <div style="white-space: pre-wrap; font-family: monospace; line-height: 1.8;">${stockInfo}</div>
+                            </div>
+                        </div>
+                    `;
+                    document.body.insertAdjacentHTML('beforeend', modalHtml);
                 })
                 .catch(err => {
                     console.error('Error cargando stock:', err);
-                    alert('❌ Error cargando datos de stock');
+                    showToast('Error', 'Error cargando datos de stock', 'error');
                 });
         }
 
         // Users Management
         function loadUsers() {
-            showLoading('users-table-body');
+            showTableLoading('users-table-body');
             fetch('/api/admin/users')
                 .then(response => response.json())
                 .then(data => {
@@ -3643,19 +3371,37 @@
                     'Authorization': `Bearer ${localStorage.getItem('token')}`
                 }
             })
-            .then(response => response.json())
+            .then(response => {
+                if (!response.ok) {
+                    if (response.status === 404) {
+                        throw new Error('La solicitud ya no existe o fue eliminada previamente');
+                    } else if (response.status === 403) {
+                        throw new Error('No tienes permisos para eliminar esta solicitud');
+                    }
+                    throw new Error(`Error del servidor: ${response.status}`);
+                }
+                return response.json();
+            })
             .then(data => {
                 if (data.success) {
                     showNotification(`✅ Solicitud #${numeroSolicitud} eliminada exitosamente`, 'success');
                     // Actualizar datos y forzar sincronización
                     loadSolicitudes(); // Recargar la lista
-                    loadRequestsStats(); // Actualizar estadísticas si existe la función
-                    loadDashboard(); // Actualizar dashboard
+                    if (typeof loadRequestsStats === 'function') {
+                        loadRequestsStats(); // Actualizar estadísticas si existe la función
+                    }
+                    if (typeof loadDashboard === 'function') {
+                        loadDashboard(); // Actualizar dashboard
+                    }
                     // Disparar actualización de hash para sincronización
                     setTimeout(() => {
-                        getDataHashes().then(newHashes => {
-                            lastDataHash.solicitudes = newHashes.solicitudes;
-                        });
+                        if (typeof getDataHashes === 'function') {
+                            getDataHashes().then(newHashes => {
+                                if (lastDataHash) {
+                                    lastDataHash.solicitudes = newHashes.solicitudes;
+                                }
+                            }).catch(err => console.log('Info: Error actualizando hash:', err));
+                        }
                     }, 1000);
                 } else {
                     showNotification('Error: ' + (data.error || 'Error desconocido'), 'error');
@@ -3663,7 +3409,7 @@
             })
             .catch(error => {
                 console.error('Error deleting solicitud:', error);
-                showNotification('Error de conexión al eliminar solicitud', 'error');
+                showNotification(error.message || 'Error de conexión al eliminar solicitud', 'error');
             });
         }
 
@@ -3675,7 +3421,7 @@
 
         // Products Management
         function loadProducts() {
-            showLoading('products-table-body');
+            showTableLoading('products-table-body');
             fetch('/api/productos')
                 .then(response => response.json())
                 .then(result => {
@@ -3831,7 +3577,7 @@
             document.getElementById(modalId).classList.remove('active');
         }
 
-        function showLoading(elementId) {
+        function showTableLoading(elementId) {
             document.getElementById(elementId).innerHTML = '<tr><td colspan="10" style="text-align: center;"><div class="loading"><div class="spinner"></div> Cargando...</div></td></tr>';
         }
 
@@ -3845,9 +3591,57 @@
             return date.toLocaleDateString('es-ES') + ' ' + date.toLocaleTimeString('es-ES', {hour: '2-digit', minute: '2-digit'});
         }
 
+        // Toast Notification System
+        function showToast(title, message, type = 'info', duration = 4000) {
+            // Crear contenedor si no existe
+            let container = document.querySelector('.toast-container');
+            if (!container) {
+                container = document.createElement('div');
+                container.className = 'toast-container';
+                document.body.appendChild(container);
+            }
+
+            // Iconos según tipo
+            const icons = {
+                success: '✅',
+                error: '❌',
+                warning: '⚠️',
+                info: 'ℹ️'
+            };
+
+            // Crear toast
+            const toast = document.createElement('div');
+            toast.className = `toast toast-${type}`;
+            toast.innerHTML = `
+                <div class="toast-icon">${icons[type] || icons.info}</div>
+                <div class="toast-content">
+                    <div class="toast-title">${title}</div>
+                    <div class="toast-message">${message}</div>
+                </div>
+                <button class="toast-close" onclick="this.closest('.toast').remove()">×</button>
+            `;
+
+            // Agregar al contenedor
+            container.appendChild(toast);
+
+            // Auto-remover después de la duración
+            setTimeout(() => {
+                toast.classList.add('toast-closing');
+                setTimeout(() => {
+                    if (toast.parentNode) {
+                        toast.remove();
+                    }
+                    // Remover contenedor si está vacío
+                    if (container.children.length === 0) {
+                        container.remove();
+                    }
+                }, 300);
+            }, duration);
+        }
+
         function showNotification(message, type = 'info') {
-            // Simple notification - could be enhanced with a proper notification system
-            alert(message);
+            // Usar toast en lugar de alert
+            showToast('Notificación', message, type);
         }
 
         // Export functions (placeholders)
@@ -4472,7 +4266,7 @@
 
         // Other placeholder functions
         function loadSolicitudes() {
-            showLoading('solicitudes-table-body');
+            showTableLoading('solicitudes-table-body');
             fetch('/api/solicitudes')
                 .then(response => response.json())
                 .then(data => {
@@ -7113,19 +6907,30 @@
             if (prod.nombre_producto_3) componentes.push(`• ${prod.nombre_producto_3} (Cantidad: ${prod.cantidad_producto_3})`);
             if (prod.nombre_producto_4) componentes.push(`• ${prod.nombre_producto_4} (Cantidad: ${prod.cantidad_producto_4})`);
 
-            alert(`
-🎁 PRODUCTO ESPECIAL - DETALLE
-
-ID: ${prod.id_producto_especial}
-Código: ${prod.codigo_producto_especial}
-Nombre: ${prod.nombre_producto_especial}
-Tipo: ${prod.tipo_combo || 'COMBO'}
-Estado: ${prod.activo ? '✅ Activo' : '❌ Inactivo'}
-Creado: ${new Date(prod.created_at).toLocaleString()}
-
-COMPONENTES:
-${componentes.join('\n')}
-            `.trim());
+            const detalleHtml = `
+                <div class="custom-modal active" style="z-index: 10000;" onclick="if(event.target === this) this.remove()">
+                    <div class="modal-content" style="max-width: 600px;">
+                        <div class="modal-header">
+                            <div class="modal-title">🎁 Producto Especial - Detalle</div>
+                            <button class="modal-close" onclick="this.closest('.custom-modal').remove()">×</button>
+                        </div>
+                        <div style="line-height: 1.8;">
+                            <p><strong>ID:</strong> ${prod.id_producto_especial}</p>
+                            <p><strong>Código:</strong> ${prod.codigo_producto_especial}</p>
+                            <p><strong>Nombre:</strong> ${prod.nombre_producto_especial}</p>
+                            <p><strong>Tipo:</strong> ${prod.tipo_combo || 'COMBO'}</p>
+                            <p><strong>Estado:</strong> ${prod.activo ? '✅ Activo' : '❌ Inactivo'}</p>
+                            <p><strong>Creado:</strong> ${new Date(prod.created_at).toLocaleString()}</p>
+                            <hr style="margin: 20px 0; border: none; border-top: 2px solid #e2e8f0;">
+                            <p><strong>COMPONENTES:</strong></p>
+                            <div style="margin-left: 20px; margin-top: 10px;">
+                                ${componentes.join('<br>')}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            `;
+            document.body.insertAdjacentHTML('beforeend', detalleHtml);
         }
 
         function editProductoEspecial(id) {
@@ -7328,20 +7133,29 @@ ${componentes.join('\n')}
             const sol = solicitudesEspecialesData.find(s => s.id_solicitud === id);
             if (!sol) return;
 
-            alert(`
-⭐ SOLICITUD ESPECIAL - DETALLE
-
-ID: #${sol.id_solicitud}
-Producto: ${sol.nombre_producto_especial || 'N/A'}
-Código: ${sol.codigo_producto_especial || 'N/A'}
-Costurera: ${sol.nombre_costurera || 'N/A'}
-Cantidad: ${sol.cantidad_solicitada}
-Estado: ${sol.estado_solicitud}
-Prioridad: ${sol.prioridad || 'media'}
-Fecha: ${new Date(sol.fecha_solicitud).toLocaleString()}
-${sol.observaciones ? `\nObservaciones: ${sol.observaciones}` : ''}
-${sol.observaciones_supervisor ? `\nObservaciones Supervisor: ${sol.observaciones_supervisor}` : ''}
-            `.trim());
+            const detalleHtml = `
+                <div class="custom-modal active" style="z-index: 10000;" onclick="if(event.target === this) this.remove()">
+                    <div class="modal-content" style="max-width: 600px;">
+                        <div class="modal-header">
+                            <div class="modal-title">⭐ Solicitud Especial - Detalle</div>
+                            <button class="modal-close" onclick="this.closest('.custom-modal').remove()">×</button>
+                        </div>
+                        <div style="line-height: 1.8;">
+                            <p><strong>ID:</strong> #${sol.id_solicitud}</p>
+                            <p><strong>Producto:</strong> ${sol.nombre_producto_especial || 'N/A'}</p>
+                            <p><strong>Código:</strong> ${sol.codigo_producto_especial || 'N/A'}</p>
+                            <p><strong>Costurera:</strong> ${sol.nombre_costurera || 'N/A'}</p>
+                            <p><strong>Cantidad:</strong> ${sol.cantidad_solicitada}</p>
+                            <p><strong>Estado:</strong> ${sol.estado_solicitud}</p>
+                            <p><strong>Prioridad:</strong> ${sol.prioridad || 'media'}</p>
+                            <p><strong>Fecha:</strong> ${new Date(sol.fecha_solicitud).toLocaleString()}</p>
+                            ${sol.observaciones ? `<p><strong>Observaciones:</strong> ${sol.observaciones}</p>` : ''}
+                            ${sol.observaciones_supervisor ? `<p><strong>Observaciones Supervisor:</strong> ${sol.observaciones_supervisor}</p>` : ''}
+                        </div>
+                    </div>
+                </div>
+            `;
+            document.body.insertAdjacentHTML('beforeend', detalleHtml);
         }
 
         async function aprobarSolicitudEspecial(id) {

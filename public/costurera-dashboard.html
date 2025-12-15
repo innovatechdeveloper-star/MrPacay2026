@@ -15,6 +15,12 @@
     <link rel="stylesheet" href="gender-themes.css">
     <script src="theme-system.js" defer></script>
     
+    <!-- Componentes Avanzados -->
+    <link rel="stylesheet" href="/css/components-advanced.css">
+    <link rel="stylesheet" href="/css/backgrounds-animated.css">
+    <link rel="stylesheet" href="/css/fix-backgrounds-zindex.css">
+    <script src="/js/components-utils.js" defer></script>
+    
     <!-- Theme Switcher -->
     <script src="/css/theme-switcher.js" defer></script>
     
@@ -71,7 +77,7 @@
             width: 100%;
             height: 100%;
             pointer-events: none;
-            z-index: 0;
+            z-index: -2;
             overflow: hidden;
         }
 
@@ -103,7 +109,7 @@
             width: 100%;
             height: 100%;
             pointer-events: none;
-            z-index: 0;
+            z-index: -2;
             overflow: hidden;
         }
 
@@ -279,51 +285,114 @@
             font-weight: 500;
         }
 
-        .rotulado-toggle {
+        /* ===== NEW SWITCH STYLES FROM UIVERSE ===== */
+        .switch {
+            --switch-width: 46px;
+            --switch-height: 24px;
+            --switch-bg: rgb(131, 131, 131);
+            --switch-checked-bg: rgb(0, 218, 80);
+            --switch-offset: calc((var(--switch-height) - var(--circle-diameter)) / 2);
+            --switch-transition: all .2s cubic-bezier(0.27, 0.2, 0.25, 1.51);
+            --circle-diameter: 18px;
+            --circle-bg: #fff;
+            --circle-shadow: 1px 1px 2px rgba(146, 146, 146, 0.45);
+            --circle-checked-shadow: -1px 1px 2px rgba(163, 163, 163, 0.45);
+            --circle-transition: var(--switch-transition);
+            --icon-transition: all .2s cubic-bezier(0.27, 0.2, 0.25, 1.51);
+            --icon-cross-color: var(--switch-bg);
+            --icon-cross-size: 6px;
+            --icon-checkmark-color: var(--switch-checked-bg);
+            --icon-checkmark-size: 10px;
+            --effect-width: calc(var(--circle-diameter) / 2);
+            --effect-height: calc(var(--effect-width) / 2 - 1px);
+            --effect-bg: var(--circle-bg);
+            --effect-border-radius: 1px;
+            --effect-transition: all .2s ease-in-out;
+        }
+
+        .switch input {
+            display: none;
+        }
+
+        .switch {
+            display: inline-block;
+        }
+
+        .switch svg {
+            transition: var(--icon-transition);
+            position: absolute;
+            height: auto;
+        }
+
+        .switch .checkmark {
+            width: var(--icon-checkmark-size);
+            color: var(--icon-checkmark-color);
+            transform: scale(0);
+        }
+
+        .switch .cross {
+            width: var(--icon-cross-size);
+            color: var(--icon-cross-color);
+        }
+
+        .slider {
+            box-sizing: border-box;
+            width: var(--switch-width);
+            height: var(--switch-height);
+            background: var(--switch-bg);
+            border-radius: 999px;
+            display: flex;
+            align-items: center;
             position: relative;
-            width: 48px;
-            height: 24px;
+            transition: var(--switch-transition);
             cursor: pointer;
         }
 
-        .rotulado-toggle input {
-            opacity: 0;
-            width: 0;
-            height: 0;
+        .circle {
+            width: var(--circle-diameter);
+            height: var(--circle-diameter);
+            background: var(--circle-bg);
+            border-radius: inherit;
+            box-shadow: var(--circle-shadow);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: var(--circle-transition);
+            z-index: 1;
+            position: absolute;
+            left: var(--switch-offset);
         }
 
-        .rotulado-slider {
-            position: absolute;
-            cursor: pointer;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            background: rgba(255, 255, 255, 0.3);
-            border: 2px solid rgba(255, 255, 255, 0.5);
-            transition: 0.4s;
-            border-radius: 24px;
-        }
-
-        .rotulado-slider:before {
-            position: absolute;
+        .slider::before {
             content: "";
-            height: 16px;
-            width: 16px;
-            left: 2px;
-            bottom: 2px;
-            background: white;
-            transition: 0.4s;
-            border-radius: 50%;
+            position: absolute;
+            width: var(--effect-width);
+            height: var(--effect-height);
+            left: calc(var(--switch-offset) + (var(--effect-width) / 2));
+            background: var(--effect-bg);
+            border-radius: var(--effect-border-radius);
+            transition: var(--effect-transition);
         }
 
-        .rotulado-toggle input:checked + .rotulado-slider {
-            background: #10b981;
-            border-color: #059669;
+        .switch input:checked + .slider {
+            background: var(--switch-checked-bg);
         }
 
-        .rotulado-toggle input:checked + .rotulado-slider:before {
-            transform: translateX(24px);
+        .switch input:checked + .slider .checkmark {
+            transform: scale(1);
+        }
+
+        .switch input:checked + .slider .cross {
+            transform: scale(0);
+        }
+
+        .switch input:checked + .slider::before {
+            left: calc(100% - var(--effect-width) - (var(--effect-width) / 2) - var(--switch-offset));
+        }
+
+        .switch input:checked + .slider .circle {
+            left: calc(100% - var(--circle-diameter) - var(--switch-offset));
+            box-shadow: var(--circle-checked-shadow);
         }
 
         /* Toggle Modo Oscuro/Claro */
@@ -399,6 +468,9 @@
             max-width: 1000px;
             margin: 0 auto;
             padding: 30px 20px;
+            position: relative;
+            z-index: 100;
+            pointer-events: auto;
         }
 
         .nav-tabs {
@@ -410,6 +482,9 @@
             box-shadow: 0 4px 15px rgba(0,0,0,0.1);
             transition: all 0.5s ease;
             gap: 8px;
+            position: relative;
+            z-index: 100;
+            pointer-events: auto;
         }
 
         body.dark-mode .nav-tabs {
@@ -429,6 +504,7 @@
             color: #666;
             background: transparent;
             border: 2px solid transparent;
+            pointer-events: auto;
         }
 
         .nav-tab:hover {
@@ -457,6 +533,12 @@
         .tab-content {
             display: none;
             animation: fadeIn 0.3s ease;
+            position: relative;
+            z-index: 50;
+            pointer-events: auto;
+            max-height: calc(100vh - 300px);
+            overflow-y: auto;
+            overflow-x: hidden;
         }
 
         .tab-content.active {
@@ -1115,18 +1197,30 @@
         }
 
         .spinner {
-            width: 30px;
-            height: 30px;
-            border: 3px solid #f3f3f3;
-            border-top: 3px solid #667eea;
+            width: 50px;
+            height: 50px;
+            border: 4px solid rgba(102, 126, 234, 0.2);
+            border-top: 4px solid #667eea;
+            border-right: 4px solid #764ba2;
+            border-bottom: 4px solid #667eea;
             border-radius: 50%;
             animation: spin 1s linear infinite;
             margin: 0 auto 15px;
+            box-shadow: 0 0 15px rgba(102, 126, 234, 0.3);
         }
 
         @keyframes spin {
-            0% { transform: rotate(0deg); }
-            100% { transform: rotate(360deg); }
+            0% { 
+                transform: rotate(0deg); 
+                box-shadow: 0 0 15px rgba(102, 126, 234, 0.3);
+            }
+            50% { 
+                box-shadow: 0 0 25px rgba(118, 75, 162, 0.5);
+            }
+            100% { 
+                transform: rotate(360deg); 
+                box-shadow: 0 0 15px rgba(102, 126, 234, 0.3);
+            }
         }
 
         .success-message {
@@ -1654,7 +1748,7 @@
         }
     </style>
 </head>
-<body>
+<body class="bg-diagonal-blue">
 
     <!-- Flores decorativas -->
     <div class="flowers-container">
@@ -1684,18 +1778,28 @@
                 <!-- Toggle Automatizar Rotulado -->
                 <div class="rotulado-toggle-container">
                     <span>Automatizar rotulado</span>
-                    <label class="rotulado-toggle">
+                    <label class="switch" title="Activar/Desactivar rotulado automático">
                         <input type="checkbox" id="toggle-auto-servicesgd" onchange="toggleAutoServicesGD()">
-                        <span class="rotulado-slider"></span>
+                        <div class="slider">
+                            <div class="circle">
+                                <svg class="checkmark" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M5 13l4 4L19 7"/></svg>
+                                <svg class="cross" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M6 18L18 6M6 6l12 12"/></svg>
+                            </div>
+                        </div>
                     </label>
                 </div>
                 
                 <!-- 🔪 Toggle Guillotina Automática -->
                 <div class="rotulado-toggle-container">
                     <span>Guillotina automática</span>
-                    <label class="rotulado-toggle">
+                    <label class="switch" title="Activar/Desactivar guillotina automática">
                         <input type="checkbox" id="corte-automatico-toggle" onchange="toggleCorteAutomatico()">
-                        <span class="rotulado-slider"></span>
+                        <div class="slider">
+                            <div class="circle">
+                                <svg class="checkmark" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M5 13l4 4L19 7"/></svg>
+                                <svg class="cross" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M6 18L18 6M6 6l12 12"/></svg>
+                            </div>
+                        </div>
                     </label>
                 </div>
                 
@@ -2272,6 +2376,17 @@
     </style>
 
     <script>
+        // Forzar pointer-events: auto en elementos interactivos
+        window.addEventListener('load', () => {
+            const interactiveElements = document.querySelectorAll('button, [onclick], input, select, textarea, .nav-tab, .tab-content, a');
+            interactiveElements.forEach(el => {
+                el.style.pointerEvents = 'auto';
+            });
+            
+            // Asegurar que body tenga pointer-events: auto
+            document.body.style.pointerEvents = 'auto';
+        }, false);
+        
         let currentUser = null;
         let currentCostureraId = null;
         let isSupervisor = false;
@@ -2287,10 +2402,6 @@
             
             // Guardar en localStorage
             localStorage.setItem('corteAutomaticoActivado', estado);
-            
-            // Mensaje visual usando función existente
-            const mensaje = estado ? '🔪 Corte automático activado' : '✂️ Corte desactivado (manual)';
-            showSuccess(mensaje);
             
             console.log(`🔪 Corte automático: ${estado ? 'ON' : 'OFF'}`);
         }
@@ -3028,18 +3139,36 @@
 
         // Cambiar tab
         function switchTab(tabName) {
-            // Si es la tab de crear, mostrar popup de selección
-            if (tabName === 'crear') {
-                document.getElementById('tipo-solicitud-popup').style.display = 'flex';
-                return;
+            console.log(`🔄 Cambiando a tab: ${tabName}`);
+            
+            // Actualizar tabs - remover clase active de todos
+            const allTabs = document.querySelectorAll('.nav-tab');
+            const allContents = document.querySelectorAll('.tab-content');
+            
+            allTabs.forEach(tab => {
+                tab.classList.remove('active');
+            });
+            allContents.forEach(content => {
+                content.classList.remove('active');
+            });
+            
+            // Agregar clase active al tab seleccionado
+            const activeTab = document.querySelector(`[onclick="switchTab('${tabName}')"]`);
+            if (activeTab) {
+                activeTab.classList.add('active');
+                console.log(`✓ Tab button actualizado: ${tabName}`);
+            } else {
+                console.error(`✗ Tab button no encontrado: ${tabName}`);
             }
             
-            // Actualizar tabs
-            document.querySelectorAll('.nav-tab').forEach(tab => tab.classList.remove('active'));
-            document.querySelectorAll('.tab-content').forEach(content => content.classList.remove('active'));
-            
-            document.querySelector(`[onclick="switchTab('${tabName}')"]`).classList.add('active');
-            document.getElementById(`${tabName}-tab`).classList.add('active');
+            // Agregar clase active al contenido seleccionado
+            const activeContent = document.getElementById(`${tabName}-tab`);
+            if (activeContent) {
+                activeContent.classList.add('active');
+                console.log(`✓ Tab content actualizado: ${tabName}-tab`);
+            } else {
+                console.error(`✗ Tab content no encontrado: ${tabName}-tab`);
+            }
             
             // Si cambia a registros, recargar
             if (tabName === 'registros') {
@@ -3144,11 +3273,11 @@
                 await loadRegistros();
                 
                 // Mostrar mensaje de éxito
-                alert('✅ Observaciones guardadas correctamente');
+                showToast('Guardado', 'Observaciones guardadas correctamente', 'success');
                 
             } catch (error) {
                 console.error('Error guardando observaciones:', error);
-                alert('❌ Error al guardar observaciones');
+                showToast('Error', 'Error al guardar observaciones', 'error');
             }
         }
 
@@ -3555,11 +3684,7 @@
                     throw new Error('Error al actualizar configuración');
                 }
                 
-                if (isActive) {
-                    showSuccess('✅ Rotulado Godex: SE IMPRIMIRÁ automáticamente junto con las etiquetas QR');
-                } else {
-                    showSuccess('ℹ️ Rotulado Godex: DESACTIVADO (solo etiquetas QR)');
-                }
+                console.log(`🖨️ Rotulado Godex: ${isActive ? 'ACTIVADO' : 'DESACTIVADO'}`);
                 
             } catch (error) {
                 console.error('Error cambiando modo auto-servicesgd:', error);
@@ -3576,6 +3701,9 @@
                 btnElement.disabled = true;
                 btnElement.innerHTML = '🖨️ Imprimiendo...';
                 
+                // � Mostrar hamster animado
+                showLoading('Imprimiendo...');
+                
                 // 🔪 Obtener estado de guillotina automática (default: true)
                 const estadoGuardado = localStorage.getItem('corteAutomaticoActivado');
                 const corteActivado = estadoGuardado === null ? true : estadoGuardado === 'true';
@@ -3591,6 +3719,9 @@
                         conCorte: corteActivado // 🔪 Enviar configuración de corte
                     })
                 });
+                
+                // 🐹 Ocultar hamster
+                hideLoading();
                 
                 if (handleAuthError(response)) {
                     btnElement.disabled = false;
@@ -3612,6 +3743,9 @@
                 }, 1000);
                 
             } catch (error) {
+                // 🐹 Ocultar hamster en caso de error
+                hideLoading();
+                
                 console.error('Error imprimiendo rotulado:', error);
                 showError('❌ ' + error.message);
                 btnElement.disabled = false;
@@ -3705,15 +3839,83 @@
             }
         });
 
-        // Mostrar mensaje de éxito
+        // Mostrar mensaje de éxito con animación de hamster
         function showSuccess(message) {
-            const successDiv = document.getElementById('success-message');
-            successDiv.textContent = message;
-            successDiv.style.display = 'block';
+            // Crear contenedor del hamster
+            const hamsterDiv = document.createElement('div');
+            hamsterDiv.style.cssText = `
+                position: fixed;
+                top: 50%;
+                left: 50%;
+                transform: translate(-50%, -50%);
+                background: rgba(16, 185, 129, 0.95);
+                padding: 40px;
+                border-radius: 20px;
+                box-shadow: 0 20px 60px rgba(16, 185, 129, 0.4);
+                z-index: 10000;
+                text-align: center;
+                backdrop-filter: blur(10px);
+                animation: hamsterPopIn 0.3s ease;
+            `;
             
+            hamsterDiv.innerHTML = `
+                <div style="font-size: 80px; margin-bottom: 15px; animation: hamsterBounce 0.6s ease-in-out infinite;">🐹</div>
+                <div style="color: white; font-size: 16px; font-weight: 600; margin-bottom: 10px;">¡Registrado Exitosamente!</div>
+                <div style="color: rgba(255,255,255,0.9); font-size: 13px;">${message}</div>
+            `;
+            
+            document.body.appendChild(hamsterDiv);
+            
+            // Agregar estilos de animación si no existen
+            if (!document.querySelector('style[data-hamster="true"]')) {
+                const styleEl = document.createElement('style');
+                styleEl.setAttribute('data-hamster', 'true');
+                styleEl.textContent = `
+                    @keyframes hamsterPopIn {
+                        from {
+                            opacity: 0;
+                            transform: translate(-50%, -50%) scale(0.5);
+                        }
+                        to {
+                            opacity: 1;
+                            transform: translate(-50%, -50%) scale(1);
+                        }
+                    }
+                    
+                    @keyframes hamsterPopOut {
+                        from {
+                            opacity: 1;
+                            transform: translate(-50%, -50%) scale(1);
+                        }
+                        to {
+                            opacity: 0;
+                            transform: translate(-50%, -50%) scale(0.5);
+                        }
+                    }
+                    
+                    @keyframes hamsterBounce {
+                        0%, 100% { transform: translateY(0); }
+                        50% { transform: translateY(-20px); }
+                    }
+                `;
+                document.head.appendChild(styleEl);
+            }
+            
+            // Remover después de 1 segundo
             setTimeout(() => {
-                successDiv.style.display = 'none';
-            }, 5000);
+                hamsterDiv.style.animation = 'hamsterPopOut 0.3s ease';
+                setTimeout(() => hamsterDiv.remove(), 300);
+            }, 1000);
+            
+            // Mostrar también el mensaje de éxito tradicional (opcional)
+            const successDiv = document.getElementById('success-message');
+            if (successDiv) {
+                successDiv.textContent = message;
+                successDiv.style.display = 'block';
+                setTimeout(() => {
+                    successDiv.style.display = 'none';
+                }, 5000);
+            }
         }
 
         // Mostrar mensaje de error
@@ -4093,11 +4295,11 @@
                     input.value = '';
                     loadChatMessagesCosturera(); // Refresh messages
                 } else {
-                    showAlert('Error enviando mensaje', 'error');
+                    showToast('Error', 'Error enviando mensaje', 'error');
                 }
             } catch (error) {
                 console.error('Error sending message:', error);
-                showAlert('Error de conexión al enviar mensaje', 'error');
+                showToast('Error', 'Error de conexión al enviar mensaje', 'error');
             }
         }
 
@@ -4570,8 +4772,8 @@
             }
         }
 
-        // Cargar componente de bitácora
-        fetch('/components/bitacora-produccion-mejorada.html')
+        // Cargar componente de bitácora (versión tablet táctil)
+        fetch('/components/bitacora-tablet.html')
             .then(response => response.text())
             .then(html => {
                 // Separar HTML y Scripts

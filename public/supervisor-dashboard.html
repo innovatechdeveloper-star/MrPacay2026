@@ -1215,18 +1215,30 @@
         }
 
         .spinner {
-            width: 30px;
-            height: 30px;
-            border: 3px solid #f3f3f3;
-            border-top: 3px solid #667eea;
+            width: 50px;
+            height: 50px;
+            border: 4px solid rgba(102, 126, 234, 0.2);
+            border-top: 4px solid #667eea;
+            border-right: 4px solid #764ba2;
+            border-bottom: 4px solid #667eea;
             border-radius: 50%;
             animation: spin 1s linear infinite;
             margin: 0 auto 15px;
+            box-shadow: 0 0 15px rgba(102, 126, 234, 0.3);
         }
 
         @keyframes spin {
-            0% { transform: rotate(0deg); }
-            100% { transform: rotate(360deg); }
+            0% { 
+                transform: rotate(0deg); 
+                box-shadow: 0 0 15px rgba(102, 126, 234, 0.3);
+            }
+            50% { 
+                box-shadow: 0 0 25px rgba(118, 75, 162, 0.5);
+            }
+            100% { 
+                transform: rotate(360deg); 
+                box-shadow: 0 0 15px rgba(102, 126, 234, 0.3);
+            }
         }
 
         @media (max-width: 768px) {
@@ -2940,8 +2952,10 @@
         }
 
         .gestion-table td {
-            padding: 15px 12px;
+            padding: 14px 12px;
             font-size: 14px;
+            vertical-align: middle;
+            min-height: 70px;
         }
 
         .gestion-table td:first-child {
@@ -3150,12 +3164,18 @@
             color: #6b7280;
         }
 
-        .spinner {
+        .gestion-loading .spinner {
             width: 50px;
             height: 50px;
-            border: 4px solid #f3f4f6;
-            border-top-color: #ec4899;
+            border: 4px solid rgba(236, 72, 153, 0.2);
+            border-top: 4px solid #ec4899;
+            border-right: 4px solid #d946ef;
+            border-bottom: 4px solid #ec4899;
             border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 15px;
+            box-shadow: 0 0 15px rgba(236, 72, 153, 0.3);
+        }
             animation: spin 1s linear infinite;
             margin: 0 auto 15px;
         }
@@ -3203,6 +3223,260 @@
                 font-size: 11px;
                 padding: 6px 10px;
             }
+        }
+
+        /* ======================================== 
+           ESTILOS NEO TOGGLE (Interruptores)
+           ======================================== */
+        .neo-toggle-container {
+          --toggle-width: 80px;
+          --toggle-height: 38px;
+          --toggle-bg: #181c20;
+          --toggle-off-color: #475057;
+          --toggle-on-color: #36f9c7;
+          --toggle-transition: 0.4s cubic-bezier(0.25, 1, 0.5, 1);
+
+          position: relative;
+          display: inline-flex;
+          flex-direction: column;
+          font-family: "Segoe UI", Tahoma, sans-serif;
+          user-select: none;
+        }
+
+        .neo-toggle-input {
+          position: absolute;
+          opacity: 0;
+          width: 0;
+          height: 0;
+        }
+
+        .neo-toggle {
+          position: relative;
+          width: var(--toggle-width);
+          height: var(--toggle-height);
+          display: block;
+          cursor: pointer;
+          transform: translateZ(0);
+          perspective: 500px;
+        }
+
+        .neo-track {
+          position: absolute;
+          inset: 0;
+          border-radius: calc(var(--toggle-height) / 2);
+          overflow: hidden;
+          transform-style: preserve-3d;
+          transform: translateZ(-1px);
+          transition: transform var(--toggle-transition);
+          box-shadow:
+            0 2px 10px rgba(0, 0, 0, 0.5),
+            inset 0 0 0 1px rgba(255, 255, 255, 0.1);
+        }
+
+        .neo-background-layer {
+          position: absolute;
+          inset: 0;
+          background: var(--toggle-bg);
+          background-image: linear-gradient(
+            -45deg,
+            rgba(20, 20, 20, 0.8) 0%,
+            rgba(30, 30, 30, 0.3) 50%,
+            rgba(20, 20, 20, 0.8) 100%
+          );
+          opacity: 1;
+          transition: all var(--toggle-transition);
+        }
+
+        .neo-thumb {
+          position: absolute;
+          top: 4px;
+          left: 4px;
+          width: 30px;
+          height: 30px;
+          border-radius: 50%;
+          transform-style: preserve-3d;
+          transition: transform var(--toggle-transition);
+          z-index: 1;
+        }
+
+        .neo-thumb-ring {
+          position: absolute;
+          inset: 0;
+          border-radius: 50%;
+          border: 1px solid rgba(255, 255, 255, 0.1);
+          background: var(--toggle-off-color);
+          box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
+          transition: all var(--toggle-transition);
+        }
+
+        .neo-toggle-input:checked + .neo-toggle .neo-thumb {
+          transform: translateX(calc(var(--toggle-width) - 38px));
+        }
+
+        .neo-toggle-input:checked + .neo-toggle .neo-thumb-ring {
+          background-color: var(--toggle-on-color);
+          border-color: rgba(54, 249, 199, 0.3);
+          box-shadow: 0 0 15px rgba(54, 249, 199, 0.5);
+        }
+
+        .neo-toggle:hover .neo-thumb-ring {
+          transform: scale(1.05);
+        }
+
+        /* ======================================== 
+           ESTILOS WAVE GROUP (Campos de búsqueda)
+           ======================================== */
+        .wave-group {
+          position: relative;
+        }
+
+        .wave-group .input {
+          font-size: 16px;
+          padding: 10px 10px 10px 5px;
+          display: block;
+          width: 200px;
+          border: none;
+          border-bottom: 1px solid #515151;
+          background: transparent;
+        }
+
+        .wave-group .input:focus {
+          outline: none;
+        }
+
+        .wave-group .label {
+          color: #999;
+          font-size: 18px;
+          font-weight: normal;
+          position: absolute;
+          pointer-events: none;
+          left: 5px;
+          top: 10px;
+          display: flex;
+        }
+
+        .wave-group .label-char {
+          transition: 0.2s ease all;
+          transition-delay: calc(var(--index) * .05s);
+        }
+
+        .wave-group .input:focus ~ label .label-char,
+        .wave-group .input:valid ~ label .label-char {
+          transform: translateY(-20px);
+          font-size: 14px;
+          color: #5264AE;
+        }
+
+        .wave-group .bar {
+          position: relative;
+          display: block;
+          width: 200px;
+        }
+
+        .wave-group .bar:before, .wave-group .bar:after {
+          content: '';
+          height: 2px;
+          width: 0;
+          bottom: 1px;
+          position: absolute;
+          background: #5264AE;
+          transition: 0.2s ease all;
+          -moz-transition: 0.2s ease all;
+          -webkit-transition: 0.2s ease all;
+        }
+
+        .wave-group .bar:before {
+          left: 50%;
+        }
+
+        .wave-group .bar:after {
+          right: 50%;
+        }
+
+        .wave-group .input:focus ~ .bar:before,
+        .wave-group .input:focus ~ .bar:after {
+          width: 50%;
+        }
+
+        /* ======================================== 
+           ESTILOS TORCH TOGGLE (Antorcha)
+           ======================================== */
+        .container input {
+          position: absolute;
+          opacity: 0;
+          cursor: pointer;
+          height: 0;
+          width: 0;
+        }
+
+        /* ========== TORCH COMPONENT ========== */
+        .torch-container {
+          display: inline-flex;
+          flex-direction: column;
+          align-items: center;
+          gap: 5px;
+          cursor: pointer;
+          user-select: none;
+          position: relative;
+          min-width: 60px;
+        }
+
+        .torch-container input {
+          display: none;
+          opacity: 0;
+          width: 0;
+          height: 0;
+        }
+
+        .torch {
+          height: 48px;
+          width: 48px;
+          border-radius: 50%;
+          background: linear-gradient(135deg, #fef2f2 0%, #f5f5f5 100%);
+          border: 2.5px solid #dc2626;
+          box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.05), 0 2px 6px rgba(220, 38, 38, 0.15);
+          position: relative;
+          transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+          display: flex;
+          align-items: center;
+          justify-content: center;
+        }
+
+        .torch::before {
+          content: '';
+          position: absolute;
+          width: 5px;
+          height: 5px;
+          background: #dc2626;
+          border-radius: 50%;
+          opacity: 0.6;
+          box-shadow: 0 0 0 2px rgba(220, 38, 38, 0.15);
+        }
+
+        .torch-label {
+          font-size: 11px;
+          font-weight: 700;
+          color: #dc2626;
+          transition: all 0.3s ease;
+          text-transform: uppercase;
+          letter-spacing: 0.5px;
+          height: 13px;
+          line-height: 13px;
+        }
+
+        .torch-container input:checked ~ .torch {
+          background: linear-gradient(135deg, #f0fdf4 0%, #f5f5f5 100%);
+          border-color: #16a34a;
+          box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.05), 0 2px 6px rgba(22, 163, 74, 0.15);
+        }
+
+        .torch-container input:checked ~ .torch::before {
+          background: #16a34a;
+          box-shadow: 0 0 0 2px rgba(22, 163, 74, 0.15), 0 0 10px rgba(22, 163, 74, 0.3);
+        }
+
+        .torch-container input:checked ~ .torch-label {
+          color: #16a34a;
         }
     </style>
 </head>
@@ -10071,39 +10345,29 @@ ${sol.observaciones_supervisor ? `\n💬 Observaciones: ${sol.observaciones_supe
                             </span>
                         </td>
                         <td>
-                            <div class="auto-service-toggle">
-                                <button 
-                                    class="toggle-btn automatico ${usuario.auto_services ? 'active' : ''}"
-                                    onclick="toggleAutoService(${usuario.id_usuario}, true)"
-                                    title="Aprobar e imprimir automáticamente QR"
-                                >
-                                    🤖 Auto
-                                </button>
-                                <button 
-                                    class="toggle-btn manual ${!usuario.auto_services ? 'active' : ''}"
-                                    onclick="toggleAutoService(${usuario.id_usuario}, false)"
-                                    title="Requiere aprobación manual"
-                                >
-                                    👤 Manual
-                                </button>
+                            <div style="display: flex; justify-content: center; align-items: center; height: 100%;">
+                                <label class="torch-container">
+                                    <input 
+                                        type="checkbox" 
+                                        ${usuario.auto_services ? 'checked' : ''}
+                                        onchange="toggleAutoService(${usuario.id_usuario}, this.checked)"
+                                    />
+                                    <div class="torch"></div>
+                                    <span class="torch-label">${usuario.auto_services ? 'ON' : 'OFF'}</span>
+                                </label>
                             </div>
                         </td>
                         <td>
-                            <div class="auto-service-toggle">
-                                <button 
-                                    class="toggle-btn automatico ${usuario.auto_servicesgd ? 'active' : ''}"
-                                    onclick="toggleAutoRotulado(${usuario.id_usuario}, true)"
-                                    title="Imprimir rotulado Godex automáticamente"
-                                >
-                                    🏷️ Auto
-                                </button>
-                                <button 
-                                    class="toggle-btn manual ${!usuario.auto_servicesgd ? 'active' : ''}"
-                                    onclick="toggleAutoRotulado(${usuario.id_usuario}, false)"
-                                    title="Imprimir rotulado manualmente"
-                                >
-                                    👤 Manual
-                                </button>
+                            <div style="display: flex; justify-content: center; align-items: center; height: 100%;">
+                                <label class="torch-container">
+                                    <input 
+                                        type="checkbox" 
+                                        ${usuario.auto_servicesgd ? 'checked' : ''}
+                                        onchange="toggleAutoRotulado(${usuario.id_usuario}, this.checked)"
+                                    />
+                                    <div class="torch"></div>
+                                    <span class="torch-label">${usuario.auto_servicesgd ? 'ON' : 'OFF'}</span>
+                                </label>
                             </div>
                         </td>
                     `;

@@ -1,0 +1,187 @@
+/* ========================================== */
+/* FIX: FONDOS ANIMADOS - Z-INDEX Y VISIBILIDAD */
+/* Aplicar después de backgrounds-animated.css */
+/* ========================================== */
+
+/* CORRECCIÓN CRÍTICA: Body no debe tener background propio */
+body {
+    background: transparent !important;
+    animation: none !important;
+}
+
+/* Asegurar que TODOS los contenedores principales tengan fondo sólido Y SEAN CLICKEABLES */
+.main-content,
+.dashboard-content,
+.admin-panel,
+.supervisor-panel,
+.costurera-panel,
+section,
+.section,
+.panel,
+.dashboard-section,
+header,
+.header,
+nav,
+.navbar,
+.sidebar {
+    position: relative;
+    z-index: 1;
+    background: rgba(255, 255, 255, 0.98);
+    backdrop-filter: blur(10px);
+    pointer-events: auto !important; /* CRÍTICO: permitir clicks */
+}
+
+/* Tablas siempre visibles Y CLICKEABLES */
+table,
+.table-wrapper,
+.data-table,
+tbody,
+thead,
+tr,
+td,
+th {
+    position: relative;
+    z-index: 2;
+    background: white;
+    pointer-events: auto !important; /* CRÍTICO: permitir clicks */
+}
+
+/* Cards siempre visibles Y CLICKEABLES */
+.card,
+.info-card,
+.stat-card,
+.metric-card,
+.widget {
+    position: relative;
+    z-index: 2;
+    background: white;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    pointer-events: auto !important; /* CRÍTICO: permitir clicks */
+}
+
+/* Forms y inputs visibles Y CLICKEABLES */
+form,
+.form-container,
+.form-group,
+input,
+select,
+textarea,
+button,
+a {
+    position: relative;
+    z-index: 2;
+    pointer-events: auto !important; /* CRÍTICO: permitir clicks */
+}
+
+/* Botones SIEMPRE clickeables */
+button,
+.btn,
+.button,
+[type="button"],
+[type="submit"],
+.action-btn,
+.btn-primary,
+.btn-secondary {
+    pointer-events: auto !important;
+    cursor: pointer !important;
+    z-index: 10 !important;
+}
+
+/* Asegurar que waves-background y elementos decorativos NO BLOQUEEN CLICKS */
+.waves-background,
+.flowers-container,
+.decorative-background,
+.animated-background {
+    position: fixed;
+    z-index: -2 !important;
+    pointer-events: none !important; /* NO capturar eventos */
+}
+
+/* Elementos flotantes del sistema (deben estar visible pero no molestar) */
+.floating-button,
+.fab,
+.action-button,
+.main-action-btn {
+    z-index: 100;
+    pointer-events: auto !important;
+}
+
+/* IMPORTANTE: Si hay un overlay de decoración, NO debe bloquear */
+body::before,
+body::after {
+    z-index: -1 !important;
+    pointer-events: none !important;
+}
+
+/* Corregir cualquier elemento que use position: absolute y esté bloqueando */
+[class*="background"]::before,
+[class*="background"]::after,
+[class*="bg-"]::before,
+[class*="bg-"]::after {
+    position: absolute;
+    z-index: 0;
+    pointer-events: none !important; /* NO capturar eventos */
+}
+
+/* Asegurar que el contenido scrolleable sea visible Y CLICKEABLE */
+.scrollable,
+.overflow-auto,
+.overflow-scroll {
+    position: relative;
+    z-index: 2;
+    background: white;
+    pointer-events: auto !important;
+}
+
+/* Grids y flex containers CLICKEABLES */
+.grid,
+.flex,
+.flex-container,
+.grid-container,
+[class*="grid-"],
+[class*="flex-"] {
+    position: relative;
+    z-index: 2;
+    pointer-events: auto !important;
+}
+
+/* Estados especiales de carga */
+.loading-container,
+.spinner-container {
+    background: rgba(255, 255, 255, 0.95);
+    z-index: 3;
+    pointer-events: auto !important;
+}
+
+/* ========================================== */
+/* DEBUG: Descomentar para ver z-index */
+/* ========================================== */
+
+/*
+[class^="bg-"]::after,
+[class*=" bg-"]::after {
+    content: "Z-INDEX: -1 (Background)";
+    position: fixed;
+    top: 10px;
+    right: 10px;
+    background: red;
+    color: white;
+    padding: 5px 10px;
+    z-index: 100000;
+    font-size: 12px;
+    border-radius: 5px;
+}
+
+.container::after {
+    content: "Z-INDEX: 1 (Content)";
+    position: fixed;
+    top: 40px;
+    right: 10px;
+    background: green;
+    color: white;
+    padding: 5px 10px;
+    z-index: 100001;
+    font-size: 12px;
+    border-radius: 5px;
+}
+*/

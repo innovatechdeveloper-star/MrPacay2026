@@ -1,0 +1,901 @@
+<!-- ========================================== -->
+<!-- BITÁCORA PARA SUPERVISORES -->
+<!-- Vista por días con control total -->
+<!-- ========================================== -->
+
+<!-- CSS y JS de componentes avanzados -->
+<link rel="stylesheet" href="/css/components-advanced.css">
+<link rel="stylesheet" href="/css/backgrounds-animated.css">
+<link rel="stylesheet" href="/css/fix-backgrounds-zindex.css">
+<script src="/js/components-utils.js"></script>
+
+<style>
+:root {
+    --primary-color: #667eea;
+    --secondary-color: #764ba2;
+    --success-color: #10b981;
+    --warning-color: #f59e0b;
+    --danger-color: #ef4444;
+    --info-color: #3b82f6;
+}
+
+.bitacora-supervisor-container {
+    padding: 20px;
+    max-width: 1400px;
+    margin: 0 auto;
+}
+
+.supervisor-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 30px;
+    padding-bottom: 20px;
+    border-bottom: 2px solid #e2e8f0;
+}
+
+.supervisor-header h2 {
+    font-size: 28px;
+    color: #1e293b;
+    margin: 0;
+}
+
+/* Filtros de fecha */
+.filtros-supervisor {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 15px;
+    margin-bottom: 30px;
+    padding: 20px;
+    background: #f8fafc;
+    border-radius: 10px;
+}
+
+.filtro-grupo {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.filtro-grupo label {
+    font-size: 14px;
+    font-weight: 600;
+    color: #64748b;
+}
+
+.filtro-grupo input,
+.filtro-grupo select {
+    padding: 10px;
+    border: 2px solid #e2e8f0;
+    border-radius: 8px;
+    font-size: 14px;
+}
+
+.filtro-grupo input:focus,
+.filtro-grupo select:focus {
+    outline: none;
+    border-color: var(--primary-color);
+}
+
+.btn-filtrar {
+    background: linear-gradient(135deg, var(--primary-color) 0%, var(--secondary-color) 100%);
+    color: white;
+    border: none;
+    padding: 12px 24px;
+    border-radius: 8px;
+    font-size: 16px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s;
+    align-self: end;
+}
+
+.btn-filtrar:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 5px 15px rgba(102, 126, 234, 0.3);
+}
+
+/* Estadísticas rápidas */
+.estadisticas-rapidas {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 20px;
+    margin-bottom: 30px;
+}
+
+.stat-card {
+    background: white;
+    border: 2px solid #e2e8f0;
+    border-radius: 15px;
+    padding: 20px;
+    text-align: center;
+    transition: all 0.3s;
+}
+
+.stat-card:hover {
+    border-color: var(--primary-color);
+    box-shadow: 0 5px 20px rgba(102, 126, 234, 0.2);
+}
+
+.stat-icon {
+    font-size: 36px;
+    margin-bottom: 10px;
+}
+
+.stat-value {
+    font-size: 32px;
+    font-weight: 700;
+    color: #1e293b;
+    margin-bottom: 5px;
+}
+
+.stat-label {
+    font-size: 14px;
+    color: #64748b;
+}
+
+/* Agrupación por días */
+.dia-grupo {
+    background: white;
+    border: 2px solid #e2e8f0;
+    border-radius: 15px;
+    padding: 20px;
+    margin-bottom: 20px;
+    transition: all 0.3s;
+}
+
+.dia-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding-bottom: 15px;
+    border-bottom: 2px solid #e2e8f0;
+    margin-bottom: 20px;
+    cursor: pointer;
+}
+
+.dia-fecha {
+    font-size: 20px;
+    font-weight: 700;
+    color: #1e293b;
+}
+
+.dia-totales {
+    display: flex;
+    gap: 20px;
+    font-size: 14px;
+}
+
+.dia-total-item {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.dia-total-valor {
+    font-size: 18px;
+    font-weight: 700;
+    color: var(--success-color);
+}
+
+.dia-total-label {
+    color: #64748b;
+}
+
+.dia-contenido {
+    display: none;
+}
+
+.dia-contenido.expanded {
+    display: block;
+}
+
+.chevron {
+    font-size: 24px;
+    transition: transform 0.3s;
+}
+
+.chevron.rotated {
+    transform: rotate(180deg);
+}
+
+/* Tabla de registros */
+.tabla-registros {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 15px;
+}
+
+.tabla-registros thead {
+    background: #f8fafc;
+}
+
+.tabla-registros th {
+    padding: 12px;
+    text-align: left;
+    font-size: 13px;
+    font-weight: 700;
+    color: #64748b;
+    border-bottom: 2px solid #e2e8f0;
+}
+
+.tabla-registros td {
+    padding: 12px;
+    border-bottom: 1px solid #e2e8f0;
+    font-size: 14px;
+}
+
+.tabla-registros tbody tr:hover {
+    background: #f8fafc;
+}
+
+/* Badges */
+.badge {
+    display: inline-block;
+    padding: 4px 12px;
+    border-radius: 12px;
+    font-size: 12px;
+    font-weight: 700;
+}
+
+.badge-rotulado {
+    background: #e0f2fe;
+    color: #0369a1;
+}
+
+.badge-no-rotulado {
+    background: #fef3c7;
+    color: #92400e;
+}
+
+.badge-activo {
+    background: #d1fae5;
+    color: #065f46;
+}
+
+.badge-editado {
+    background: #fef3c7;
+    color: #92400e;
+}
+
+.badge-anulado {
+    background: #fee2e2;
+    color: #991b1b;
+}
+
+/* Botones de acción */
+.acciones-celda {
+    display: flex;
+    gap: 8px;
+}
+
+.btn-icono {
+    width: 32px;
+    height: 32px;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: 16px;
+    transition: all 0.2s;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.btn-ver {
+    background: #dbeafe;
+    color: #1e40af;
+}
+
+.btn-ver:hover {
+    background: #bfdbfe;
+}
+
+.btn-editar-admin {
+    background: #fef3c7;
+    color: #92400e;
+}
+
+.btn-editar-admin:hover {
+    background: #fde68a;
+}
+
+.btn-eliminar {
+    background: #fee2e2;
+    color: #991b1b;
+}
+
+.btn-eliminar:hover {
+    background: #fecaca;
+}
+
+/* Estado vacío */
+.estado-vacio-supervisor {
+    text-align: center;
+    padding: 80px 20px;
+    color: #94a3b8;
+}
+
+.estado-vacio-supervisor-icon {
+    font-size: 72px;
+    margin-bottom: 20px;
+}
+
+.estado-vacio-supervisor-text {
+    font-size: 20px;
+}
+
+/* Modal detalles */
+.modal-supervisor {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.5);
+    z-index: 9999;
+    backdrop-filter: blur(5px);
+}
+
+.modal-supervisor.active {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.modal-supervisor-content {
+    background: white;
+    border-radius: 15px;
+    padding: 30px;
+    max-width: 700px;
+    width: 90%;
+    max-height: 90vh;
+    overflow-y: auto;
+}
+
+.modal-supervisor-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 25px;
+    padding-bottom: 15px;
+    border-bottom: 2px solid #e2e8f0;
+}
+
+.modal-supervisor-header h3 {
+    font-size: 24px;
+    color: #1e293b;
+    margin: 0;
+}
+
+.btn-cerrar-modal {
+    background: #f1f5f9;
+    border: none;
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    cursor: pointer;
+    font-size: 24px;
+    color: #64748b;
+}
+
+.btn-cerrar-modal:hover {
+    background: #e2e8f0;
+}
+
+.detalle-grupo {
+    margin-bottom: 20px;
+}
+
+.detalle-label {
+    font-size: 13px;
+    font-weight: 700;
+    color: #64748b;
+    margin-bottom: 5px;
+}
+
+.detalle-valor {
+    font-size: 16px;
+    color: #1e293b;
+    padding: 12px;
+    background: #f8fafc;
+    border-radius: 8px;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+    .filtros-supervisor {
+        grid-template-columns: 1fr;
+    }
+    
+    .estadisticas-rapidas {
+        grid-template-columns: 1fr;
+    }
+    
+    .tabla-registros {
+        font-size: 12px;
+    }
+    
+    .tabla-registros th,
+    .tabla-registros td {
+        padding: 8px;
+    }
+}
+</style>
+
+<!-- Contenedor Principal -->
+<div class="bitacora-supervisor-container">
+    <div class="supervisor-header">
+        <h2>📊 Control de Producción</h2>
+        <button class="btn-filtrar" onclick="exportarExcel()">📥 Exportar Excel</button>
+    </div>
+    
+    <!-- Filtros -->
+    <div class="filtros-supervisor">
+        <div class="filtro-grupo">
+            <label>Fecha Inicio</label>
+            <input type="date" id="filtro-fecha-inicio">
+        </div>
+        
+        <div class="filtro-grupo">
+            <label>Fecha Fin</label>
+            <input type="date" id="filtro-fecha-fin">
+        </div>
+        
+        <div class="filtro-grupo">
+            <label>Usuario</label>
+            <select id="filtro-usuario">
+                <option value="">Todos</option>
+            </select>
+        </div>
+        
+        <div class="filtro-grupo">
+            <label>Producto</label>
+            <select id="filtro-producto">
+                <option value="">Todos</option>
+            </select>
+        </div>
+        
+        <div class="filtro-grupo">
+            <label>Tipo</label>
+            <select id="filtro-tipo">
+                <option value="">Todos</option>
+                <option value="ROTULADO">ROTULADO</option>
+                <option value="NO_ROTULADO">NO ROTULADO</option>
+            </select>
+        </div>
+        
+        <div class="filtro-grupo">
+            <label>Estado</label>
+            <select id="filtro-estado">
+                <option value="">Todos</option>
+                <option value="ACTIVO">ACTIVO</option>
+                <option value="EDITADO">EDITADO</option>
+                <option value="ANULADO">ANULADO</option>
+            </select>
+        </div>
+        
+        <button class="btn-filtrar" onclick="aplicarFiltros()">🔍 Filtrar</button>
+    </div>
+    
+    <!-- Estadísticas Rápidas -->
+    <div class="estadisticas-rapidas">
+        <div class="stat-card">
+            <div class="stat-icon">📝</div>
+            <div class="stat-value" id="stat-total-registros">0</div>
+            <div class="stat-label">Total Registros</div>
+        </div>
+        
+        <div class="stat-card">
+            <div class="stat-icon">✅</div>
+            <div class="stat-value" id="stat-total-completados">0</div>
+            <div class="stat-label">Total Completados</div>
+        </div>
+        
+        <div class="stat-card">
+            <div class="stat-icon">⏳</div>
+            <div class="stat-value" id="stat-total-pendientes">0</div>
+            <div class="stat-label">Total Pendientes</div>
+        </div>
+        
+        <div class="stat-card">
+            <div class="stat-icon">🏷️</div>
+            <div class="stat-value" id="stat-rotulados">0</div>
+            <div class="stat-label">Rotulados</div>
+        </div>
+    </div>
+    
+    <!-- Lista de Días -->
+    <div id="lista-dias-produccion"></div>
+</div>
+
+<!-- Modal Detalles -->
+<div class="modal-supervisor" id="modal-detalles">
+    <div class="modal-supervisor-content">
+        <div class="modal-supervisor-header">
+            <h3>📋 Detalles del Registro</h3>
+            <button class="btn-cerrar-modal" onclick="cerrarModalDetalles()">×</button>
+        </div>
+        
+        <div id="contenido-detalles"></div>
+    </div>
+</div>
+
+<script>
+let todosLosRegistros = [];
+let registrosFiltrados = [];
+
+// Inicialización
+function inicializarBitacoraSupervisor() {
+    cargarUsuarios();
+    cargarProductos();
+    establecerFechasDefault();
+    cargarDatosSupervisor();
+}
+
+function establecerFechasDefault() {
+    const hoy = new Date();
+    const hace7Dias = new Date();
+    hace7Dias.setDate(hoy.getDate() - 7);
+    
+    document.getElementById('filtro-fecha-inicio').valueAsDate = hace7Dias;
+    document.getElementById('filtro-fecha-fin').valueAsDate = hoy;
+}
+
+async function cargarUsuarios() {
+    try {
+        const response = await fetch('/api/usuarios');
+        const usuarios = await response.json();
+        
+        const select = document.getElementById('filtro-usuario');
+        usuarios.forEach(user => {
+            const option = document.createElement('option');
+            option.value = user.id_usuario;
+            option.textContent = user.nombre_completo;
+            select.appendChild(option);
+        });
+    } catch (error) {
+        console.error('Error cargando usuarios:', error);
+    }
+}
+
+async function cargarProductos() {
+    try {
+        const response = await fetch('/api/productos?all=true');
+        const result = await response.json();
+        const productos = result.data || result.productos || result;
+        
+        const select = document.getElementById('filtro-producto');
+        if (Array.isArray(productos)) {
+            productos.forEach(prod => {
+                const option = document.createElement('option');
+                option.value = prod.id_producto;
+                option.textContent = prod.nombre_producto;
+                select.appendChild(option);
+            });
+        }
+    } catch (error) {
+        console.error('Error cargando productos:', error);
+    }
+}
+
+async function cargarDatosSupervisor() {
+    try {
+        const response = await fetch('/api/bitacora/listar');
+        const result = await response.json();
+        
+        if (result.success) {
+            todosLosRegistros = result.data || [];
+            aplicarFiltros();
+        }
+    } catch (error) {
+        console.error('Error cargando datos:', error);
+    }
+}
+
+function aplicarFiltros() {
+    const fechaInicio = document.getElementById('filtro-fecha-inicio').value;
+    const fechaFin = document.getElementById('filtro-fecha-fin').value;
+    const usuarioId = document.getElementById('filtro-usuario').value;
+    const productoId = document.getElementById('filtro-producto').value;
+    const tipo = document.getElementById('filtro-tipo').value;
+    const estado = document.getElementById('filtro-estado').value;
+    
+    registrosFiltrados = todosLosRegistros.filter(reg => {
+        const fechaReg = new Date(reg.fecha).toISOString().split('T')[0];
+        
+        if (fechaInicio && fechaReg < fechaInicio) return false;
+        if (fechaFin && fechaReg > fechaFin) return false;
+        if (usuarioId && reg.id_usuario != usuarioId) return false;
+        if (productoId && reg.id_producto != productoId) return false;
+        if (tipo && reg.tipo !== tipo) return false;
+        if (estado && reg.estado !== estado) return false;
+        
+        return true;
+    });
+    
+    actualizarEstadisticas();
+    renderizarPorDias();
+}
+
+function actualizarEstadisticas() {
+    const totalRegistros = registrosFiltrados.length;
+    
+    let totalCompletados = 0;
+    let totalPendientes = 0;
+    let totalRotulados = 0;
+    
+    registrosFiltrados.forEach(reg => {
+        const completado = reg.cantidad_completada || 0;
+        const total = reg.cantidad_total || reg.cantidad;
+        const pendiente = total - completado;
+        
+        totalCompletados += completado;
+        totalPendientes += pendiente;
+        
+        if (reg.tipo === 'ROTULADO') {
+            totalRotulados++;
+        }
+    });
+    
+    document.getElementById('stat-total-registros').textContent = totalRegistros;
+    document.getElementById('stat-total-completados').textContent = totalCompletados;
+    document.getElementById('stat-total-pendientes').textContent = totalPendientes;
+    document.getElementById('stat-rotulados').textContent = totalRotulados;
+}
+
+function renderizarPorDias() {
+    const container = document.getElementById('lista-dias-produccion');
+    
+    if (registrosFiltrados.length === 0) {
+        container.innerHTML = `
+            <div class="estado-vacio-supervisor">
+                <div class="estado-vacio-supervisor-icon">📊</div>
+                <div class="estado-vacio-supervisor-text">No hay registros para mostrar</div>
+            </div>
+        `;
+        return;
+    }
+    
+    // Agrupar por día
+    const porDia = {};
+    
+    registrosFiltrados.forEach(reg => {
+        const fecha = new Date(reg.fecha);
+        const diaKey = fecha.toISOString().split('T')[0];
+        
+        if (!porDia[diaKey]) {
+            porDia[diaKey] = [];
+        }
+        
+        porDia[diaKey].push(reg);
+    });
+    
+    // Ordenar días (más reciente primero)
+    const diasOrdenados = Object.keys(porDia).sort((a, b) => new Date(b) - new Date(a));
+    
+    // Renderizar cada día
+    container.innerHTML = diasOrdenados.map(dia => {
+        const registros = porDia[dia];
+        const totalDelDia = registros.reduce((sum, r) => sum + (r.cantidad_total || r.cantidad), 0);
+        const completadosDelDia = registros.reduce((sum, r) => sum + (r.cantidad_completada || 0), 0);
+        
+        const fecha = new Date(dia + 'T00:00:00');
+        const fechaFormateada = fecha.toLocaleDateString('es-PE', {
+            weekday: 'long',
+            year: 'numeric',
+            month: 'long',
+            day: 'numeric'
+        });
+        
+        return `
+            <div class="dia-grupo">
+                <div class="dia-header" onclick="toggleDia('${dia}')">
+                    <div class="dia-fecha">${fechaFormateada}</div>
+                    <div class="dia-totales">
+                        <div class="dia-total-item">
+                            <div class="dia-total-valor">${registros.length}</div>
+                            <div class="dia-total-label">registros</div>
+                        </div>
+                        <div class="dia-total-item">
+                            <div class="dia-total-valor">${totalDelDia}</div>
+                            <div class="dia-total-label">creados</div>
+                        </div>
+                        <div class="dia-total-item">
+                            <div class="dia-total-valor">${completadosDelDia}</div>
+                            <div class="dia-total-label">completados</div>
+                        </div>
+                        <span class="chevron" id="chevron-${dia}">▼</span>
+                    </div>
+                </div>
+                
+                <div class="dia-contenido" id="contenido-${dia}">
+                    <table class="tabla-registros">
+                        <thead>
+                            <tr>
+                                <th>Hora</th>
+                                <th>Usuario</th>
+                                <th>Producto</th>
+                                <th>Tipo</th>
+                                <th>Cantidad</th>
+                                <th>Completado</th>
+                                <th>Pendiente</th>
+                                <th>Estado</th>
+                                <th>Acciones</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            ${registros.map(reg => crearFilaRegistro(reg)).join('')}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        `;
+    }).join('');
+}
+
+function crearFilaRegistro(reg) {
+    const fecha = new Date(reg.fecha);
+    const hora = fecha.toLocaleTimeString('es-PE', { hour: '2-digit', minute: '2-digit' });
+    
+    const total = reg.cantidad_total || reg.cantidad;
+    const completado = reg.cantidad_completada || 0;
+    const pendiente = total - completado;
+    
+    const tipoBadge = reg.tipo === 'ROTULADO' ? 
+        '<span class="badge badge-rotulado">ROTULADO</span>' :
+        '<span class="badge badge-no-rotulado">NO ROTULADO</span>';
+    
+    let estadoBadge = '';
+    if (reg.estado === 'ACTIVO') {
+        estadoBadge = '<span class="badge badge-activo">ACTIVO</span>';
+    } else if (reg.estado === 'EDITADO') {
+        estadoBadge = '<span class="badge badge-editado">EDITADO</span>';
+    } else if (reg.estado === 'ANULADO') {
+        estadoBadge = '<span class="badge badge-anulado">ANULADO</span>';
+    }
+    
+    return `
+        <tr>
+            <td>${hora}</td>
+            <td>${reg.nombre_usuario}</td>
+            <td>${reg.nombre_producto}</td>
+            <td>${tipoBadge}</td>
+            <td>${total}</td>
+            <td>${completado}</td>
+            <td>${pendiente}</td>
+            <td>${estadoBadge}</td>
+            <td>
+                <div class="acciones-celda">
+                    <button class="btn-icono btn-ver" onclick='verDetalles(${JSON.stringify(reg)})' title="Ver detalles">
+                        👁️
+                    </button>
+                </div>
+            </td>
+        </tr>
+    `;
+}
+
+function toggleDia(diaKey) {
+    const contenido = document.getElementById('contenido-' + diaKey);
+    const chevron = document.getElementById('chevron-' + diaKey);
+    
+    contenido.classList.toggle('expanded');
+    chevron.classList.toggle('rotated');
+}
+
+function verDetalles(registro) {
+    const modal = document.getElementById('modal-detalles');
+    const contenido = document.getElementById('contenido-detalles');
+    
+    const fecha = new Date(registro.fecha).toLocaleString('es-PE');
+    const total = registro.cantidad_total || registro.cantidad;
+    const completado = registro.cantidad_completada || 0;
+    const pendiente = total - completado;
+    
+    contenido.innerHTML = `
+        <div class="detalle-grupo">
+            <div class="detalle-label">Fecha</div>
+            <div class="detalle-valor">${fecha}</div>
+        </div>
+        
+        <div class="detalle-grupo">
+            <div class="detalle-label">Usuario</div>
+            <div class="detalle-valor">${registro.nombre_usuario}</div>
+        </div>
+        
+        <div class="detalle-grupo">
+            <div class="detalle-label">Producto</div>
+            <div class="detalle-valor">${registro.nombre_producto}</div>
+        </div>
+        
+        <div class="detalle-grupo">
+            <div class="detalle-label">Tipo</div>
+            <div class="detalle-valor">${registro.tipo === 'ROTULADO' ? 'ROTULADO' : 'NO ROTULADO'}</div>
+        </div>
+        
+        <div class="detalle-grupo">
+            <div class="detalle-label">Cantidad Total</div>
+            <div class="detalle-valor">${total}</div>
+        </div>
+        
+        <div class="detalle-grupo">
+            <div class="detalle-label">Cantidad Completada</div>
+            <div class="detalle-valor">${completado}</div>
+        </div>
+        
+        <div class="detalle-grupo">
+            <div class="detalle-label">Cantidad Pendiente</div>
+            <div class="detalle-valor">${pendiente}</div>
+        </div>
+        
+        <div class="detalle-grupo">
+            <div class="detalle-label">Estado</div>
+            <div class="detalle-valor">${registro.estado}</div>
+        </div>
+        
+        ${registro.observaciones ? `
+            <div class="detalle-grupo">
+                <div class="detalle-label">Observaciones</div>
+                <div class="detalle-valor">${registro.observaciones}</div>
+            </div>
+        ` : ''}
+        
+        ${registro.motivo_cambio ? `
+            <div class="detalle-grupo">
+                <div class="detalle-label">Motivo de Cambio</div>
+                <div class="detalle-valor">${registro.motivo_cambio}</div>
+            </div>
+        ` : ''}
+        
+        ${registro.nombre_modificador ? `
+            <div class="detalle-grupo">
+                <div class="detalle-label">Modificado Por</div>
+                <div class="detalle-valor">${registro.nombre_modificador}</div>
+            </div>
+        ` : ''}
+    `;
+    
+    modal.classList.add('active');
+}
+
+function cerrarModalDetalles() {
+    document.getElementById('modal-detalles').classList.remove('active');
+}
+
+function exportarExcel() {
+    const fechaInicio = document.getElementById('filtro-fecha-inicio').value || '';
+    const fechaFin = document.getElementById('filtro-fecha-fin').value || '';
+    const usuarioId = document.getElementById('filtro-usuario').value || '';
+    const productoId = document.getElementById('filtro-producto').value || '';
+    const tipo = document.getElementById('filtro-tipo').value || '';
+    const estado = document.getElementById('filtro-estado').value || '';
+    
+    const params = new URLSearchParams({
+        fecha_inicio: fechaInicio,
+        fecha_fin: fechaFin,
+        id_usuario: usuarioId,
+        id_producto: productoId,
+        tipo: tipo,
+        estado: estado,
+        formato: 'docx'
+    });
+    
+    window.open(`/api/bitacora/exportar-docx?${params.toString()}`, '_blank');
+}
+
+// Exponer funciones globales
+window.aplicarFiltros = aplicarFiltros;
+window.toggleDia = toggleDia;
+window.verDetalles = verDetalles;
+window.cerrarModalDetalles = cerrarModalDetalles;
+window.exportarExcel = exportarExcel;
+
+// Inicializar
+if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', inicializarBitacoraSupervisor);
+} else {
+    inicializarBitacoraSupervisor();
+}
+</script>

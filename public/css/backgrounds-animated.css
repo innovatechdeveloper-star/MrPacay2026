@@ -1,0 +1,257 @@
+/* ========================================== */
+/* BACKGROUNDS ANIMADOS - SISTEMA ETIQUETAS */
+/* Fondos dinámicos seleccionables */
+/* ========================================== */
+
+/* BASE: Todos los fondos deben estar DETRÁS del contenido */
+body[class^="bg-"],
+body[class*=" bg-"] {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    z-index: -1;
+    pointer-events: none;
+}
+
+/* Panel selector ENCIMA de todo lo demás */
+#bg-selector-panel {
+    position: fixed;
+    bottom: 80px;
+    left: 20px;
+    z-index: 9995;
+    pointer-events: auto;
+    background: white;
+    border-radius: 15px;
+    padding: 16px;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+    border: 1px solid rgba(0, 0, 0, 0.1);
+    width: 240px;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+/* Asegurar contenido está ENCIMA de fondos */
+.container,
+.dashboard-container,
+.main-container,
+.bitacora-supervisor-container,
+.bitacora-tablet-container,
+.content-wrapper,
+.admin-container,
+.card,
+.stats-card,
+.table-container,
+.modal-content,
+.custom-modal .modal-content,
+table,
+.filter-section,
+.action-buttons,
+.user-grid,
+.solicitudes-container,
+.productos-container,
+.nav-tabs,
+.nav-tab,
+.tab-content,
+.app-header {
+    position: relative;
+    z-index: 1;
+    background: rgba(255, 255, 255, 0.98);
+    pointer-events: auto;
+}
+
+/* Modales completamente opacos */
+.modal,
+.custom-modal,
+.popup-overlay {
+    z-index: 9998;
+}
+
+.modal-content,
+.custom-modal .modal-content {
+    background: white;
+    z-index: 9999;
+}
+
+/* Loading y Success overlays siempre al frente */
+.loading-overlay,
+.success-overlay {
+    z-index: 10000;
+}
+
+/* Toast notifications al frente */
+.toast-notification {
+    z-index: 10001;
+}
+
+/* ========================================== */
+/* BOTÓN SELECTOR DE FONDOS */
+/* ========================================== */
+
+.bg-selector-toggle {
+    position: fixed;
+    bottom: 20px;
+    left: 20px;
+    width: 56px;
+    height: 56px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, #667eea, #764ba2);
+    color: white;
+    border: none;
+    font-size: 24px;
+    cursor: pointer;
+    box-shadow: 0 5px 20px rgba(102, 126, 234, 0.4);
+    transition: all 0.3s ease;
+    z-index: 9990;
+    pointer-events: auto;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.bg-selector-toggle:hover {
+    transform: scale(1.1);
+    box-shadow: 0 8px 25px rgba(102, 126, 234, 0.6);
+}
+
+.bg-selector-toggle:active {
+    transform: scale(0.95);
+}
+
+/* ========================================== */
+/* BACKGROUNDS DEFINIDOS */
+/* ========================================== */
+
+.bg-diagonal-blue {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+}
+
+.bg-rain-blue {
+    background: linear-gradient(to right, #2e3192, #1bafe0);
+}
+
+.bg-rain-gray {
+    background: linear-gradient(to bottom, #9ca3af, #4b5563);
+}
+
+.bg-christmas {
+    --s: 75px;
+    --_c: #0000, #fff 1deg 79deg, #0000 81deg;
+    --g0: conic-gradient(from 140deg at 50% 87.5%, var(--_c));
+    --g1: conic-gradient(from 140deg at 50% 81.25%, var(--_c));
+    --g2: conic-gradient(from 140deg at 50% 75%, var(--_c));
+    --g3: conic-gradient(at 10% 20%, #0000 75%, #fff 0);
+    background: var(--g0) 0 calc(var(--s) / -4),
+        var(--g0) var(--s) calc(3 * var(--s) / 4), var(--g1),
+        var(--g1) var(--s) var(--s), var(--g2) 0 calc(var(--s) / 4),
+        var(--g2) var(--s) calc(5 * var(--s) / 4),
+        var(--g3) calc(var(--s) / -10) var(--s),
+        var(--g3) calc(9 * var(--s) / 10) calc(2 * var(--s)),
+        repeating-conic-gradient(from 45deg, #228b22 0 25%, #2e8b57 0 50%);
+    background-size: calc(2 * var(--s)) calc(2 * var(--s));
+}
+
+.bg-christmas-red {
+    --s: 75px;
+    --_c: #0000, #fff 1deg 79deg, #0000 81deg;
+    --g0: conic-gradient(from 140deg at 50% 87.5%, var(--_c));
+    --g1: conic-gradient(from 140deg at 50% 81.25%, var(--_c));
+    --g2: conic-gradient(from 140deg at 50% 75%, var(--_c));
+    --g3: conic-gradient(at 10% 20%, #0000 75%, #fff 0);
+    background: var(--g0) 0 calc(var(--s) / -4),
+        var(--g0) var(--s) calc(3 * var(--s) / 4), var(--g1),
+        var(--g1) var(--s) var(--s), var(--g2) 0 calc(var(--s) / 4),
+        var(--g2) var(--s) calc(5 * var(--s) / 4),
+        var(--g3) calc(var(--s) / -10) var(--s),
+        var(--g3) calc(9 * var(--s) / 10) calc(2 * var(--s)),
+        repeating-conic-gradient(from 45deg, #a31e39 0 25%, #31570e 0 50%);
+    background-size: calc(2 * var(--s)) calc(2 * var(--s));
+}
+
+.bg-dots {
+    background-color: #ffffff;
+    background-image: radial-gradient(circle, #1f2937 1px, transparent 1px);
+    background-size: 15px 15px;
+    background-position: 0 0;
+}
+
+.bg-cosmic {
+    background: linear-gradient(135deg, #6366f1 0%, #8b5cf6 100%);
+}
+
+.bg-gradient-wave {
+    background: linear-gradient(45deg, #667eea 0%, #764ba2 25%, #f093fb 50%, #667eea 75%, #764ba2 100%);
+}
+
+.bg-grid {
+    background-image: 
+        linear-gradient(rgba(102, 126, 234, 0.1) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(102, 126, 234, 0.1) 1px, transparent 1px);
+    background-size: 50px 50px;
+}
+
+.bg-bubbles {
+    background: linear-gradient(135deg, #667eea 0%, #f093fb 100%);
+}
+
+/* ========================================== */
+/* PREVIEW STYLES DENTRO DEL PANEL */
+/* ========================================== */
+
+#bg-selector-panel h4 {
+    margin: 0;
+    font-size: 14px;
+    font-weight: 700;
+    color: #1e293b;
+    letter-spacing: 0.5px;
+}
+
+#bg-selector-panel > div {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 10px;
+    max-height: 400px;
+    overflow-y: auto;
+}
+
+#bg-selector-panel [data-bg] {
+    cursor: pointer;
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    align-items: center;
+    padding: 8px;
+    border-radius: 10px;
+    transition: all 0.3s ease;
+    border: 2px solid transparent;
+    pointer-events: auto;
+}
+
+#bg-selector-panel [data-bg]:hover {
+    background: rgba(0, 0, 0, 0.04);
+    border-color: rgba(0, 0, 0, 0.1);
+    transform: translateY(-2px);
+}
+
+#bg-selector-panel [data-bg].active {
+    border-color: #667eea;
+    background: rgba(102, 126, 234, 0.1);
+}
+
+#bg-selector-panel [data-bg] > div {
+    width: 100%;
+    aspect-ratio: 4/3;
+    border-radius: 8px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    border: 1px solid rgba(0, 0, 0, 0.05);
+}
+
+#bg-selector-panel span {
+    font-size: 11px;
+    font-weight: 600;
+    color: #475569;
+    text-align: center;
+    line-height: 1.2;
+}

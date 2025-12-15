@@ -1,0 +1,1005 @@
+/* ========================================== */
+/* COMPONENTES AVANZADOS - SISTEMA ETIQUETAS */
+/* Diseños modernos y animados */
+/* ========================================== */
+
+:root {
+    --primary-color: #667eea;
+    --secondary-color: #764ba2;
+    --success-color: #10b981;
+    --warning-color: #f59e0b;
+    --danger-color: #ef4444;
+    --bg-dark: #1e293b;
+    --bg-light: #f8fafc;
+}
+
+/* ========================================== */
+/* NOTIFICACIÓN SUPERIOR MEJORADA */
+/* ========================================== */
+
+.toast-notification {
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    background: white;
+    border-radius: 15px;
+    padding: 20px 25px;
+    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.2);
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    z-index: 99999;
+    animation: slideInRight 0.4s ease-out;
+    max-width: 400px;
+}
+
+.toast-notification.success {
+    border-left: 5px solid var(--success-color);
+}
+
+.toast-notification.error {
+    border-left: 5px solid var(--danger-color);
+}
+
+.toast-notification.info {
+    border-left: 5px solid var(--primary-color);
+}
+
+.toast-icon {
+    font-size: 28px;
+    flex-shrink: 0;
+}
+
+.toast-content {
+    flex: 1;
+}
+
+.toast-title {
+    font-weight: 700;
+    font-size: 16px;
+    margin-bottom: 4px;
+    color: var(--bg-dark);
+}
+
+.toast-message {
+    font-size: 14px;
+    color: #64748b;
+}
+
+.toast-close {
+    background: none;
+    border: none;
+    font-size: 24px;
+    color: #94a3b8;
+    cursor: pointer;
+    padding: 0;
+    width: 30px;
+    height: 30px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
+    transition: all 0.2s;
+}
+
+.toast-close:hover {
+    background: #f1f5f9;
+    color: #64748b;
+}
+
+@keyframes slideInRight {
+    from {
+        transform: translateX(400px);
+        opacity: 0;
+    }
+    to {
+        transform: translateX(0);
+        opacity: 1;
+    }
+}
+
+@keyframes slideOutRight {
+    from {
+        transform: translateX(0);
+        opacity: 1;
+    }
+    to {
+        transform: translateX(400px);
+        opacity: 0;
+    }
+}
+
+/* ========================================== */
+/* MENU RULETA 4 OPCIONES */
+/* ========================================== */
+
+.menu-wheel {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5em;
+}
+
+.menu-wheel .up {
+    display: flex;
+    flex-direction: row;
+    gap: 0.5em;
+}
+
+.menu-wheel .down {
+    display: flex;
+    flex-direction: row;
+    gap: 0.5em;
+}
+
+.wheel-card {
+    width: 90px;
+    height: 90px;
+    outline: none;
+    border: none;
+    background: white;
+    box-shadow: rgba(50, 50, 93, 0.25) 0px 2px 5px -1px, rgba(0, 0, 0, 0.3) 0px 1px 3px -1px;
+    transition: .2s ease-in-out;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+}
+
+.wheel-card1 {
+    border-radius: 90px 5px 5px 5px;
+}
+
+.wheel-card2 {
+    border-radius: 5px 90px 5px 5px;
+}
+
+.wheel-card3 {
+    border-radius: 5px 5px 5px 90px;
+}
+
+.wheel-card4 {
+    border-radius: 5px 5px 90px 5px;
+}
+
+.wheel-card .wheel-icon {
+    font-size: 36px;
+}
+
+.wheel-card1 .wheel-icon {
+    margin-top: 1.5em;
+    margin-left: 1.2em;
+}
+
+.wheel-card2 .wheel-icon {
+    margin-top: 1.5em;
+    margin-left: -.9em;
+}
+
+.wheel-card3 .wheel-icon {
+    margin-top: -.6em;
+    margin-left: 1.2em;
+}
+
+.wheel-card4 .wheel-icon {
+    margin-top: -.9em;
+    margin-left: -1.2em;
+}
+
+.wheel-card1:hover {
+    cursor: pointer;
+    scale: 1.1;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+}
+
+.wheel-card1:hover .wheel-icon {
+    filter: brightness(0) invert(1);
+}
+
+.wheel-card2:hover {
+    cursor: pointer;
+    scale: 1.1;
+    background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+}
+
+.wheel-card2:hover .wheel-icon {
+    filter: brightness(0) invert(1);
+}
+
+.wheel-card3:hover {
+    cursor: pointer;
+    scale: 1.1;
+    background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
+}
+
+.wheel-card3:hover .wheel-icon {
+    filter: brightness(0) invert(1);
+}
+
+.wheel-card4:hover {
+    cursor: pointer;
+    scale: 1.1;
+    background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);
+}
+
+.wheel-card4:hover .wheel-icon {
+    filter: brightness(0) invert(1);
+}
+
+.wheel-label {
+    position: absolute;
+    bottom: -30px;
+    left: 50%;
+    transform: translateX(-50%);
+    font-size: 11px;
+    font-weight: 600;
+    color: var(--bg-dark);
+    white-space: nowrap;
+    opacity: 0;
+    transition: opacity 0.3s;
+}
+
+.wheel-card:hover .wheel-label {
+    opacity: 1;
+}
+
+/* ========================================== */
+/* POPUP MODAL TRANSPARENTE */
+/* ========================================== */
+
+.popup-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.7);
+    backdrop-filter: blur(10px);
+    display: none;
+    align-items: center;
+    justify-content: center;
+    z-index: 99998;
+    animation: fadeIn 0.3s ease-out;
+}
+
+.popup-overlay.active {
+    display: flex;
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
+}
+
+/* ========================================== */
+/* CARD EXPANDIBLE CON HOVER */
+/* ========================================== */
+
+.cardm {
+    position: absolute;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    top: 46.64%;
+    left: 50%;
+}
+
+.expandable-card {
+    position: absolute;
+    width: 250px;
+    height: 130px;
+    border-radius: 25px;
+    background: whitesmoke;
+    color: black;
+    z-index: 2;
+    transition: .4s ease-in-out;
+}
+
+.expandable-weather {
+    position: relative;
+    margin: 1em;
+}
+
+.expandable-main {
+    font-size: 2em;
+    position: relative;
+    top: -3em;
+    left: 4.3em;
+}
+
+.expandable-mainsub {
+    position: relative;
+    top: -10.2em;
+    left: 14em;
+    font-size: 0.6em;
+}
+
+.expandable-card2 {
+    position: absolute;
+    display: flex;
+    flex-direction: row;
+    width: 240px;
+    height: 130px;
+    border-radius: 35px;
+    background: white;
+    z-index: -1;
+    transition: .4s ease-in-out;
+}
+
+.expandable-card:hover {
+    background-color: #FFE87C;
+    cursor: pointer;
+}
+
+.expandable-card:hover + .expandable-card2 {
+    height: 300px;
+    border-bottom-left-radius: 0px;
+    border-bottom-right-radius: 0px;
+}
+
+.expandable-card:hover + .expandable-card2 .expandable-lower {
+    top: 20.2em;
+}
+
+.expandable-upper {
+    display: flex;
+    flex-direction: row;
+    position: relative;
+    color: black;
+    left: 1.8em;
+    top: 0.5em;
+    gap: 4em;
+}
+
+.expandable-lower {
+    display: flex;
+    flex-direction: row;
+    position: absolute;
+    text-align: center;
+    color: black;
+    left: 3em;
+    top: 1em;
+    margin-top: 0.7em;
+    font-size: 0.7em;
+    transition: .4s ease-in-out;
+}
+
+.expandable-card3 {
+    position: absolute;
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    align-items: center;
+    width: 240px;
+    height: 30px;
+    top: 4.7em;
+    left: -2.4em;
+    font-size: 1.24em;
+    border-bottom-left-radius: 35px;
+    border-bottom-right-radius: 35px;
+    background: limegreen;
+    transition: .4s ease-in-out;
+}
+
+/* ========================================== */
+/* TOGGLE SWITCH MODERNO */
+/* ========================================== */
+
+.switch {
+    --switch-width: 46px;
+    --switch-height: 24px;
+    --switch-bg: rgb(131, 131, 131);
+    --switch-checked-bg: rgb(0, 218, 80);
+    --switch-offset: calc((var(--switch-height) - var(--circle-diameter)) / 2);
+    --switch-transition: all .2s cubic-bezier(0.27, 0.2, 0.25, 1.51);
+    --circle-diameter: 18px;
+    --circle-bg: #fff;
+    --circle-shadow: 1px 1px 2px rgba(146, 146, 146, 0.45);
+    --circle-checked-shadow: -1px 1px 2px rgba(163, 163, 163, 0.45);
+    --circle-transition: var(--switch-transition);
+    --icon-transition: all .2s cubic-bezier(0.27, 0.2, 0.25, 1.51);
+    --icon-cross-color: var(--switch-bg);
+    --icon-cross-size: 6px;
+    --icon-checkmark-color: var(--switch-checked-bg);
+    --icon-checkmark-size: 10px;
+    --effect-width: calc(var(--circle-diameter) / 2);
+    --effect-height: calc(var(--effect-width) / 2 - 1px);
+    --effect-bg: var(--circle-bg);
+    --effect-border-radius: 1px;
+    --effect-transition: all .2s ease-in-out;
+}
+
+.switch input {
+    display: none;
+}
+
+.switch {
+    display: inline-block;
+}
+
+.switch svg {
+    transition: var(--icon-transition);
+    position: absolute;
+    height: auto;
+}
+
+.switch .checkmark {
+    width: var(--icon-checkmark-size);
+    color: var(--icon-checkmark-color);
+    transform: scale(0);
+}
+
+.switch .cross {
+    width: var(--icon-cross-size);
+    color: var(--icon-cross-color);
+}
+
+.slider {
+    box-sizing: border-box;
+    width: var(--switch-width);
+    height: var(--switch-height);
+    background: var(--switch-bg);
+    border-radius: 999px;
+    display: flex;
+    align-items: center;
+    position: relative;
+    transition: var(--switch-transition);
+    cursor: pointer;
+}
+
+.circle {
+    width: var(--circle-diameter);
+    height: var(--circle-diameter);
+    background: var(--circle-bg);
+    border-radius: inherit;
+    box-shadow: var(--circle-shadow);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: var(--circle-transition);
+    z-index: 1;
+    position: absolute;
+    left: var(--switch-offset);
+}
+
+.slider::before {
+    content: "";
+    position: absolute;
+    width: var(--effect-width);
+    height: var(--effect-height);
+    left: calc(var(--switch-offset) + (var(--effect-width) / 2));
+    background: var(--effect-bg);
+    border-radius: var(--effect-border-radius);
+    transition: var(--effect-transition);
+}
+
+.switch input:checked + .slider {
+    background: var(--switch-checked-bg);
+}
+
+.switch input:checked + .slider .checkmark {
+    transform: scale(1);
+}
+
+.switch input:checked + .slider .cross {
+    transform: scale(0);
+}
+
+.switch input:checked + .slider::before {
+    left: calc(100% - var(--effect-width) - (var(--effect-width) / 2) - var(--switch-offset));
+}
+
+.switch input:checked + .slider .circle {
+    left: calc(100% - var(--circle-diameter) - var(--switch-offset));
+    box-shadow: var(--circle-checked-shadow);
+}
+
+/* ========================================== */
+/* LOADING HAMSTER */
+/* ========================================== */
+
+.loading-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.8);
+    backdrop-filter: blur(5px);
+    display: none;
+    align-items: center;
+    justify-content: center;
+    flex-direction: column;
+    gap: 30px;
+    z-index: 99999;
+}
+
+.loading-overlay.active {
+    display: flex;
+}
+
+.wheel-and-hamster {
+    --dur: 1s;
+    position: relative;
+    width: 12em;
+    height: 12em;
+    font-size: 14px;
+}
+
+.wheel,
+.hamster,
+.hamster div,
+.spoke {
+    position: absolute;
+}
+
+.wheel,
+.spoke {
+    border-radius: 50%;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+}
+
+.wheel {
+    background: radial-gradient(100% 100% at center,hsla(0,0%,60%,0) 47.8%,hsl(0,0%,60%) 48%);
+    z-index: 2;
+}
+
+.hamster {
+    animation: hamster var(--dur) ease-in-out infinite;
+    top: 50%;
+    left: calc(50% - 3.5em);
+    width: 7em;
+    height: 3.75em;
+    transform: rotate(4deg) translate(-0.8em,1.85em);
+    transform-origin: 50% 0;
+    z-index: 1;
+}
+
+.hamster__head {
+    animation: hamsterHead var(--dur) ease-in-out infinite;
+    background: hsl(30,90%,55%);
+    border-radius: 70% 30% 0 100% / 40% 25% 25% 60%;
+    box-shadow: 0 -0.25em 0 hsl(30,90%,80%) inset, 0.75em -1.55em 0 hsl(30,90%,90%) inset;
+    top: 0;
+    left: -2em;
+    width: 2.75em;
+    height: 2.5em;
+    transform-origin: 100% 50%;
+}
+
+.hamster__ear {
+    animation: hamsterEar var(--dur) ease-in-out infinite;
+    background: hsl(0,90%,85%);
+    border-radius: 50%;
+    box-shadow: -0.25em 0 hsl(30,90%,55%) inset;
+    top: -0.25em;
+    right: -0.25em;
+    width: 0.75em;
+    height: 0.75em;
+    transform-origin: 50% 75%;
+}
+
+.hamster__eye {
+    animation: hamsterEye var(--dur) linear infinite;
+    background-color: hsl(0,0%,0%);
+    border-radius: 50%;
+    top: 0.375em;
+    left: 1.25em;
+    width: 0.5em;
+    height: 0.5em;
+}
+
+.hamster__nose {
+    background: hsl(0,90%,75%);
+    border-radius: 35% 65% 85% 15% / 70% 50% 50% 30%;
+    top: 0.75em;
+    left: 0;
+    width: 0.2em;
+    height: 0.25em;
+}
+
+.hamster__body {
+    animation: hamsterBody var(--dur) ease-in-out infinite;
+    background: hsl(30,90%,90%);
+    border-radius: 50% 30% 50% 30% / 15% 60% 40% 40%;
+    box-shadow: 0.1em 0.75em 0 hsl(30,90%,55%) inset, 0.15em -0.5em 0 hsl(30,90%,80%) inset;
+    top: 0.25em;
+    left: 2em;
+    width: 4.5em;
+    height: 3em;
+    transform-origin: 17% 50%;
+    transform-style: preserve-3d;
+}
+
+.hamster__limb--fr,
+.hamster__limb--fl {
+    clip-path: polygon(0 0,100% 0,70% 80%,60% 100%,0% 100%,40% 80%);
+    top: 2em;
+    left: 0.5em;
+    width: 1em;
+    height: 1.5em;
+    transform-origin: 50% 0;
+}
+
+.hamster__limb--fr {
+    animation: hamsterFRLimb var(--dur) linear infinite;
+    background: linear-gradient(hsl(30,90%,80%) 80%,hsl(0,90%,75%) 80%);
+    transform: rotate(15deg) translateZ(-1px);
+}
+
+.hamster__limb--fl {
+    animation: hamsterFLLimb var(--dur) linear infinite;
+    background: linear-gradient(hsl(30,90%,90%) 80%,hsl(0,90%,85%) 80%);
+    transform: rotate(15deg);
+}
+
+.hamster__limb--br,
+.hamster__limb--bl {
+    border-radius: 0.75em 0.75em 0 0;
+    clip-path: polygon(0 0,100% 0,100% 30%,70% 90%,70% 100%,30% 100%,40% 90%,0% 30%);
+    top: 1em;
+    left: 2.8em;
+    width: 1.5em;
+    height: 2.5em;
+    transform-origin: 50% 30%;
+}
+
+.hamster__limb--br {
+    animation: hamsterBRLimb var(--dur) linear infinite;
+    background: linear-gradient(hsl(30,90%,80%) 90%,hsl(0,90%,75%) 90%);
+    transform: rotate(-25deg) translateZ(-1px);
+}
+
+.hamster__limb--bl {
+    animation: hamsterBLLimb var(--dur) linear infinite;
+    background: linear-gradient(hsl(30,90%,90%) 90%,hsl(0,90%,85%) 90%);
+    transform: rotate(-25deg);
+}
+
+.hamster__tail {
+    animation: hamsterTail var(--dur) linear infinite;
+    background: hsl(0,90%,85%);
+    border-radius: 0.25em 50% 50% 0.25em;
+    box-shadow: 0 -0.2em 0 hsl(0,90%,75%) inset;
+    top: 1.5em;
+    right: -0.5em;
+    width: 1em;
+    height: 0.5em;
+    transform: rotate(30deg) translateZ(-1px);
+    transform-origin: 0.25em 0.25em;
+}
+
+.spoke {
+    animation: spoke var(--dur) linear infinite;
+    background: radial-gradient(100% 100% at center,hsl(0,0%,60%) 4.8%,hsla(0,0%,60%,0) 5%),
+        linear-gradient(hsla(0,0%,55%,0) 46.9%,hsl(0,0%,65%) 47% 52.9%,hsla(0,0%,65%,0) 53%) 50% 50% / 99% 99% no-repeat;
+}
+
+.loading-text {
+    color: white;
+    font-size: 18px;
+    font-weight: 700;
+    text-align: center;
+}
+
+/* Animaciones del hamster */
+@keyframes hamster {
+    from, to { transform: rotate(4deg) translate(-0.8em,1.85em); }
+    50% { transform: rotate(0) translate(-0.8em,1.85em); }
+}
+
+@keyframes hamsterHead {
+    from, 25%, 50%, 75%, to { transform: rotate(0); }
+    12.5%, 37.5%, 62.5%, 87.5% { transform: rotate(8deg); }
+}
+
+@keyframes hamsterEye {
+    from, 90%, to { transform: scaleY(1); }
+    95% { transform: scaleY(0); }
+}
+
+@keyframes hamsterEar {
+    from, 25%, 50%, 75%, to { transform: rotate(0); }
+    12.5%, 37.5%, 62.5%, 87.5% { transform: rotate(12deg); }
+}
+
+@keyframes hamsterBody {
+    from, 25%, 50%, 75%, to { transform: rotate(0); }
+    12.5%, 37.5%, 62.5%, 87.5% { transform: rotate(-2deg); }
+}
+
+@keyframes hamsterFRLimb {
+    from, 25%, 50%, 75%, to { transform: rotate(50deg) translateZ(-1px); }
+    12.5%, 37.5%, 62.5%, 87.5% { transform: rotate(-30deg) translateZ(-1px); }
+}
+
+@keyframes hamsterFLLimb {
+    from, 25%, 50%, 75%, to { transform: rotate(-30deg); }
+    12.5%, 37.5%, 62.5%, 87.5% { transform: rotate(50deg); }
+}
+
+@keyframes hamsterBRLimb {
+    from, 25%, 50%, 75%, to { transform: rotate(-60deg) translateZ(-1px); }
+    12.5%, 37.5%, 62.5%, 87.5% { transform: rotate(20deg) translateZ(-1px); }
+}
+
+@keyframes hamsterBLLimb {
+    from, 25%, 50%, 75%, to { transform: rotate(20deg); }
+    12.5%, 37.5%, 62.5%, 87.5% { transform: rotate(-60deg); }
+}
+
+@keyframes hamsterTail {
+    from, 25%, 50%, 75%, to { transform: rotate(30deg) translateZ(-1px); }
+    12.5%, 37.5%, 62.5%, 87.5% { transform: rotate(10deg) translateZ(-1px); }
+}
+
+@keyframes spoke {
+    from { transform: rotate(0); }
+    to { transform: rotate(-1turn); }
+}
+
+/* ========================================== */
+/* SUCCESS CHECKBOX */
+/* ========================================== */
+
+.success-overlay {
+    position: fixed;
+    bottom: 30px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: auto;
+    max-width: 90%;
+    background: white;
+    border-radius: 12px;
+    padding: 20px 30px;
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.2);
+    display: none;
+    align-items: center;
+    justify-content: center;
+    flex-direction: column;
+    gap: 15px;
+    z-index: 99999;
+    pointer-events: none;
+}
+
+.success-overlay.active {
+    display: flex;
+    animation: slideUpSuccess 0.4s ease;
+}
+
+@keyframes slideUpSuccess {
+    from {
+        opacity: 0;
+        transform: translateX(-50%) translateY(20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateX(-50%) translateY(0);
+    }
+}
+
+.checkbox-wrapper {
+    position: relative;
+    display: inline-block;
+    width: 80px;
+    height: 80px;
+}
+
+.checkbox-wrapper .background {
+    fill: #667eea;
+    transition: ease all 0.6s;
+}
+
+.checkbox-wrapper .stroke {
+    fill: none;
+    stroke: #fff;
+    stroke-miterlimit: 10;
+    stroke-width: 2px;
+    stroke-dashoffset: 100;
+    stroke-dasharray: 100;
+    transition: ease all 0.6s;
+}
+
+.checkbox-wrapper .check {
+    fill: none;
+    stroke: #fff;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+    stroke-width: 2px;
+    stroke-dashoffset: 22;
+    stroke-dasharray: 22;
+    transition: ease all 0.6s;
+}
+
+.checkbox-wrapper input[type=checkbox] {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    left: 0;
+    top: 0;
+    margin: 0;
+    opacity: 0;
+}
+
+.checkbox-wrapper:hover .check {
+    stroke-dashoffset: 0;
+}
+
+.checkbox-wrapper input[type=checkbox]:checked + svg .background {
+    fill: #10b981;
+}
+
+.checkbox-wrapper input[type=checkbox]:checked + svg .stroke {
+    stroke-dashoffset: 0;
+}
+
+.checkbox-wrapper input[type=checkbox]:checked + svg .check {
+    stroke-dashoffset: 0;
+}
+
+.success-text {
+    color: white;
+    font-size: 24px;
+    font-weight: 700;
+    text-align: center;
+}
+
+/* ========================================== */
+/* INPUT BÚSQUEDA MINIMALISTA */
+/* ========================================== */
+
+.container-input {
+    position: relative;
+}
+
+.input-search {
+    width: 150px;
+    padding: 10px 0px 10px 40px;
+    border-radius: 9999px;
+    border: solid 1px #333;
+    transition: all .2s ease-in-out;
+    outline: none;
+    opacity: 0.8;
+}
+
+.container-input svg {
+    position: absolute;
+    top: 50%;
+    left: 10px;
+    transform: translate(0, -50%);
+}
+
+.input-search:focus {
+    opacity: 1;
+    width: 250px;
+}
+
+/* ========================================== */
+/* INPUT PASSWORD RETRO */
+/* ========================================== */
+
+.input-add-friend {
+    width: 17em;
+    height: 11em;
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    --color: rgb(169, 116, 255);
+    --background-color: rgb(36, 34, 39);
+}
+
+.input-add-friend-title {
+    width: 8em;
+    height: 2em;
+    background-color: var(--background-color);
+    color: white;
+    display: flex;
+    justify-content: center;
+    font-weight: bold;
+    font-family: monospace, sans-serif;
+    box-shadow: -0.05em 0em var(--color), -0.05em -0.05em var(--color), 0.05em -0.05em var(--color);
+    position: relative;
+    z-index: 1;
+    align-items: center;
+    align-self: flex-start;
+    margin-left: 0.5em;
+}
+
+.input-add-friend-input {
+    width: 16em;
+    height: 8em;
+    background-color: var(--background-color);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-direction: column;
+    gap: 1em;
+    font-weight: bold;
+    box-shadow: -0.05em 0em var(--color), -0.05em 0.05em var(--color), 0.05em 0.05em var(--color), 
+                0.05em -0.05em var(--color), 0em 0em 2.5em 0em rgba(169, 116, 255, 0.15);
+    position: relative;
+    z-index: 0;
+    animation: change-box-shadow 5s linear infinite;
+}
+
+@keyframes change-box-shadow {
+    0%, 100% {
+        box-shadow: -0.05em 0em var(--color), -0.05em 0.05em var(--color), 0.05em 0.05em var(--color),
+                    0.05em -0.05em var(--color), 0em 0em 2.5em 0em rgba(169, 116, 255, 0);
+    }
+    50% {
+        box-shadow: -0.05em 0em var(--color), -0.05em 0.05em var(--color), 0.05em 0.05em var(--color),
+                    0.05em -0.05em var(--color), 0em 0em 2.5em 0em rgba(169, 116, 255, 0.25);
+    }
+}
+
+.input-add-friend-input input {
+    width: 14em;
+    height: 2.5em;
+    border: solid 0.5em transparent;
+    font-family: monospace, sans-serif;
+    color: white;
+    font-weight: bold;
+    outline: none;
+    padding-left: 1em;
+    background-color: transparent;
+    position: relative;
+    z-index: 4;
+}
+
+.input-add-friend-input input::placeholder {
+    color: #999;
+    font-weight: bold;
+    font-family: monospace, sans-serif;
+}
+
+.input-add-friend-text {
+    color: var(--background-color);
+    position: absolute;
+    letter-spacing: 0.85em;
+    top: 1.65em;
+    left: 5.25em;
+    z-index: 3;
+}
+
+.input-add-friend-input-behind {
+    width: 13.25em;
+    height: 2.25em;
+    top: 1.35em;
+    font-family: monospace, sans-serif;
+    color: var(--background-color);
+    font-weight: bold;
+    background-color: rgb(255, 255, 255);
+    position: absolute;
+    z-index: 2;
+}
+
+.input-add-friend-checkbox + label {
+    width: 13.25em;
+    height: 2.25em;
+    border: solid 0.5em var(--color);
+    background-color: var(--color);
+    font-family: monospace, sans-serif;
+    color: var(--background-color);
+    font-weight: bold;
+    outline: none;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    transition: all 0.25s ease-in-out;
+    cursor: pointer;
+}
+
+.input-add-friend-checkbox:hover + label {
+    opacity: 75%;
+}
+
+.input-add-friend-checkbox:active + label {
+    background-color: white;
+    border-color: white;
+}

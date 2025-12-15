@@ -1,0 +1,213 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Test Backgrounds Preview</title>
+    <link rel="stylesheet" href="/css/backgrounds-animated.css">
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            padding: 20px;
+            background: #f5f5f5;
+        }
+        
+        .test-container {
+            max-width: 800px;
+            margin: 0 auto;
+        }
+        
+        h1 {
+            color: #1e293b;
+            margin-bottom: 20px;
+        }
+        
+        .preview-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 15px;
+            margin-bottom: 30px;
+        }
+        
+        .preview-item {
+            cursor: pointer;
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+            align-items: center;
+            padding: 12px;
+            border-radius: 10px;
+            background: white;
+            border: 2px solid #e2e8f0;
+            transition: all 0.3s ease;
+        }
+        
+        .preview-item:hover {
+            border-color: #667eea;
+            box-shadow: 0 4px 12px rgba(102, 126, 234, 0.2);
+        }
+        
+        .preview-color {
+            width: 100%;
+            aspect-ratio: 4/3;
+            border-radius: 8px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+            border: 1px solid rgba(0, 0, 0, 0.05);
+        }
+        
+        .preview-label {
+            font-size: 12px;
+            font-weight: 600;
+            color: #475569;
+        }
+        
+        /* Panel simulado */
+        #bg-selector-panel {
+            position: fixed;
+            bottom: 160px;
+            left: 20px;
+            background: white;
+            border-radius: 12px;
+            padding: 16px;
+            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.15);
+            border: 1px solid rgba(0, 0, 0, 0.08);
+            width: 300px;
+            z-index: 9991;
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            pointer-events: auto;
+        }
+        
+        #bg-selector-panel h4 {
+            margin: 0;
+            font-size: 14px;
+            font-weight: 700;
+            color: #1e293b;
+            letter-spacing: 0.3px;
+        }
+        
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 10px;
+            max-height: 400px;
+            overflow-y: auto;
+        }
+    </style>
+</head>
+<body>
+    <div class="test-container">
+        <h1>🎨 Test de Preview de Fondos</h1>
+        
+        <h2>Previa en página principal:</h2>
+        <div class="preview-grid">
+            <div class="preview-item" data-bg="bg-diagonal-blue">
+                <div class="preview-color bg-diagonal-blue"></div>
+                <span class="preview-label">Diagonal Azul</span>
+            </div>
+            
+            <div class="preview-item" data-bg="bg-rain-blue">
+                <div class="preview-color bg-rain-blue"></div>
+                <span class="preview-label">Lluvia Azul</span>
+            </div>
+            
+            <div class="preview-item" data-bg="bg-rain-gray">
+                <div class="preview-color bg-rain-gray"></div>
+                <span class="preview-label">Lluvia Gris</span>
+            </div>
+            
+            <div class="preview-item" data-bg="bg-christmas">
+                <div class="preview-color bg-christmas"></div>
+                <span class="preview-label">Navidad Verde</span>
+            </div>
+            
+            <div class="preview-item" data-bg="bg-christmas-red">
+                <div class="preview-color bg-christmas-red"></div>
+                <span class="preview-label">Navidad Roja</span>
+            </div>
+            
+            <div class="preview-item" data-bg="bg-dots">
+                <div class="preview-color bg-dots"></div>
+                <span class="preview-label">Puntos</span>
+            </div>
+            
+            <div class="preview-item" data-bg="bg-cosmic">
+                <div class="preview-color bg-cosmic"></div>
+                <span class="preview-label">Cósmico</span>
+            </div>
+            
+            <div class="preview-item" data-bg="bg-gradient-wave">
+                <div class="preview-color bg-gradient-wave"></div>
+                <span class="preview-label">Onda Gradiente</span>
+            </div>
+            
+            <div class="preview-item" data-bg="bg-grid">
+                <div class="preview-color bg-grid"></div>
+                <span class="preview-label">Grid</span>
+            </div>
+            
+            <div class="preview-item" data-bg="bg-bubbles">
+                <div class="preview-color bg-bubbles"></div>
+                <span class="preview-label">Burbujas</span>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Simulación del panel -->
+    <div id="bg-selector-panel">
+        <h4>🎨 Seleccionar Fondo</h4>
+        <div class="grid">
+            <div data-bg="bg-diagonal-blue" style="cursor: pointer; display: flex; flex-direction: column; gap: 6px; align-items: center; padding: 8px; border-radius: 10px; transition: all 0.3s ease; border: 2px solid transparent; pointer-events: auto;">
+                <div style="width: 100%; aspect-ratio: 4/3; border-radius: 8px; box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1); border: 1px solid rgba(0, 0, 0, 0.05);" class="bg-diagonal-blue"></div>
+                <span style="font-size: 11px; font-weight: 600; color: #475569; text-align: center; line-height: 1.2;">Diagonal Azul</span>
+            </div>
+            
+            <div data-bg="bg-rain-blue" style="cursor: pointer; display: flex; flex-direction: column; gap: 6px; align-items: center; padding: 8px; border-radius: 10px; transition: all 0.3s ease; border: 2px solid transparent; pointer-events: auto;">
+                <div style="width: 100%; aspect-ratio: 4/3; border-radius: 8px; box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1); border: 1px solid rgba(0, 0, 0, 0.05);" class="bg-rain-blue"></div>
+                <span style="font-size: 11px; font-weight: 600; color: #475569; text-align: center; line-height: 1.2;">Lluvia Azul</span>
+            </div>
+            
+            <div data-bg="bg-rain-gray" style="cursor: pointer; display: flex; flex-direction: column; gap: 6px; align-items: center; padding: 8px; border-radius: 10px; transition: all 0.3s ease; border: 2px solid transparent; pointer-events: auto;">
+                <div style="width: 100%; aspect-ratio: 4/3; border-radius: 8px; box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1); border: 1px solid rgba(0, 0, 0, 0.05);" class="bg-rain-gray"></div>
+                <span style="font-size: 11px; font-weight: 600; color: #475569; text-align: center; line-height: 1.2;">Lluvia Gris</span>
+            </div>
+            
+            <div data-bg="bg-christmas" style="cursor: pointer; display: flex; flex-direction: column; gap: 6px; align-items: center; padding: 8px; border-radius: 10px; transition: all 0.3s ease; border: 2px solid transparent; pointer-events: auto;">
+                <div style="width: 100%; aspect-ratio: 4/3; border-radius: 8px; box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1); border: 1px solid rgba(0, 0, 0, 0.05);" class="bg-christmas"></div>
+                <span style="font-size: 11px; font-weight: 600; color: #475569; text-align: center; line-height: 1.2;">Navidad Verde</span>
+            </div>
+            
+            <div data-bg="bg-christmas-red" style="cursor: pointer; display: flex; flex-direction: column; gap: 6px; align-items: center; padding: 8px; border-radius: 10px; transition: all 0.3s ease; border: 2px solid transparent; pointer-events: auto;">
+                <div style="width: 100%; aspect-ratio: 4/3; border-radius: 8px; box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1); border: 1px solid rgba(0, 0, 0, 0.05);" class="bg-christmas-red"></div>
+                <span style="font-size: 11px; font-weight: 600; color: #475569; text-align: center; line-height: 1.2;">Navidad Roja</span>
+            </div>
+            
+            <div data-bg="bg-dots" style="cursor: pointer; display: flex; flex-direction: column; gap: 6px; align-items: center; padding: 8px; border-radius: 10px; transition: all 0.3s ease; border: 2px solid transparent; pointer-events: auto;">
+                <div style="width: 100%; aspect-ratio: 4/3; border-radius: 8px; box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1); border: 1px solid rgba(0, 0, 0, 0.05);" class="bg-dots"></div>
+                <span style="font-size: 11px; font-weight: 600; color: #475569; text-align: center; line-height: 1.2;">Puntos</span>
+            </div>
+            
+            <div data-bg="bg-cosmic" style="cursor: pointer; display: flex; flex-direction: column; gap: 6px; align-items: center; padding: 8px; border-radius: 10px; transition: all 0.3s ease; border: 2px solid transparent; pointer-events: auto;">
+                <div style="width: 100%; aspect-ratio: 4/3; border-radius: 8px; box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1); border: 1px solid rgba(0, 0, 0, 0.05);" class="bg-cosmic"></div>
+                <span style="font-size: 11px; font-weight: 600; color: #475569; text-align: center; line-height: 1.2;">Cósmico</span>
+            </div>
+            
+            <div data-bg="bg-gradient-wave" style="cursor: pointer; display: flex; flex-direction: column; gap: 6px; align-items: center; padding: 8px; border-radius: 10px; transition: all 0.3s ease; border: 2px solid transparent; pointer-events: auto;">
+                <div style="width: 100%; aspect-ratio: 4/3; border-radius: 8px; box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1); border: 1px solid rgba(0, 0, 0, 0.05);" class="bg-gradient-wave"></div>
+                <span style="font-size: 11px; font-weight: 600; color: #475569; text-align: center; line-height: 1.2;">Onda Gradiente</span>
+            </div>
+            
+            <div data-bg="bg-grid" style="cursor: pointer; display: flex; flex-direction: column; gap: 6px; align-items: center; padding: 8px; border-radius: 10px; transition: all 0.3s ease; border: 2px solid transparent; pointer-events: auto;">
+                <div style="width: 100%; aspect-ratio: 4/3; border-radius: 8px; box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1); border: 1px solid rgba(0, 0, 0, 0.05);" class="bg-grid"></div>
+                <span style="font-size: 11px; font-weight: 600; color: #475569; text-align: center; line-height: 1.2;">Grid</span>
+            </div>
+            
+            <div data-bg="bg-bubbles" style="cursor: pointer; display: flex; flex-direction: column; gap: 6px; align-items: center; padding: 8px; border-radius: 10px; transition: all 0.3s ease; border: 2px solid transparent; pointer-events: auto;">
+                <div style="width: 100%; aspect-ratio: 4/3; border-radius: 8px; box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1); border: 1px solid rgba(0, 0, 0, 0.05);" class="bg-bubbles"></div>
+                <span style="font-size: 11px; font-weight: 600; color: #475569; text-align: center; line-height: 1.2;">Burbujas</span>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

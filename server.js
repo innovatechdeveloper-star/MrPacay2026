@@ -33,6 +33,14 @@ function loadSystemConfig() {
             WIDTH_MM: 100,
             HEIGHT_MM: 150
         },
+        godex: {
+            MODEL: 'G530',
+            PRINTER_IP: '192.168.15.35',
+            PORT_NUMBER: 9100,
+            DPI: 300,
+            WIDTH_MM: 30,
+            HEIGHT_MM: 75
+        },
         server: {
             PORT: 3012,
             JWT_SECRET: 'tu_clave_secreta_super_segura_2025'
@@ -76,6 +84,8 @@ function loadSystemConfig() {
                 if (key && value) {
                     if (currentSection === 'ZEBRA_CONFIG') {
                         config.zebra[key.trim()] = isNaN(value.trim()) ? value.trim() : parseInt(value.trim());
+                    } else if (currentSection === 'GODEX_CONFIG') {
+                        config.godex[key.trim()] = isNaN(value.trim()) ? value.trim() : parseInt(value.trim());
                     } else if (currentSection === 'SERVER_CONFIG') {
                         config.server[key.trim()] = isNaN(value.trim()) ? value.trim() : parseInt(value.trim());
                     } else if (currentSection === 'DATABASE_CONFIG') {
@@ -767,6 +777,7 @@ function generarRotuladoZPL(data, opciones = {}) {
     } = opciones;
     
     console.log(`🏷️ [generarRotuladoZPL] Generando ZPL para Godex G530`);
+    console.log(`✅ CONFIG.godex cargado: ${JSON.stringify({WIDTH_MM: CONFIG.godex.WIDTH_MM, HEIGHT_MM: CONFIG.godex.HEIGHT_MM, DPI: CONFIG.godex.DPI})}`);
     console.log(`📋 Datos:`, JSON.stringify(data, null, 2));
     console.log(`⚙️  Opciones: LogoPrincipal=${logoPrincipal}, Iconos=${conIconos}, Misti=${conLogoMisti}, Corte=${conCorte}`);
     
@@ -807,78 +818,44 @@ function generarRotuladoZPL(data, opciones = {}) {
         }
     }
     
-    // 🔪 CONFIGURACIÓN DE CORTE Y MÁRGENES:
-    // SIN CORTE: ^MNN, ^LL826 (70mm = 7.0cm), márgenes 1cm arriba/abajo
-    // CON CORTE: ^MMC, ^LL826 (70mm = 7.0cm), mismo tamaño pero con comando de corte
-    const ALTURA_LABEL = 826;  // 7.0cm SIEMPRE (70mm)
+    // � ESPECIFICACIONES CORRECTAS (Godex G530 - 300 DPI):
+    // • ALTURA TOTAL: 7cm = 827 dots @ 300 DPI
+    // • MARGEN SUPERIOR: 1cm (costura) = 118 dots
+    // • MARGEN INFERIOR: 1cm (costura) = 118 dots  
+    // • ÁREA CONTENIDO: 5cm = 590 dots (espacio para datos)
+    
+    const ALTURA_LABEL = 826;           // 7cm = 70mm @ 300 DPI ✅ OFICIAL
+    const MARGEN_SUPERIOR = 118;        // 1cm para costura ARRIBA (VACÍO)
+    const MARGEN_INFERIOR = 35;         // 0.3cm abajo
+    const AREA_CONTENIDO = 673;         // Contenido (826-118-35=673)
     const MODO_MEDIA = conCorte ? '^MMC' : '^MNN';
     
-    // 📐 MÁRGENES PARA ZONA DE COSTURA (1cm cada uno = 118 dots)
-    // Etiqueta se dobla a la mitad (3.5cm), dejando 2.5cm arriba y 2.5cm abajo para datos
-    const MARGEN_SUPERIOR = 118;  // 1.0cm (10mm) - zona de costura superior
-    const MARGEN_INFERIOR = 118;  // 1.0cm (10mm) - zona de costura inferior
-    const AREA_SUPERIOR = 295;    // 2.5cm (25mm) - LOGO + PRODUCTO + TELA + MODELO + EMPRESA
-    const AREA_INFERIOR = 295;    // 2.5cm (25mm) - ICONOS + LOGOS ADV + BARCODE
-    
-    // 📐 POSICIONES SECCIÓN SUPERIOR (MARGEN_SUPERIOR + 12 dots de ajuste + distribución en 2.5cm)
-    const Y_LOGO = MARGEN_SUPERIOR + 12;  // 130 (1cm + 12 dots desde inicio)
-    const Y_PRODUCTO_1 = Y_LOGO + 140;  // 270 (espacio para logo 1.2cm)
-    const Y_PRODUCTO_2 = Y_PRODUCTO_1 + 40;  // 310
-    const Y_TELA = (productoLinea2 ? Y_PRODUCTO_2 + 40 : Y_PRODUCTO_1 + 55);  // 350 o 325
-    const Y_MODELO = Y_TELA + 35;  // 385 o 360
-    const Y_HECHO_PERU = Y_MODELO + 35;  // 420 o 395
-    
-    // 📐 POSICIONES SECCIÓN INFERIOR (después del doblez a 3.5cm = 413 dots)
-    const Y_ICONOS_1 = MARGEN_SUPERIOR + AREA_SUPERIOR + 5;  // 418 (inicio área inferior)
-    const Y_ICONOS_2 = Y_ICONOS_1 + 100;  // 518
-    const Y_MISTI = Y_ICONOS_1 + 15;  // 433
-    const Y_BARCODE = ALTURA_LABEL - MARGEN_INFERIOR - 55;  // 653 (826-118-55)
-    
-    // 📊 LOG DETALLADO DE POSICIONES
-    console.log(`\n╔═══════════════════════════════════════════════════════════════╗`);
-    console.log(`║  🖨️  GODEX G530 - CONFIGURACIÓN DE IMPRESIÓN ROTULADO         ║`);
-    console.log(`╠═══════════════════════════════════════════════════════════════╣`);
-    console.log(`║  📏 DIMENSIONES ETIQUETA:                                      ║`);
-    console.log(`║     • Ancho: 354 dots (30mm / 3.0cm)                          ║`);
-    console.log(`║     • Alto: ${ALTURA_LABEL} dots (${(ALTURA_LABEL/11.811).toFixed(1)}mm / ${(ALTURA_LABEL/118.11).toFixed(1)}cm)                  ║`);
-    console.log(`║  🔪 MODO DE CORTE:                                             ║`);
-    console.log(`║     • Guillotina: ${conCorte ? '✅ ACTIVADA (^MMC)' : '❌ DESACTIVADA (^MNN)'}                      ║`);
-    console.log(`║  📐 MÁRGENES:                                                  ║`);
-    console.log(`║     • Superior: ${MARGEN_SUPERIOR} dots (${(MARGEN_SUPERIOR/11.811).toFixed(1)}mm / ${(MARGEN_SUPERIOR/118.11).toFixed(1)}cm)            ║`);
-    console.log(`║     • Inferior: ${MARGEN_INFERIOR} dots (${(MARGEN_INFERIOR/11.811).toFixed(1)}mm / ${(MARGEN_INFERIOR/118.11).toFixed(1)}cm)            ║`);
-    console.log(`║     • Área superior: ${AREA_SUPERIOR} dots (${(AREA_SUPERIOR/118.11).toFixed(1)}cm) - Datos arriba         ║`);
-    console.log(`║     • Área inferior: ${AREA_INFERIOR} dots (${(AREA_INFERIOR/118.11).toFixed(1)}cm) - Iconos/Barcode    ║`);
-    console.log(`║     • 🔄 DOBLEZ: ${(ALTURA_LABEL/2)} dots (${(ALTURA_LABEL/2/118.11).toFixed(1)}cm) - Mitad exacta              ║`);
-    console.log(`║  📍 POSICIONES Y (en dots y cm):                               ║`);
-    console.log(`║     • Logo:        Y=${Y_LOGO} (${(Y_LOGO/118.11).toFixed(2)}cm)                           ║`);
-    console.log(`║     • Producto 1:  Y=${Y_PRODUCTO_1} (${(Y_PRODUCTO_1/118.11).toFixed(2)}cm)                         ║`);
-    if (productoLinea2) {
-    console.log(`║     • Producto 2:  Y=${Y_PRODUCTO_2} (${(Y_PRODUCTO_2/118.11).toFixed(2)}cm)                         ║`);
-    }
-    console.log(`║     • Tela:        Y=${Y_TELA} (${(Y_TELA/118.11).toFixed(2)}cm)                         ║`);
-    console.log(`║     • Modelo:      Y=${Y_MODELO} (${(Y_MODELO/118.11).toFixed(2)}cm)                         ║`);
-    console.log(`║     • Empresa:     Y=${Y_HECHO_PERU} (${(Y_HECHO_PERU/118.11).toFixed(2)}cm)                         ║`);
-    console.log(`║     • Iconos 1:    Y=${Y_ICONOS_1} (${(Y_ICONOS_1/118.11).toFixed(2)}cm)                         ║`);
-    console.log(`║     • Misti:       Y=${Y_MISTI} (${(Y_MISTI/118.11).toFixed(2)}cm)                         ║`);
-    console.log(`║     • Barcode:     Y=${Y_BARCODE} (${(Y_BARCODE/118.11).toFixed(2)}cm)                         ║`);
-    console.log(`║  📦 DATOS:                                                     ║`);
-    console.log(`║     • Producto: ${productoLinea1.padEnd(40)} ║`);
-    if (productoLinea2) {
-    console.log(`║                 ${productoLinea2.padEnd(40)} ║`);
-    }
-    console.log(`║     • Tela: ${telaTipo.padEnd(46)} ║`);
-    console.log(`║     • Modelo: ${tamano.padEnd(44)} ║`);
-    console.log(`║     • Barcode: ${codigoBarras.padEnd(43)} ║`);
-    console.log(`╚═══════════════════════════════════════════════════════════════╝\n`);
+    // 📐 POSICIONES NORMALES (1cm arriba vacío, distribución correcta 6.5cm):
+    // Distribución: 1cm vacío → Logo → Textos → Iconos → Barcode → 0.3cm vacío
+    const Y_LOGO = MARGEN_SUPERIOR;                    // 118 dots = 1cm desde arriba
+    const Y_PRODUCTO_1 = Y_LOGO + 125;                 // 243 dots - Después del logo
+    const Y_PRODUCTO_2 = Y_PRODUCTO_1 + 38;            // 281 dots
+    const Y_TELA = (productoLinea2 ? Y_PRODUCTO_2 + 35 : Y_PRODUCTO_1 + 50);  // ~316 o 293
+    const Y_MODELO = Y_TELA + 32;                      // ~348 dots
+    const Y_HECHO_PERU = Y_MODELO + 32;                // ~380 dots
+    const Y_ICONOS_1 = Y_HECHO_PERU + 42;              // ~422 dots - Logos DESPUÉS de textos
+    const Y_ICONOS_2 = Y_ICONOS_1 + 95;                // ~517 dots - Segunda fila iconos
+    const Y_MISTI = Y_ICONOS_1 + 15;                   // ~437 dots - Offset Misti
+    const Y_BARCODE = 630;                             // ~5.3cm - Barcode al final
     
     // 🏷️ CONSTRUCCIÓN DEL ZPL
-    // Etiqueta: 30mm × 70mm (3.0cm × 7.0cm) con márgenes 1.5cm arriba/abajo
+    console.log(`\n🔧 [generarRotuladoZPL] VALORES CRÍTICOS:`);
+    console.log(`   ALTURA_LABEL: ${ALTURA_LABEL} dots (debe ser 826)`);
+    console.log(`   Y_BARCODE: ${Y_BARCODE} dots (debe ser 653)`);
+    console.log(`   MODO_MEDIA: ${MODO_MEDIA} (${conCorte ? 'CON' : 'SIN'} corte)`);
+    
     let zpl = `^XA
 ${MODO_MEDIA}
 ^PW354
 ^LL${ALTURA_LABEL}
 ^LH0,0
 ^LS0
+^FWN
 `;
     
     // Logo Principal (condicional según selección del usuario)
@@ -963,7 +940,16 @@ ${MODO_MEDIA}
     
     console.log(`📊 [Rotulado] Código de barras Y=${Y_BARCODE_DINAMICO} (${!conLogoMisti ? 'SIN' : 'CON'} logo secundario)`);
     
+    // 🛡️ VALIDACIÓN DE SEGURIDAD: NO permitir comandos de guardado
+    if (zpl.includes('^JUS') || zpl.includes('^JUF') || zpl.includes('^JUM')) {
+        console.error('❌ ERROR CRÍTICO: ZPL contiene comandos de guardado permanente');
+        console.error('   ^JUS/^JUF/^JUM NO están permitidos');
+        console.error('   La impresora debe leer SOLO nuestro código, sin guardar');
+        throw new Error('Comando de guardado detectado en ZPL - BLOQUEADO');
+    }
+    
     console.log(`✅ [generarRotuladoZPL] ZPL generado: ${zpl.length} caracteres`);
+    console.log(`✅ [Seguridad] Sin comandos de guardado (^JUS/^JUF/^JUM)`);
     console.log(`\n╔═══════════════════════════════════════════════════════════════╗`);
     console.log(`║  📄 ZPL COMPLETO QUE SE ENVIARÁ A LA IMPRESORA:               ║`);
     console.log(`╚═══════════════════════════════════════════════════════════════╝`);
@@ -1387,23 +1373,8 @@ async function addToPrintQueue(solicitudData) {
 
 // Función para validar IPs permitidas específicas
 function validarIPPermitida(ip) {
-    // Extraer IP real (remover prefijo IPv6 si existe)
-    const cleanIP = ip.replace('::ffff:', '');
-    
-    // Lista de IPs permitidas - Nueva red 192.168.15.x
-    const ipsPermitidas = [
-        '127.0.0.1',      // Localhost para desarrollo
-        '::1',            // Localhost IPv6
-        '192.168.15.21',  // Servidor (IP estatica nueva)
-        '192.168.15.6',   // PC actual (DHCP)
-        '192.168.15.20',  // Dispositivo detectado en red
-        '192.168.15.26',  // Tablet/Dispositivo movil
-        '192.168.15.36',  // Brother printer / dispositivo
-        '192.168.15.34',  // Zebra ZD230
-        '192.168.15.35'   // Godex G530
-    ];
-    
-    return ipsPermitidas.includes(cleanIP) || ip === '::1';
+    // ✅ ACCESO ABIERTO - Todas las IPs permitidas
+    return true;  // Sin restricciones para producción
 }
 
 // Middleware de filtro de IP
@@ -2225,9 +2196,9 @@ const verificarAdmin = (req, res, next) => {
 // RUTAS DE AUTENTICACIÓN
 // =============================================
 
-// Página de login
+// Página de login (redirigir a la raíz)
 app.get('/login', (req, res) => {
-    res.sendFile(path.join(__dirname, 'public', 'login_fixed.html'));
+    res.redirect('/');
 });
 
 // API de login
@@ -8131,7 +8102,147 @@ app.get('/api/bitacora/:id/asignaciones', async (req, res) => {
     }
 });
 
-console.log('✅ Bitácora de Producción: 8 endpoints registrados');
+// MIS REGISTROS (registros que YO creé)
+app.get('/api/bitacora/mis-registros', async (req, res) => {
+    const { userId } = req.query;
+    
+    console.log('📝 Obteniendo mis registros para userId:', userId);
+    
+    try {
+        if (!userId) {
+            return res.status(400).json({ error: 'userId requerido' });
+        }
+        
+        const result = await pool.query(`
+            SELECT 
+                b.*,
+                p.nombre_producto,
+                u.nombre_completo as nombre_usuario,
+                b.cantidad as cantidad_total,
+                COALESCE(b.cantidad_completada, 0) as cantidad_completada,
+                (b.cantidad - COALESCE(b.cantidad_completada, 0)) as cantidad_pendiente
+            FROM bitacora_produccion b
+            JOIN productos p ON b.id_producto = p.id_producto
+            JOIN usuarios u ON b.id_usuario = u.id_usuario
+            WHERE b.id_usuario = $1
+            AND b.estado = 'ACTIVO'
+            ORDER BY b.fecha DESC
+        `, [userId]);
+        
+        console.log(`✅ ${result.rows.length} registros propios encontrados`);
+        res.json({ success: true, data: result.rows });
+        
+    } catch (error) {
+        console.error('❌ Error obteniendo mis registros:', error);
+        res.status(500).json({ error: error.message });
+    }
+});
+
+// REGISTROS AJENOS (de otros usuarios con pendientes)
+app.get('/api/bitacora/registros-ajenos', async (req, res) => {
+    const { userId } = req.query;
+    
+    console.log('👥 Obteniendo registros ajenos para userId:', userId);
+    
+    try {
+        if (!userId) {
+            return res.status(400).json({ error: 'userId requerido' });
+        }
+        
+        const result = await pool.query(`
+            SELECT 
+                b.*,
+                p.nombre_producto,
+                u.nombre_completo as nombre_usuario,
+                b.cantidad as cantidad_total,
+                COALESCE(b.cantidad_completada, 0) as cantidad_completada,
+                (b.cantidad - COALESCE(b.cantidad_completada, 0)) as cantidad_pendiente,
+                (
+                    SELECT STRING_AGG(
+                        uc.nombre_completo || ' hizo: ' || a.cantidad_asignada, 
+                        ' | '
+                        ORDER BY a.fecha_asignacion
+                    )
+                    FROM bitacora_asignaciones a
+                    JOIN usuarios uc ON a.id_colaborador = uc.id_usuario
+                    WHERE a.id_registro = b.id
+                ) as colaboradores
+            FROM bitacora_produccion b
+            JOIN productos p ON b.id_producto = p.id_producto
+            JOIN usuarios u ON b.id_usuario = u.id_usuario
+            WHERE b.id_usuario != $1
+            AND b.estado = 'ACTIVO'
+            AND (b.cantidad - COALESCE(b.cantidad_completada, 0)) > 0
+            ORDER BY b.fecha DESC
+        `, [userId]);
+        
+        console.log(`✅ ${result.rows.length} registros ajenos con pendientes encontrados`);
+        res.json({ success: true, data: result.rows });
+        
+    } catch (error) {
+        console.error('❌ Error obteniendo registros ajenos:', error);
+        res.status(500).json({ error: error.message });
+    }
+});
+
+// MI PRODUCCIÓN (registros que creé O donde colaboré)
+app.get('/api/bitacora/mi-produccion', async (req, res) => {
+    const { userId } = req.query;
+    
+    console.log('📊 Obteniendo mi producción completa para userId:', userId);
+    
+    try {
+        if (!userId) {
+            return res.status(400).json({ error: 'userId requerido' });
+        }
+        
+        const result = await pool.query(`
+            SELECT DISTINCT
+                b.*,
+                p.nombre_producto,
+                u.nombre_completo as nombre_usuario,
+                b.cantidad as cantidad_total,
+                COALESCE(b.cantidad_completada, 0) as cantidad_completada,
+                (b.cantidad - COALESCE(b.cantidad_completada, 0)) as cantidad_pendiente,
+                (
+                    SELECT STRING_AGG(
+                        uc.nombre_completo || ' hizo: ' || a.cantidad_asignada, 
+                        ' | '
+                        ORDER BY a.fecha_asignacion
+                    )
+                    FROM bitacora_asignaciones a
+                    JOIN usuarios uc ON a.id_colaborador = uc.id_usuario
+                    WHERE a.id_registro = b.id
+                ) as colaboradores,
+                CASE 
+                    WHEN b.id_usuario = $1 THEN 'CREADOR'
+                    WHEN EXISTS (
+                        SELECT 1 FROM bitacora_asignaciones a 
+                        WHERE a.id_registro = b.id AND a.id_colaborador = $1
+                    ) THEN 'COLABORADOR'
+                    ELSE 'OTRO'
+                END as mi_rol
+            FROM bitacora_produccion b
+            JOIN productos p ON b.id_producto = p.id_producto
+            JOIN usuarios u ON b.id_usuario = u.id_usuario
+            LEFT JOIN bitacora_asignaciones a ON a.id_registro = b.id
+            WHERE (
+                b.id_usuario = $1 
+                OR a.id_colaborador = $1
+            )
+            ORDER BY b.fecha DESC
+        `, [userId]);
+        
+        console.log(`✅ ${result.rows.length} registros de mi producción encontrados`);
+        res.json({ success: true, data: result.rows });
+        
+    } catch (error) {
+        console.error('❌ Error obteniendo mi producción:', error);
+        res.status(500).json({ error: error.message });
+    }
+});
+
+console.log('✅ Bitácora de Producción: 11 endpoints registrados');
 console.log('   - POST /api/bitacora/crear');
 console.log('   - GET  /api/bitacora/listar');
 console.log('   - PUT  /api/bitacora/anular');
@@ -8140,6 +8251,9 @@ console.log('   - GET  /api/bitacora/reporte');
 console.log('   - GET  /api/bitacora/exportar-docx');
 console.log('   - POST /api/bitacora/asignar-colaborador');
 console.log('   - GET  /api/bitacora/:id/asignaciones');
+console.log('   - GET  /api/bitacora/mis-registros');
+console.log('   - GET  /api/bitacora/registros-ajenos');
+console.log('   - GET  /api/bitacora/mi-produccion');
 
 // ====================================================
 // ENDPOINTS DE SISTEMA DE CHAT

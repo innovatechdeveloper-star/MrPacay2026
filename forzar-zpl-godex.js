@@ -9,12 +9,17 @@ const GODEX_IP = '192.168.15.35';
 const GODEX_PORT = 9100;
 
 console.log('========================================');
-console.log('  FORZAR GODEX A MODO ZPL');
+console.log('  LIMPIAR Y CONFIGURAR GODEX G530');
+console.log('  Solo acepta ZPL - Sin config guardada');
 console.log('========================================\n');
 
-// Secuencia completa basada en pruebas exitosas
+// Secuencia AGRESIVA de limpieza
+// ⚠️ IMPORTANTE: Borra TODO, configura ZPL, NO guarda nada
 const comandosCompletos = `~R
 ~S,LANGUAGE,ZPL
+~S,MEDIA,LABEL
+~S,DARKNESS,15
+~S,SPEED,4
 ~S,RELOAD
 ^XA
 ^CI28
@@ -25,17 +30,20 @@ const comandosCompletos = `~R
 ^MMC
 ^MNM
 ^MTD
-^JUS
 ^XZ
 `;
 
 console.log(`🖨️  Godex G530: ${GODEX_IP}:${GODEX_PORT}\n`);
-console.log('📋 Secuencia de comandos:');
-console.log('   1. ~R              → Reset general');
-console.log('   2. ~S,LANGUAGE,ZPL → Cambiar a ZPL');
-console.log('   3. ~S,RELOAD       → Recargar config');
-console.log('   4. ^XA...^XZ       → Establecer parámetros ZPL');
-console.log('   5. ^JUS            → Guardar permanente\n');
+console.log('📋 Secuencia de limpieza AGRESIVA:');
+console.log('   1. ~R              → Reset TOTAL (borra memoria flash)');
+console.log('   2. ~S,LANGUAGE,ZPL → Solo acepta ZPL');
+console.log('   3. ~S,MEDIA,LABEL  → Tipo de media etiquetas');
+console.log('   4. ~S,DARKNESS,15  → Oscuridad default');
+console.log('   5. ~S,SPEED,4      → Velocidad default');
+console.log('   6. ~S,RELOAD       → Recargar todo limpio');
+console.log('   7. ^XA...^XZ       → Config base ZPL');
+console.log('   8. NO ^JUS         → NO guarda (volátil)\n');
+console.log('⚠️  La impresora OLVIDARÁ todo después de apagar\n');
 
 const socket = new net.Socket();
 socket.setTimeout(20000);
@@ -66,16 +74,26 @@ socket.on('data', (data) => {
 
 socket.on('close', () => {
     console.log(`\n========================================`);
-    console.log(`  CONFIGURACIÓN COMPLETADA`);
+    console.log(`  LIMPIEZA COMPLETADA`);
     console.log(`========================================\n`);
+    console.log(`✅ Configuración LIMPIA aplicada:\n`);
+    console.log(`   • ~R: Memoria flash BORRADA`);
+    console.log(`   • Modo ZPL: ACTIVADO (solo acepta ZPL)`);
+    console.log(`   • Config guardada: NINGUNA`);
+    console.log(`   • Cada trabajo: Lee ZPL completo que enviamos\n`);
+    console.log(`🛡️  GARANTÍA:\n`);
+    console.log(`   • NO hay config por default`);
+    console.log(`   • NO hay ^LL guardado`);
+    console.log(`   • NO hay ^PQ guardado`);
+    console.log(`   • Impresora lee SOLO nuestro código\n`);
     console.log(`⚡ PASOS CRÍTICOS AHORA:\n`);
     console.log(`1️⃣  APAGAR completamente la impresora`);
-    console.log(`   (Desconectar y esperar 10 segundos)\n`);
-    console.log(`2️⃣  ENCENDER la impresora\n`);
-    console.log(`3️⃣  CALIBRAR: Mantén FEED al encender`);
-    console.log(`   (Suelta cuando parpadee)\n`);
-    console.log(`4️⃣  PROBAR:`);
-    console.log(`   node test-godex-zpl.js\n`);
+    console.log(`   (Desconectar cable - Esperar 10 segundos)\n`);
+    console.log(`2️⃣  MANTENER FEED presionado\n`);
+    console.log(`3️⃣  CONECTAR cable (sin soltar FEED)\n`);
+    console.log(`4️⃣  SOLTAR FEED cuando parpadee\n`);
+    console.log(`5️⃣  Esperar calibración → Luz verde\n`);
+    console.log(`6️⃣  PROBAR: node test-godex-zpl.js\n`);
     console.log(`========================================`);
     console.log(`\n🔍 DIAGNÓSTICO:\n`);
     console.log(`Si sale EN BLANCO aún:`);

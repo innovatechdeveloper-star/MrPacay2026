@@ -31,10 +31,55 @@
     gap: 16px;
 }
 
+.bitacora-header-left {
+    flex: 1;
+}
+
 .bitacora-header h2 {
     color: #1e293b;
     font-size: 26px;
     font-weight: 700;
+    margin-bottom: 8px;
+}
+
+.bitacora-stats {
+    display: flex;
+    gap: 20px;
+    margin-top: 12px;
+    flex-wrap: wrap;
+}
+
+.stat-item {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 8px 16px;
+    background: #f8fafc;
+    border-radius: 8px;
+    font-size: 14px;
+}
+
+.stat-label {
+    color: #64748b;
+    font-weight: 500;
+}
+
+.stat-value {
+    color: #1e293b;
+    font-weight: 700;
+    font-size: 16px;
+}
+
+.stat-value.success {
+    color: var(--color-success);
+}
+
+.stat-value.warning {
+    color: var(--color-warning);
+}
+
+.stat-value.danger {
+    color: var(--color-danger);
 }
 
 .btn-nueva-entrada {
@@ -538,7 +583,27 @@
 <!-- Sección de Bitácora -->
 <div class="seccion-bitacora">
     <div class="bitacora-header">
-        <h2>Bitácora de Producción</h2>
+        <div class="bitacora-header-left">
+            <h2>Bitácora de Producción</h2>
+            <div class="bitacora-stats" id="bitacora-stats">
+                <div class="stat-item">
+                    <span class="stat-label">Total:</span>
+                    <span class="stat-value" id="stat-total">0</span>
+                </div>
+                <div class="stat-item">
+                    <span class="stat-label">Activos:</span>
+                    <span class="stat-value success" id="stat-activos">0</span>
+                </div>
+                <div class="stat-item">
+                    <span class="stat-label">Editados:</span>
+                    <span class="stat-value warning" id="stat-editados">0</span>
+                </div>
+                <div class="stat-item">
+                    <span class="stat-label">Anulados:</span>
+                    <span class="stat-value danger" id="stat-anulados">0</span>
+                </div>
+            </div>
+        </div>
         <button class="btn-nueva-entrada" onclick="abrirModalNuevaEntrada()">
             + Nueva Entrada (NO ROTULADO)
         </button>
@@ -838,6 +903,18 @@ function formatearFecha(fechaStr) {
     });
 }
 
+function actualizarEstadisticas(registros) {
+    const total = registros.length;
+    const activos = registros.filter(r => r.estado === 'ACTIVO').length;
+    const editados = registros.filter(r => r.estado === 'EDITADO').length;
+    const anulados = registros.filter(r => r.estado === 'ANULADO').length;
+    
+    document.getElementById('stat-total').textContent = total;
+    document.getElementById('stat-activos').textContent = activos;
+    document.getElementById('stat-editados').textContent = editados;
+    document.getElementById('stat-anulados').textContent = anulados;
+}
+
 // ========================================
 // CARGAR BITÁCORA
 // ========================================
@@ -868,6 +945,9 @@ async function cargarBitacora() {
         const result = await response.json();
         const registros = result.data || [];
         
+        // Actualizar estadísticas
+        actualizarEstadisticas(registros);
+        
         if (registros.length === 0) {
             tbody.innerHTML = '<tr><td colspan="9" style="text-align: center; padding: 40px; color: #94a3b8;">No hay registros en la bitácora</td></tr>';
             return;
@@ -888,8 +968,8 @@ async function cargarBitacora() {
             const cantidadCompletada = reg.cantidad_completada || cantidadTotal;
             const cantidadPendiente = cantidadTotal - cantidadCompletada;
             
-            // Permisos de acción
-            const puedeEditar = reg.estado === 'ACTIVO';
+            // Permisos de acción: permitir editar ACTIVO y EDITADO, no ANULADO
+            const puedeEditar = reg.estado === 'ACTIVO' || reg.estado === 'EDITADO';
             const userId = getUserId();
             
             return `

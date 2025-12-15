@@ -1,0 +1,1315 @@
+<!-- ========================================== -->
+<!-- BITÁCORA PARA TABLETS - INTERFAZ TÁCTIL -->
+<!-- Diseño de burbujitas para costureras -->
+<!-- ========================================== -->
+
+<style>
+/* Variables */
+:root {
+    --bubble-primary: #667eea;
+    --bubble-success: #10b981;
+    --bubble-warning: #f59e0b;
+    --bubble-info: #3b82f6;
+    --bubble-danger: #ef4444;
+}
+
+/* Contenedor principal */
+.bitacora-tablet-container {
+    padding: 30px 40px;
+    max-width: 900px;
+    margin: 0 auto;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+}
+
+/* Header */
+.tablet-header {
+    text-align: center;
+    margin-bottom: 50px;
+}
+
+.tablet-header h2 {
+    font-size: 36px;
+    color: #1e293b;
+    margin-bottom: 15px;
+    font-weight: 800;
+}
+
+.tablet-header p {
+    font-size: 20px;
+    color: #64748b;
+    font-weight: 600;
+}
+
+/* Burbujitas principales */
+.bubbles-container {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 30px;
+    margin-bottom: 30px;
+}
+
+.bubble-btn {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    border: none;
+    border-radius: 30px;
+    padding: 60px 30px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    box-shadow: 0 15px 40px rgba(102, 126, 234, 0.4);
+    min-height: 280px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 20px;
+}
+
+.bubble-btn:hover {
+    transform: translateY(-8px);
+    box-shadow: 0 20px 50px rgba(102, 126, 234, 0.5);
+}
+
+.bubble-btn:active {
+    transform: translateY(-3px);
+}
+
+.bubble-btn.success {
+    background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+    box-shadow: 0 15px 40px rgba(16, 185, 129, 0.4);
+}
+
+.bubble-btn.success:hover {
+    box-shadow: 0 20px 50px rgba(16, 185, 129, 0.5);
+}
+
+.bubble-btn.info {
+    background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%);
+    box-shadow: 0 15px 40px rgba(59, 130, 246, 0.4);
+}
+
+.bubble-btn.info:hover {
+    box-shadow: 0 20px 50px rgba(59, 130, 246, 0.5);
+}
+
+.bubble-icon {
+    font-size: 72px;
+    filter: drop-shadow(0 4px 8px rgba(0, 0, 0, 0.2));
+}
+
+.bubble-text {
+    color: white;
+    font-size: 24px;
+    font-weight: 800;
+    text-align: center;
+    line-height: 1.4;
+    text-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+}
+
+/* Modal */
+.tablet-modal {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.5);
+    z-index: 9999;
+    backdrop-filter: blur(5px);
+}
+
+.tablet-modal.active {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.tablet-modal-content {
+    background: white;
+    border-radius: 20px;
+    padding: 30px;
+    max-width: 600px;
+    width: 90%;
+    max-height: 90vh;
+    overflow-y: auto;
+    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+}
+
+.modal-header-tablet {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 25px;
+    padding-bottom: 15px;
+    border-bottom: 2px solid #e2e8f0;
+}
+
+.modal-header-tablet h3 {
+    font-size: 24px;
+    color: #1e293b;
+    margin: 0;
+}
+
+.btn-close-tablet {
+    background: #f1f5f9;
+    border: none;
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    cursor: pointer;
+    font-size: 24px;
+    color: #64748b;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.btn-close-tablet:hover {
+    background: #e2e8f0;
+}
+
+/* Formulario táctil */
+.form-tablet {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+
+.form-group-tablet {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.form-group-tablet label {
+    font-size: 16px;
+    font-weight: 600;
+    color: #1e293b;
+}
+
+.form-group-tablet input,
+.form-group-tablet select,
+.form-group-tablet textarea {
+    padding: 15px;
+    border: 2px solid #e2e8f0;
+    border-radius: 10px;
+    font-size: 16px;
+    min-height: 50px;
+}
+
+.form-group-tablet input:focus,
+.form-group-tablet select:focus,
+.form-group-tablet textarea:focus {
+    outline: none;
+    border-color: var(--bubble-primary);
+}
+
+.form-group-tablet textarea {
+    min-height: 100px;
+    resize: vertical;
+}
+
+/* Botones de motivos */
+.motivos-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+    gap: 15px;
+    margin-top: 10px;
+}
+
+.btn-motivo {
+    padding: 15px;
+    border: 2px solid #e2e8f0;
+    border-radius: 10px;
+    background: white;
+    cursor: pointer;
+    font-size: 14px;
+    font-weight: 600;
+    color: #64748b;
+    transition: all 0.2s;
+    text-align: center;
+}
+
+.btn-motivo:hover {
+    border-color: var(--bubble-primary);
+    background: #f8fafc;
+}
+
+.btn-motivo.selected {
+    border-color: var(--bubble-primary);
+    background: var(--bubble-primary);
+    color: white;
+}
+
+.motivo-otros-input {
+    display: none;
+    margin-top: 15px;
+}
+
+.motivo-otros-input.active {
+    display: block;
+}
+
+/* Cards de registros */
+.registros-list {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+}
+
+.registro-card {
+    background: white;
+    border: 2px solid #e2e8f0;
+    border-radius: 15px;
+    padding: 20px;
+    cursor: pointer;
+    transition: all 0.3s;
+}
+
+.registro-card:hover {
+    border-color: var(--bubble-primary);
+    box-shadow: 0 5px 20px rgba(102, 126, 234, 0.2);
+}
+
+.registro-card-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 15px;
+}
+
+.registro-fecha {
+    font-size: 13px;
+    color: #64748b;
+}
+
+.registro-tipo-badge {
+    padding: 6px 12px;
+    border-radius: 20px;
+    font-size: 12px;
+    font-weight: 700;
+}
+
+.tipo-rotulado {
+    background: #e0f2fe;
+    color: #0369a1;
+}
+
+.tipo-no-rotulado {
+    background: #fef3c7;
+    color: #92400e;
+}
+
+.registro-producto {
+    font-size: 18px;
+    font-weight: 700;
+    color: #1e293b;
+    margin-bottom: 10px;
+}
+
+.registro-info {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    margin-bottom: 15px;
+}
+
+.registro-cantidad {
+    font-size: 16px;
+    color: #64748b;
+}
+
+.registro-cantidad strong {
+    color: #10b981;
+}
+
+.registro-pendiente {
+    font-size: 14px;
+    color: #f59e0b;
+    font-weight: 600;
+}
+
+.registro-colaboradores {
+    font-size: 14px;
+    color: #3b82f6;
+    margin-top: 5px;
+}
+
+.registro-actions {
+    display: flex;
+    gap: 10px;
+    margin-top: 15px;
+}
+
+.btn-action-tablet {
+    flex: 1;
+    padding: 12px;
+    border: none;
+    border-radius: 10px;
+    font-size: 16px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.btn-completar {
+    background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+    color: white;
+}
+
+.btn-editar {
+    background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);
+    color: white;
+}
+
+.btn-anular {
+    background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
+    color: white;
+}
+
+.btn-action-tablet:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+}
+
+/* Botones grandes del formulario */
+.form-actions-tablet {
+    display: flex;
+    gap: 15px;
+    margin-top: 20px;
+}
+
+.btn-tablet-large {
+    flex: 1;
+    padding: 18px;
+    border: none;
+    border-radius: 12px;
+    font-size: 18px;
+    font-weight: 700;
+    cursor: pointer;
+    transition: all 0.3s;
+}
+
+.btn-tablet-primary {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+}
+
+.btn-tablet-success {
+    background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+    color: white;
+}
+
+.btn-tablet-secondary {
+    background: #e2e8f0;
+    color: #64748b;
+}
+
+.btn-tablet-large:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
+}
+
+/* Estado vacío */
+.estado-vacio {
+    text-align: center;
+    padding: 60px 20px;
+    color: #94a3b8;
+}
+
+.estado-vacio-icon {
+    font-size: 64px;
+    margin-bottom: 20px;
+}
+
+.estado-vacio-text {
+    font-size: 18px;
+}
+
+/* Responsive */
+@media (max-width: 1024px) {
+    .bubbles-container {
+        grid-template-columns: 1fr;
+        gap: 25px;
+    }
+    
+    .bubble-btn {
+        min-height: 200px;
+        padding: 50px 30px;
+    }
+    
+    .tablet-header h2 {
+        font-size: 32px;
+    }
+    
+    .bubble-icon {
+        font-size: 64px;
+    }
+    
+    .bubble-text {
+        font-size: 22px;
+    }
+}
+
+@media (max-width: 768px) {
+    .bitacora-tablet-container {
+        padding: 20px;
+    }
+    
+    .tablet-header {
+        margin-bottom: 30px;
+    }
+    
+    .tablet-header h2 {
+        font-size: 28px;
+    }
+    
+    .tablet-header p {
+        font-size: 18px;
+    }
+    
+    .bubbles-container {
+        gap: 20px;
+    }
+    
+    .bubble-btn {
+        min-height: 160px;
+        padding: 40px 20px;
+    }
+    
+    .bubble-icon {
+        font-size: 56px;
+    }
+    
+    .bubble-text {
+        font-size: 20px;
+    }
+    
+    .tablet-modal-content {
+        width: 95%;
+        padding: 20px;
+    }
+    
+    .motivos-grid {
+        grid-template-columns: 1fr;
+    }
+}
+</style>
+
+<!-- Contenedor Principal -->
+<div class="bitacora-tablet-container">
+    <div class="tablet-header">
+        <h2>Mi Producción</h2>
+        <p id="usuario-actual-nombre"></p>
+    </div>
+    
+    <!-- Burbujitas principales -->
+    <div class="bubbles-container">
+        <button class="bubble-btn" onclick="abrirCrearProduccion()">
+            <div class="bubble-icon">📝</div>
+            <div class="bubble-text">CREAR<br>PRODUCCIÓN</div>
+        </button>
+        
+        <button class="bubble-btn success" onclick="abrirCompletarProduccion()">
+            <div class="bubble-icon">✅</div>
+            <div class="bubble-text">COMPLETAR<br>PRODUCCIÓN</div>
+        </button>
+        
+        <button class="bubble-btn info" onclick="abrirVerProduccion()">
+            <div class="bubble-icon">👁️</div>
+            <div class="bubble-text">VER<br>PRODUCCIÓN</div>
+        </button>
+    </div>
+</div>
+
+<!-- Modal: Crear Producción -->
+<div class="tablet-modal" id="modal-crear">
+    <div class="tablet-modal-content">
+        <div class="modal-header-tablet">
+            <h3>📝 Crear Producción</h3>
+            <button class="btn-close-tablet" onclick="cerrarModal('modal-crear')">×</button>
+        </div>
+        
+        <form class="form-tablet" onsubmit="guardarNuevaProduccion(event)">
+            <div class="form-group-tablet">
+                <label>Producto *</label>
+                <select id="crear-producto" required></select>
+            </div>
+            
+            <div class="form-group-tablet">
+                <label>Cantidad *</label>
+                <input type="number" id="crear-cantidad" min="1" required placeholder="Ejemplo: 50">
+            </div>
+            
+            <div class="form-group-tablet">
+                <label>Nota (opcional)</label>
+                <textarea id="crear-nota" placeholder="Alguna observación..."></textarea>
+            </div>
+            
+            <div class="form-actions-tablet">
+                <button type="button" class="btn-tablet-large btn-tablet-secondary" onclick="cerrarModal('modal-crear')">
+                    Cancelar
+                </button>
+                <button type="submit" class="btn-tablet-large btn-tablet-success">
+                    Crear
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<!-- Modal: Completar Producción (Opciones) -->
+<div class="tablet-modal" id="modal-completar-opciones">
+    <div class="tablet-modal-content">
+        <div class="modal-header-tablet">
+            <h3>✅ Completar Producción</h3>
+            <button class="btn-close-tablet" onclick="cerrarModal('modal-completar-opciones')">×</button>
+        </div>
+        
+        <div class="bubbles-container">
+            <button class="bubble-btn" onclick="abrirEditarMisRegistros()">
+                <div class="bubble-icon">✏️</div>
+                <div class="bubble-text">EDITAR<br>MIS REGISTROS</div>
+            </button>
+            
+            <button class="bubble-btn success" onclick="abrirCompletarAjenos()">
+                <div class="bubble-icon">✅</div>
+                <div class="bubble-text">COMPLETAR<br>OTROS</div>
+            </button>
+            
+            <button class="bubble-btn" style="background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);" onclick="abrirAnularMisRegistros()">
+                <div class="bubble-icon">❌</div>
+                <div class="bubble-text">ANULAR<br>MIS REGISTROS</div>
+            </button>
+        </div>
+    </div>
+</div>
+
+<!-- Modal: Editar Mis Registros -->
+<div class="tablet-modal" id="modal-editar-mis-registros">
+    <div class="tablet-modal-content">
+        <div class="modal-header-tablet">
+            <h3>✏️ Editar Mis Registros</h3>
+            <button class="btn-close-tablet" onclick="cerrarModal('modal-editar-mis-registros')">×</button>
+        </div>
+        
+        <div class="registros-list" id="lista-mis-registros-editar"></div>
+    </div>
+</div>
+
+<!-- Modal: Formulario Editar -->
+<div class="tablet-modal" id="modal-form-editar">
+    <div class="tablet-modal-content">
+        <div class="modal-header-tablet">
+            <h3>✏️ Editar Registro</h3>
+            <button class="btn-close-tablet" onclick="cerrarModal('modal-form-editar')">×</button>
+        </div>
+        
+        <form class="form-tablet" onsubmit="guardarEdicion(event)">
+            <input type="hidden" id="editar-id">
+            
+            <div class="form-group-tablet">
+                <label>Producto *</label>
+                <select id="editar-producto" required></select>
+            </div>
+            
+            <div class="form-group-tablet">
+                <label>Cantidad *</label>
+                <input type="number" id="editar-cantidad" min="1" required>
+            </div>
+            
+            <div class="form-group-tablet">
+                <label>Motivo del cambio *</label>
+                <div class="motivos-grid">
+                    <button type="button" class="btn-motivo" data-motivo="ME CONFUNDÍ DE CANTIDAD" onclick="seleccionarMotivo(this, 'editar')">
+                        ME CONFUNDÍ DE CANTIDAD
+                    </button>
+                    <button type="button" class="btn-motivo" data-motivo="ME CONFUNDÍ DE PRODUCTO" onclick="seleccionarMotivo(this, 'editar')">
+                        ME CONFUNDÍ DE PRODUCTO
+                    </button>
+                    <button type="button" class="btn-motivo" data-motivo="ME EQUIVOQUÉ DE USUARIO" onclick="seleccionarMotivo(this, 'editar')">
+                        ME EQUIVOQUÉ DE USUARIO
+                    </button>
+                    <button type="button" class="btn-motivo" data-motivo="OTROS" onclick="seleccionarMotivo(this, 'editar')">
+                        OTROS
+                    </button>
+                </div>
+                <div class="motivo-otros-input" id="editar-motivo-otros-container">
+                    <textarea id="editar-motivo-otros" placeholder="Escribe el motivo..."></textarea>
+                </div>
+            </div>
+            
+            <div class="form-actions-tablet">
+                <button type="button" class="btn-tablet-large btn-tablet-secondary" onclick="cerrarModal('modal-form-editar')">
+                    Cancelar
+                </button>
+                <button type="submit" class="btn-tablet-large btn-tablet-success">
+                    Guardar
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<!-- Modal: Completar Ajenos -->
+<div class="tablet-modal" id="modal-completar-ajenos">
+    <div class="tablet-modal-content">
+        <div class="modal-header-tablet">
+            <h3>✅ Completar Otros Registros</h3>
+            <button class="btn-close-tablet" onclick="cerrarModal('modal-completar-ajenos')">×</button>
+        </div>
+        
+        <div class="registros-list" id="lista-registros-ajenos"></div>
+    </div>
+</div>
+
+<!-- Modal: Formulario Completar Ajeno -->
+<div class="tablet-modal" id="modal-form-completar-ajeno">
+    <div class="tablet-modal-content">
+        <div class="modal-header-tablet">
+            <h3>✅ Completar Producción</h3>
+            <button class="btn-close-tablet" onclick="cerrarModal('modal-form-completar-ajeno')">×</button>
+        </div>
+        
+        <div id="info-registro-ajeno" style="background: #f8fafc; padding: 20px; border-radius: 10px; margin-bottom: 20px;"></div>
+        
+        <form class="form-tablet" onsubmit="guardarCompletarAjeno(event)">
+            <input type="hidden" id="completar-id-registro">
+            
+            <div class="form-group-tablet">
+                <label>Cantidad que terminé *</label>
+                <input type="number" id="completar-cantidad" min="1" required placeholder="Ejemplo: 10">
+            </div>
+            
+            <div class="form-group-tablet">
+                <label>Motivo (opcional)</label>
+                <div class="motivos-grid">
+                    <button type="button" class="btn-motivo" data-motivo="MOTIVOS PERSONALES" onclick="seleccionarMotivo(this, 'completar')">
+                        MOTIVOS PERSONALES
+                    </button>
+                    <button type="button" class="btn-motivo" data-motivo="TIEMPO" onclick="seleccionarMotivo(this, 'completar')">
+                        TIEMPO
+                    </button>
+                    <button type="button" class="btn-motivo" data-motivo="FAVOR" onclick="seleccionarMotivo(this, 'completar')">
+                        FAVOR
+                    </button>
+                    <button type="button" class="btn-motivo" data-motivo="OTROS" onclick="seleccionarMotivo(this, 'completar')">
+                        OTROS
+                    </button>
+                </div>
+                <div class="motivo-otros-input" id="completar-motivo-otros-container">
+                    <textarea id="completar-motivo-otros" placeholder="Escribe el motivo..."></textarea>
+                </div>
+            </div>
+            
+            <div class="form-actions-tablet">
+                <button type="button" class="btn-tablet-large btn-tablet-secondary" onclick="cerrarModal('modal-form-completar-ajeno')">
+                    Cancelar
+                </button>
+                <button type="submit" class="btn-tablet-large btn-tablet-success">
+                    Guardar
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<!-- Modal: Anular -->
+<div class="tablet-modal" id="modal-anular">
+    <div class="tablet-modal-content">
+        <div class="modal-header-tablet">
+            <h3>❌ Anular Mis Registros</h3>
+            <button class="btn-close-tablet" onclick="cerrarModal('modal-anular')">×</button>
+        </div>
+        
+        <div class="registros-list" id="lista-mis-registros-anular"></div>
+    </div>
+</div>
+
+<!-- Modal: Formulario Anular -->
+<div class="tablet-modal" id="modal-form-anular">
+    <div class="tablet-modal-content">
+        <div class="modal-header-tablet">
+            <h3>❌ Anular Registro</h3>
+            <button class="btn-close-tablet" onclick="cerrarModal('modal-form-anular')">×</button>
+        </div>
+        
+        <div style="background: #fee2e2; padding: 20px; border-radius: 10px; margin-bottom: 20px; color: #991b1b;">
+            <strong>¿Estás seguro de que deseas anular este registro?</strong>
+            <p style="margin-top: 10px;">Esta acción no se puede deshacer.</p>
+        </div>
+        
+        <form class="form-tablet" onsubmit="guardarAnulacion(event)">
+            <input type="hidden" id="anular-id">
+            
+            <div class="form-group-tablet">
+                <label>Motivo *</label>
+                <div class="motivos-grid">
+                    <button type="button" class="btn-motivo" data-motivo="ME CONFUNDÍ DE CANTIDAD" onclick="seleccionarMotivo(this, 'anular')">
+                        ME CONFUNDÍ DE CANTIDAD
+                    </button>
+                    <button type="button" class="btn-motivo" data-motivo="ME CONFUNDÍ DE PRODUCTO" onclick="seleccionarMotivo(this, 'anular')">
+                        ME CONFUNDÍ DE PRODUCTO
+                    </button>
+                    <button type="button" class="btn-motivo" data-motivo="ME EQUIVOQUÉ DE USUARIO" onclick="seleccionarMotivo(this, 'anular')">
+                        ME EQUIVOQUÉ DE USUARIO
+                    </button>
+                    <button type="button" class="btn-motivo" data-motivo="OTROS" onclick="seleccionarMotivo(this, 'anular')">
+                        OTROS
+                    </button>
+                </div>
+                <div class="motivo-otros-input" id="anular-motivo-otros-container">
+                    <textarea id="anular-motivo-otros" placeholder="Escribe el motivo..."></textarea>
+                </div>
+            </div>
+            
+            <div class="form-actions-tablet">
+                <button type="button" class="btn-tablet-large btn-tablet-secondary" onclick="cerrarModal('modal-form-anular')">
+                    Cancelar
+                </button>
+                <button type="submit" class="btn-tablet-large" style="background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%); color: white;">
+                    Anular
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<!-- Modal: Ver Producción -->
+<div class="tablet-modal" id="modal-ver-produccion">
+    <div class="tablet-modal-content">
+        <div class="modal-header-tablet">
+            <h3>👁️ Mi Producción</h3>
+            <button class="btn-close-tablet" onclick="cerrarModal('modal-ver-produccion')">×</button>
+        </div>
+        
+        <div class="registros-list" id="lista-mi-produccion"></div>
+    </div>
+</div>
+
+<script>
+// Variables globales
+let usuarioActual = null;
+let motivoSeleccionado = { editar: null, completar: null, anular: null };
+let registroActual = null;
+
+// Inicialización
+function inicializarBitacoraTablet() {
+    const userId = getUserId();
+    if (!userId) {
+        console.error('No se encontró userId');
+        return;
+    }
+    
+    cargarUsuarioActual(userId);
+    cargarProductos();
+}
+
+function getUserId() {
+    const urlParams = new URLSearchParams(window.location.search);
+    let userId = urlParams.get('user');
+    
+    if (!userId) {
+        const userData = JSON.parse(localStorage.getItem('userData') || '{}');
+        userId = userData.id_usuario || userData.id;
+    }
+    
+    if (!userId) {
+        const currentUser = JSON.parse(localStorage.getItem('currentUser') || '{}');
+        userId = currentUser.id_usuario || currentUser.id;
+    }
+    
+    return userId;
+}
+
+async function cargarUsuarioActual(userId) {
+    try {
+        const response = await fetch('/api/usuarios');
+        const usuarios = await response.json();
+        usuarioActual = usuarios.find(u => u.id_usuario == userId);
+        
+        if (usuarioActual) {
+            document.getElementById('usuario-actual-nombre').textContent = usuarioActual.nombre_completo;
+        }
+    } catch (error) {
+        console.error('Error cargando usuario:', error);
+    }
+}
+
+async function cargarProductos() {
+    try {
+        const response = await fetch('/api/productos?all=true');
+        const result = await response.json();
+        const productos = result.data || result.productos || result;
+        
+        const selectores = [
+            document.getElementById('crear-producto'),
+            document.getElementById('editar-producto')
+        ];
+        
+        selectores.forEach(selector => {
+            if (selector) {
+                selector.innerHTML = '<option value="">Seleccionar producto...</option>';
+                if (Array.isArray(productos)) {
+                    productos.forEach(prod => {
+                        const option = document.createElement('option');
+                        option.value = prod.id_producto;
+                        option.textContent = prod.nombre_producto;
+                        selector.appendChild(option);
+                    });
+                }
+            }
+        });
+    } catch (error) {
+        console.error('Error cargando productos:', error);
+    }
+}
+
+// Gestión de modales
+function cerrarModal(modalId) {
+    document.getElementById(modalId).classList.remove('active');
+    limpiarFormularios();
+}
+
+function limpiarFormularios() {
+    motivoSeleccionado = { editar: null, completar: null, anular: null };
+    document.querySelectorAll('.btn-motivo').forEach(btn => btn.classList.remove('selected'));
+    document.querySelectorAll('.motivo-otros-input').forEach(div => div.classList.remove('active'));
+}
+
+// Selección de motivos
+function seleccionarMotivo(btn, tipo) {
+    const container = btn.closest('.form-group-tablet');
+    const botones = container.querySelectorAll('.btn-motivo');
+    
+    botones.forEach(b => b.classList.remove('selected'));
+    btn.classList.add('selected');
+    
+    const motivo = btn.dataset.motivo;
+    motivoSeleccionado[tipo] = motivo;
+    
+    const otrosContainer = container.querySelector('.motivo-otros-input');
+    if (motivo === 'OTROS') {
+        otrosContainer.classList.add('active');
+    } else {
+        otrosContainer.classList.remove('active');
+    }
+}
+
+function obtenerMotivoFinal(tipo) {
+    if (motivoSeleccionado[tipo] === 'OTROS') {
+        const input = document.getElementById(`${tipo}-motivo-otros`);
+        return input ? input.value.trim() : '';
+    }
+    return motivoSeleccionado[tipo] || '';
+}
+
+// 1. CREAR PRODUCCIÓN
+function abrirCrearProduccion() {
+    document.getElementById('modal-crear').classList.add('active');
+    document.getElementById('crear-cantidad').value = '';
+    document.getElementById('crear-nota').value = '';
+}
+
+async function guardarNuevaProduccion(event) {
+    event.preventDefault();
+    
+    const userId = getUserId();
+    const idProducto = document.getElementById('crear-producto').value;
+    const cantidad = document.getElementById('crear-cantidad').value;
+    const nota = document.getElementById('crear-nota').value.trim();
+    
+    try {
+        const response = await fetch('/api/bitacora/crear', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+                id_usuario: parseInt(userId),
+                id_producto: parseInt(idProducto),
+                cantidad: parseInt(cantidad),
+                tipo: 'NO_ROTULADO',
+                observaciones: nota || null
+            })
+        });
+        
+        const result = await response.json();
+        
+        if (result.success) {
+            alert('Producción creada exitosamente');
+            cerrarModal('modal-crear');
+        } else {
+            alert('Error: ' + result.error);
+        }
+    } catch (error) {
+        console.error('Error:', error);
+        alert('Error creando producción');
+    }
+}
+
+// 2. COMPLETAR PRODUCCIÓN
+function abrirCompletarProduccion() {
+    document.getElementById('modal-completar-opciones').classList.add('active');
+}
+
+// 2A. EDITAR MIS REGISTROS
+async function abrirEditarMisRegistros() {
+    cerrarModal('modal-completar-opciones');
+    
+    const userId = getUserId();
+    
+    try {
+        const response = await fetch(`/api/bitacora/mis-registros?userId=${userId}`);
+        const result = await response.json();
+        const registros = result.data || [];
+        
+        const lista = document.getElementById('lista-mis-registros-editar');
+        
+        if (registros.length === 0) {
+            lista.innerHTML = `
+                <div class="estado-vacio">
+                    <div class="estado-vacio-icon">📝</div>
+                    <div class="estado-vacio-text">No tienes registros para editar</div>
+                </div>
+            `;
+        } else {
+            lista.innerHTML = registros.map(reg => crearCardRegistro(reg, 'editar')).join('');
+        }
+        
+        document.getElementById('modal-editar-mis-registros').classList.add('active');
+    } catch (error) {
+        console.error('Error:', error);
+        alert('Error cargando registros');
+    }
+}
+
+function abrirFormularioEditar(registro) {
+    registroActual = registro;
+    
+    document.getElementById('editar-id').value = registro.id;
+    document.getElementById('editar-producto').value = registro.id_producto;
+    document.getElementById('editar-cantidad').value = registro.cantidad_total || registro.cantidad;
+    
+    cerrarModal('modal-editar-mis-registros');
+    document.getElementById('modal-form-editar').classList.add('active');
+}
+
+async function guardarEdicion(event) {
+    event.preventDefault();
+    
+    const motivo = obtenerMotivoFinal('editar');
+    if (!motivo) {
+        alert('Debes seleccionar un motivo');
+        return;
+    }
+    
+    const userId = getUserId();
+    const id = document.getElementById('editar-id').value;
+    const idProducto = document.getElementById('editar-producto').value;
+    const cantidad = document.getElementById('editar-cantidad').value;
+    
+    try {
+        const response = await fetch('/api/bitacora/editar', {
+            method: 'PUT',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+                id: parseInt(id),
+                id_producto: parseInt(idProducto),
+                cantidad: parseInt(cantidad),
+                motivo_cambio: motivo,
+                userId: parseInt(userId)
+            })
+        });
+        
+        const result = await response.json();
+        
+        if (result.success) {
+            alert('Registro actualizado exitosamente');
+            cerrarModal('modal-form-editar');
+        } else {
+            alert('Error: ' + result.error);
+        }
+    } catch (error) {
+        console.error('Error:', error);
+        alert('Error actualizando registro');
+    }
+}
+
+// 2B. COMPLETAR AJENOS
+async function abrirCompletarAjenos() {
+    cerrarModal('modal-completar-opciones');
+    
+    const userId = getUserId();
+    
+    try {
+        const response = await fetch(`/api/bitacora/registros-ajenos?userId=${userId}`);
+        const result = await response.json();
+        const registros = result.data || [];
+        
+        const lista = document.getElementById('lista-registros-ajenos');
+        
+        if (registros.length === 0) {
+            lista.innerHTML = `
+                <div class="estado-vacio">
+                    <div class="estado-vacio-icon">✅</div>
+                    <div class="estado-vacio-text">No hay registros pendientes de otros usuarios</div>
+                </div>
+            `;
+        } else {
+            lista.innerHTML = registros.map(reg => crearCardRegistro(reg, 'completar')).join('');
+        }
+        
+        document.getElementById('modal-completar-ajenos').classList.add('active');
+    } catch (error) {
+        console.error('Error:', error);
+        alert('Error cargando registros');
+    }
+}
+
+function abrirFormularioCompletarAjeno(registro) {
+    registroActual = registro;
+    
+    const cantidadPendiente = (registro.cantidad_total || registro.cantidad) - (registro.cantidad_completada || 0);
+    
+    document.getElementById('info-registro-ajeno').innerHTML = `
+        <div style="font-size: 18px; font-weight: 700; color: #1e293b; margin-bottom: 10px;">
+            ${registro.nombre_producto}
+        </div>
+        <div style="font-size: 14px; color: #64748b; margin-bottom: 5px;">
+            ${registro.nombre_usuario} creó: ${registro.cantidad_total || registro.cantidad} unidades
+        </div>
+        <div style="font-size: 14px; color: #64748b; margin-bottom: 5px;">
+            Fecha: ${new Date(registro.fecha).toLocaleString('es-PE')}
+        </div>
+        <div style="font-size: 14px; color: #64748b; margin-bottom: 10px;">
+            Tipo: <span class="registro-tipo-badge ${registro.tipo === 'ROTULADO' ? 'tipo-rotulado' : 'tipo-no-rotulado'}">${registro.tipo === 'ROTULADO' ? 'ROTULADO' : 'NO ROTULADO'}</span>
+        </div>
+        <div style="font-size: 16px; color: #f59e0b; font-weight: 600;">
+            Pendiente: ${cantidadPendiente} unidades
+        </div>
+    `;
+    
+    document.getElementById('completar-id-registro').value = registro.id;
+    document.getElementById('completar-cantidad').max = cantidadPendiente;
+    document.getElementById('completar-cantidad').value = '';
+    
+    cerrarModal('modal-completar-ajenos');
+    document.getElementById('modal-form-completar-ajeno').classList.add('active');
+}
+
+async function guardarCompletarAjeno(event) {
+    event.preventDefault();
+    
+    const motivo = obtenerMotivoFinal('completar') || null;
+    const userId = getUserId();
+    const idRegistro = document.getElementById('completar-id-registro').value;
+    const cantidad = document.getElementById('completar-cantidad').value;
+    
+    try {
+        const response = await fetch('/api/bitacora/asignar-colaborador', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+                id_registro: parseInt(idRegistro),
+                id_colaborador: parseInt(userId),
+                cantidad_asignada: parseInt(cantidad),
+                nota: motivo,
+                userId: parseInt(userId)
+            })
+        });
+        
+        const result = await response.json();
+        
+        if (result.success) {
+            alert('Producción completada exitosamente');
+            cerrarModal('modal-form-completar-ajeno');
+        } else {
+            alert('Error: ' + result.error);
+        }
+    } catch (error) {
+        console.error('Error:', error);
+        alert('Error completando producción');
+    }
+}
+
+// 2C. ANULAR
+async function abrirAnularMisRegistros() {
+    cerrarModal('modal-completar-opciones');
+    
+    const userId = getUserId();
+    
+    try {
+        const response = await fetch(`/api/bitacora/mis-registros?userId=${userId}`);
+        const result = await response.json();
+        const registros = result.data || [];
+        
+        const lista = document.getElementById('lista-mis-registros-anular');
+        
+        if (registros.length === 0) {
+            lista.innerHTML = `
+                <div class="estado-vacio">
+                    <div class="estado-vacio-icon">❌</div>
+                    <div class="estado-vacio-text">No tienes registros para anular</div>
+                </div>
+            `;
+        } else {
+            lista.innerHTML = registros.map(reg => crearCardRegistro(reg, 'anular')).join('');
+        }
+        
+        document.getElementById('modal-anular').classList.add('active');
+    } catch (error) {
+        console.error('Error:', error);
+        alert('Error cargando registros');
+    }
+}
+
+function abrirFormularioAnular(registro) {
+    registroActual = registro;
+    document.getElementById('anular-id').value = registro.id;
+    
+    cerrarModal('modal-anular');
+    document.getElementById('modal-form-anular').classList.add('active');
+}
+
+async function guardarAnulacion(event) {
+    event.preventDefault();
+    
+    const motivo = obtenerMotivoFinal('anular');
+    if (!motivo) {
+        alert('Debes seleccionar un motivo');
+        return;
+    }
+    
+    const userId = getUserId();
+    const id = document.getElementById('anular-id').value;
+    
+    try {
+        const response = await fetch('/api/bitacora/anular', {
+            method: 'PUT',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+                id: parseInt(id),
+                motivo_cambio: motivo,
+                userId: parseInt(userId)
+            })
+        });
+        
+        const result = await response.json();
+        
+        if (result.success) {
+            alert('Registro anulado exitosamente');
+            cerrarModal('modal-form-anular');
+        } else {
+            alert('Error: ' + result.error);
+        }
+    } catch (error) {
+        console.error('Error:', error);
+        alert('Error anulando registro');
+    }
+}
+
+// 3. VER PRODUCCIÓN
+async function abrirVerProduccion() {
+    const userId = getUserId();
+    
+    try {
+        const response = await fetch(`/api/bitacora/mi-produccion?userId=${userId}`);
+        const result = await response.json();
+        const registros = result.data || [];
+        
+        const lista = document.getElementById('lista-mi-produccion');
+        
+        if (registros.length === 0) {
+            lista.innerHTML = `
+                <div class="estado-vacio">
+                    <div class="estado-vacio-icon">👁️</div>
+                    <div class="estado-vacio-text">No tienes registros de producción</div>
+                </div>
+            `;
+        } else {
+            lista.innerHTML = registros.map(reg => crearCardRegistro(reg, 'ver')).join('');
+        }
+        
+        document.getElementById('modal-ver-produccion').classList.add('active');
+    } catch (error) {
+        console.error('Error:', error);
+        alert('Error cargando producción');
+    }
+}
+
+// Crear card de registro
+function crearCardRegistro(reg, modo) {
+    const fecha = new Date(reg.fecha).toLocaleString('es-PE', {
+        day: '2-digit',
+        month: '2-digit',
+        year: 'numeric',
+        hour: '2-digit',
+        minute: '2-digit'
+    });
+    
+    const cantidadTotal = reg.cantidad_total || reg.cantidad;
+    const cantidadCompletada = reg.cantidad_completada || 0;
+    const cantidadPendiente = cantidadTotal - cantidadCompletada;
+    
+    const tipoBadge = reg.tipo === 'ROTULADO' ? 
+        '<span class="registro-tipo-badge tipo-rotulado">ROTULADO</span>' :
+        '<span class="registro-tipo-badge tipo-no-rotulado">NO ROTULADO</span>';
+    
+    let accionBtn = '';
+    if (modo === 'editar') {
+        accionBtn = `<button class="btn-action-tablet btn-editar" onclick='abrirFormularioEditar(${JSON.stringify(reg)})'>EDITAR</button>`;
+    } else if (modo === 'completar') {
+        accionBtn = `<button class="btn-action-tablet btn-completar" onclick='abrirFormularioCompletarAjeno(${JSON.stringify(reg)})'>COMPLETAR</button>`;
+    } else if (modo === 'anular') {
+        accionBtn = `<button class="btn-action-tablet btn-anular" onclick='abrirFormularioAnular(${JSON.stringify(reg)})'>ANULAR</button>`;
+    }
+    
+    return `
+        <div class="registro-card">
+            <div class="registro-card-header">
+                <div class="registro-fecha">${fecha}</div>
+                ${tipoBadge}
+            </div>
+            <div class="registro-producto">${reg.nombre_producto}</div>
+            <div class="registro-info">
+                <div class="registro-cantidad">
+                    <strong>${reg.nombre_usuario}</strong> hizo: ${cantidadTotal}
+                </div>
+                ${cantidadPendiente > 0 ? `
+                    <div class="registro-pendiente">Quedan: ${cantidadPendiente}</div>
+                ` : ''}
+                ${reg.colaboradores ? `
+                    <div class="registro-colaboradores">${reg.colaboradores}</div>
+                ` : ''}
+            </div>
+            ${accionBtn ? `<div class="registro-actions">${accionBtn}</div>` : ''}
+        </div>
+    `;
+}
+
+// Exponer funciones al scope global
+window.abrirCrearProduccion = abrirCrearProduccion;
+window.abrirCompletarProduccion = abrirCompletarProduccion;
+window.abrirVerProduccion = abrirVerProduccion;
+window.abrirEditarMisRegistros = abrirEditarMisRegistros;
+window.abrirCompletarAjenos = abrirCompletarAjenos;
+window.abrirAnularMisRegistros = abrirAnularMisRegistros;
+window.abrirFormularioEditar = abrirFormularioEditar;
+window.abrirFormularioCompletarAjeno = abrirFormularioCompletarAjeno;
+window.abrirFormularioAnular = abrirFormularioAnular;
+window.cerrarModal = cerrarModal;
+window.seleccionarMotivo = seleccionarMotivo;
+window.guardarNuevaProduccion = guardarNuevaProduccion;
+window.guardarEdicion = guardarEdicion;
+window.guardarCompletarAjeno = guardarCompletarAjeno;
+window.guardarAnulacion = guardarAnulacion;
+
+// Inicializar cuando cargue el documento
+if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', inicializarBitacoraTablet);
+} else {
+    inicializarBitacoraTablet();
+}
+</script>
