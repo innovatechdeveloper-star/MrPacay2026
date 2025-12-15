@@ -3110,12 +3110,27 @@ app.post('/api/solicitudes/rotulado', async (req, res) => {
             RETURNING *
         `, [numeroSolicitud, id_usuario, id_producto, cantidad, observaciones, zplData]);
         
+        const solicitud = insertResult.rows[0];
+        
+        // Crear registro automático en bitácora de producción
+        try {
+            await pool.query(`
+                INSERT INTO bitacora_produccion 
+                (id_usuario, id_producto, tipo, cantidad_solicitada, cantidad_pendiente, observaciones)
+                VALUES ($1, $2, 'ROTULADO', $3, $3, $4)
+            `, [id_usuario, id_producto, cantidad, observaciones]);
+            
+            console.log('✅ Registro automático de ROTULADO creado en bitácora_produccion');
+        } catch (bitacoraError) {
+            console.error('⚠️ Error creando registro en bitácora (no crítico):', bitacoraError.message);
+        }
+        
         console.log(`✅ [solicitudes/rotulado] Solicitud creada: ${numeroSolicitud}`);
         
         res.json({
             success: true,
             mensaje: 'Solicitud de rotulado creada exitosamente',
-            solicitud: insertResult.rows[0],
+            solicitud: solicitud,
             numero_solicitud: numeroSolicitud
         });
         
@@ -4533,10 +4548,26 @@ app.post('/api/solicitudes', async (req, res) => {
             cantidad_solicitada, observaciones, JSON.stringify(datosQR)
         ]);
         
+        const solicitud = result.rows[0];
+        
+        // Crear registro automático en bitácora de producción
+        try {
+            await pool.query(`
+                INSERT INTO bitacora_produccion 
+                (id_usuario, id_producto, id_solicitud, tipo, cantidad_solicitada, cantidad_pendiente, observaciones)
+                VALUES ($1, $2, $3, 'NO ROTULADO', $4, $4, $5)
+            `, [usuario.id_usuario, id_producto, solicitud.id_solicitud, cantidad_solicitada, observaciones]);
+            
+            console.log('✅ Registro automático creado en bitácora_produccion');
+        } catch (bitacoraError) {
+            console.error('⚠️ Error creando registro en bitácora (no crítico):', bitacoraError.message);
+            // No bloqueamos la respuesta si falla el registro de bitácora
+        }
+        
         res.json({ 
             success: true, 
             mensaje: 'Solicitud creada exitosamente',
-            solicitud: result.rows[0],
+            solicitud: solicitud,
             lote_generado: lote_produccion
         });
         

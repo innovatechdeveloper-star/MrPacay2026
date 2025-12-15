@@ -57,6 +57,25 @@ CREATE TABLE IF NOT EXISTS chat_usuarios_en_linea (
     ultimo_ping TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 
+-- Tabla: bitacora_produccion
+CREATE TABLE IF NOT EXISTS bitacora_produccion (
+    id_bitacora SERIAL,
+    id_usuario INTEGER NOT NULL,
+    id_producto INTEGER NOT NULL,
+    id_solicitud INTEGER,
+    tipo VARCHAR(20) NOT NULL DEFAULT 'NO ROTULADO',
+    cantidad_solicitada INTEGER NOT NULL,
+    cantidad_completada INTEGER DEFAULT 0,
+    cantidad_pendiente INTEGER DEFAULT 0,
+    estado VARCHAR(20) DEFAULT 'pendiente'::character varying,
+    observaciones TEXT,
+    motivo_cambio TEXT,
+    usuario_modificador INTEGER,
+    fecha TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    fecha_modificacion TIMESTAMP,
+    fecha_completado TIMESTAMP
+);
+
 -- Tabla: cola_impresion
 CREATE TABLE IF NOT EXISTS cola_impresion (
     id SERIAL,
@@ -395,6 +414,7 @@ ALTER TABLE chat_mensajes ADD PRIMARY KEY (id_mensaje);
 ALTER TABLE chat_mensajes_no_leidos ADD PRIMARY KEY (id_no_leido);
 ALTER TABLE chat_participantes ADD PRIMARY KEY (id_participante);
 ALTER TABLE chat_usuarios_en_linea ADD PRIMARY KEY (id_estado);
+ALTER TABLE bitacora_produccion ADD PRIMARY KEY (id_bitacora);
 ALTER TABLE cola_impresion ADD PRIMARY KEY (id);
 ALTER TABLE cola_impresion_rotulado ADD PRIMARY KEY (id);
 ALTER TABLE config_impresion_especiales ADD PRIMARY KEY (id_config);
@@ -429,6 +449,10 @@ ALTER TABLE chat_mensajes_no_leidos ADD CONSTRAINT chat_mensajes_no_leidos_id_me
 ALTER TABLE chat_participantes ADD CONSTRAINT chat_participantes_id_canal_fkey FOREIGN KEY (id_canal) REFERENCES chat_canales(id_canal);
 ALTER TABLE chat_participantes ADD CONSTRAINT chat_participantes_id_usuario_fkey FOREIGN KEY (id_usuario) REFERENCES usuarios(id_usuario);
 ALTER TABLE chat_usuarios_en_linea ADD CONSTRAINT chat_usuarios_en_linea_id_usuario_fkey FOREIGN KEY (id_usuario) REFERENCES usuarios(id_usuario);
+ALTER TABLE bitacora_produccion ADD CONSTRAINT bitacora_produccion_id_usuario_fkey FOREIGN KEY (id_usuario) REFERENCES usuarios(id_usuario);
+ALTER TABLE bitacora_produccion ADD CONSTRAINT bitacora_produccion_id_producto_fkey FOREIGN KEY (id_producto) REFERENCES productos(id_producto);
+ALTER TABLE bitacora_produccion ADD CONSTRAINT bitacora_produccion_id_solicitud_fkey FOREIGN KEY (id_solicitud) REFERENCES solicitudes_etiquetas(id_solicitud);
+ALTER TABLE bitacora_produccion ADD CONSTRAINT bitacora_produccion_usuario_modificador_fkey FOREIGN KEY (usuario_modificador) REFERENCES usuarios(id_usuario);
 ALTER TABLE cola_impresion ADD CONSTRAINT cola_impresion_id_solicitud_fkey FOREIGN KEY (id_solicitud) REFERENCES solicitudes_etiquetas(id_solicitud);
 ALTER TABLE config_impresion_especiales ADD CONSTRAINT config_impresion_especiales_usuario_configuro_fkey FOREIGN KEY (usuario_configuro) REFERENCES usuarios(id_usuario);
 ALTER TABLE config_impresion_especiales ADD CONSTRAINT config_impresion_especiales_id_producto_especial_fkey FOREIGN KEY (id_producto_especial) REFERENCES productos_especiales(id_producto_especial);
@@ -471,6 +495,11 @@ CREATE UNIQUE INDEX IF NOT EXISTS chat_participantes_id_canal_id_usuario_key ON 
 CREATE INDEX IF NOT EXISTS idx_chat_participantes_canal ON chat_participantes(id_canal);
 CREATE INDEX IF NOT EXISTS idx_chat_participantes_usuario ON chat_participantes(id_usuario);
 CREATE UNIQUE INDEX IF NOT EXISTS chat_usuarios_en_linea_id_usuario_key ON chat_usuarios_en_linea(id_usuario);
+CREATE INDEX IF NOT EXISTS idx_bitacora_usuario ON bitacora_produccion(id_usuario);
+CREATE INDEX IF NOT EXISTS idx_bitacora_producto ON bitacora_produccion(id_producto);
+CREATE INDEX IF NOT EXISTS idx_bitacora_fecha ON bitacora_produccion(fecha);
+CREATE INDEX IF NOT EXISTS idx_bitacora_tipo ON bitacora_produccion(tipo);
+CREATE INDEX IF NOT EXISTS idx_bitacora_estado ON bitacora_produccion(estado);
 CREATE UNIQUE INDEX IF NOT EXISTS cola_impresion_qr_code_key ON cola_impresion(qr_code);
 CREATE INDEX IF NOT EXISTS idx_cola_impresion_estado ON cola_impresion(estado);
 CREATE INDEX IF NOT EXISTS idx_cola_impresion_fecha ON cola_impresion(fecha_creacion);

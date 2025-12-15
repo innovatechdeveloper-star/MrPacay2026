@@ -20,13 +20,14 @@ Scripts SQL para configurar la base de datos en cualquier PC.
 psql -U postgres -d postgres -f crear_base_datos.sql
 ```
 
-## 📊 Tablas incluidas (24)
+## 📊 Tablas incluidas (25)
 
 ### Core del Sistema
 - `usuarios` - Gestión de usuarios y permisos
 - `departamentos` - Departamentos de la empresa
 - `productos` - Catálogo de productos
 - `solicitudes_etiquetas` - Solicitudes principales con config de logos
+- `bitacora_produccion` - Registro de producción con mensajes de costureras
 
 ### Productos Especiales
 - `productos_especiales` - Productos personalizados
